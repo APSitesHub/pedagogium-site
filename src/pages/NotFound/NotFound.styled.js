@@ -1,4 +1,3 @@
-import { Title } from 'components/Hero/Hero.styled';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -10,7 +9,7 @@ export const NotFoundSection = styled.section`
   background-color: var(--main-color);
 `;
 
-export const NotFoundTitle = styled(Title)`
+export const NotFoundTitle = styled.h1`
   margin: auto;
   color: var(--secondary-color);
   -webkit-text-stroke-color: var(--secondary-color);

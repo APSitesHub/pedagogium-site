@@ -1,4 +1,4 @@
-import { Logo } from 'pages/Quiz/Quiz.styled';
+
 import styled from 'styled-components';
 
 export const MyPlatformBox = styled.div`
@@ -38,15 +38,6 @@ export const TestPlatformSpoiler = styled.div`
   z-index: 5;
 
   background-color: white;
-`;
-
-export const TestLogo = styled(Logo)`
-  display: block;
-  flex-shrink: 0;
-  width: 173px;
-  height: 34px;
-
-  margin: 0 auto;
 `;
 
 export const MyAPBackground = styled.div`

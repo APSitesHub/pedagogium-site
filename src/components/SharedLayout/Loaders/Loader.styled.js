@@ -1,4 +1,3 @@
-import { BackgroundFilterBottom, BackgroundFilterTop } from 'pages/Quiz/Quiz.styled';
 import styled from 'styled-components';
 
 export const LoaderWrapper = styled.div`
@@ -42,16 +41,4 @@ export const VideoLoader = styled.video`
   transform: translateY(-50%);
 `;
 
-export const VideoLoaderFilterTop = styled(BackgroundFilterTop)`
-  top: -630px;
-  left: 50%;
-  transform: translateX(-50%);
-`;
-
-export const VideoLoaderFilterBottom = styled(BackgroundFilterBottom)`
-  bottom: -630px;
-  left: 50%;
-
-  transform: translateX(-50%);
-`;
 
