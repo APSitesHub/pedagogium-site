@@ -3,10 +3,9 @@ import styled, { keyframes } from 'styled-components';
 import { ReactComponent as BoxSwitchLeft } from '../../img/svg/btnbox-switch-left.svg';
 import { ReactComponent as BoxSwitchRight } from '../../img/svg/btnbox-switch-right.svg';
 import { ReactComponent as KahootIcon } from '../../img/svg/kahootIcon.svg';
-import { ReactComponent as LogoClean } from '../../img/svg/myap/logo-clean.svg';
+import { ReactComponent as LogoClean } from '../../img/svg/logoNew.svg';
 import { ReactComponent as SupportIcon } from '../../img/svg/supportIcon.svg';
 // eslint-disable-next-line
-import { ReactComponent as SpeakingIcon } from '../../img/svg/speaking.svg';
 import { ReactComponent as SpeakingIconOption } from '../../img/svg/speaking2.svg';
 import { ReactComponent as SupportArrowIcon } from '../../img/svg/supportIcons/supportArrow.svg';
 import { ReactComponent as SupportPointerIcon } from '../../img/svg/supportIcons/supportPointer.svg';
