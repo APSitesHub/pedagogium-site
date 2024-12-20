@@ -4,11 +4,6 @@ import { ReactComponent as BoxSwitchLeft } from '../../img/svg/btnbox-switch-lef
 import { ReactComponent as BoxSwitchRight } from '../../img/svg/btnbox-switch-right.svg';
 import { ReactComponent as KahootIcon } from '../../img/svg/kahootIcon.svg';
 import { ReactComponent as LogoClean } from '../../img/svg/logoNew.svg';
-import { ReactComponent as SupportIcon } from '../../img/svg/supportIcon.svg';
-// eslint-disable-next-line
-import { ReactComponent as SpeakingIconOption } from '../../img/svg/speaking2.svg';
-import { ReactComponent as SupportArrowIcon } from '../../img/svg/supportIcons/supportArrow.svg';
-import { ReactComponent as SupportPointerIcon } from '../../img/svg/supportIcons/supportPointer.svg';
 import { ReactComponent as ChatIcon } from '../../img/svg/youTubeChat.svg';
 
 export const StreamSection = styled.section`
@@ -322,18 +317,6 @@ export const ChatLogo = styled(ChatIcon)`
 
 export const SupportBtn = styled(ChatBtn)``;
 
-export const SupportLogo = styled(SupportIcon)`
-  fill: var(--main-color);
-  width: 31px;
-  height: 31px;
-  z-index: 5;
-
-  @media screen and (min-width: 768px) {
-    width: 48px;
-    height: 48px;
-  }
-`;
-
 export const SpeakingLink = styled.a`
   background-color: rgb(240, 240, 240);
   display: flex;
@@ -390,18 +373,6 @@ export const SpeakingLink = styled.a`
   }
 `;
 
-export const SpeakingLogo = styled(SpeakingIconOption)`
-  fill: var(--main-color);
-  width: 31px;
-  height: 31px;
-  z-index: 5;
-
-  @media screen and (min-width: 768px) {
-    width: 48px;
-    height: 48px;
-  }
-`;
-
 export const BoxHideSwitch = styled.div`
   position: absolute;
   top: 118px;
@@ -451,52 +422,6 @@ export const BoxHideRightSwitch = styled(BoxSwitchRight)`
   transition: stroke var(--animation-global);
 `;
 
-export const SupportArrow = styled(SupportArrowIcon)`
-  fill: var(--main-color);
-  position: absolute;
-  bottom: 60px;
-  left: 60px;
-  width: 80px;
-  height: 80px;
-  z-index: 5;
-  opacity: 0;
-  transition: all var(--animation-global);
-
-  @media screen and (min-width: 768px) {
-    width: 120px;
-    height: 120px;
-  }
-
-  &.animated {
-    opacity: 1;
-    filter: drop-shadow(1px 1px 7px #f9ea38);
-    animation: ${pulse} 1000ms infinite ease-in-out alternate;
-  }
-`;
-
-export const SupportPointer = styled(SupportPointerIcon)`
-  fill: var(--main-color);
-  position: absolute;
-  bottom: 60px;
-  right: 100px;
-  width: 64px;
-  height: 64px;
-  z-index: 5;
-  opacity: 0;
-
-  @media screen and (min-width: 768px) {
-    width: 72px;
-    height: 72px;
-  }
-
-  &.animated {
-    opacity: 1;
-    filter: drop-shadow(1px 1px 7px #f9ea38);
-    transform: rotate(180deg);
-    animation: ${pulse} 1s infinite ease-in-out alternate;
-  }
-`;
-
 export const StreamPlaceHolder = styled.div`
   width: 100%;
   height: 100%;
@@ -540,9 +465,9 @@ export const LoginFormText = styled.p`
   font-size: 16px;
   text-align: center;
 
-  @media screen and (min-width: 1280px) {
+  @media screen and (min-width: 1024px) {
     font-size: 24px;
-    max-width: 840px;
+    max-width: 600px;
   }
 `;
 

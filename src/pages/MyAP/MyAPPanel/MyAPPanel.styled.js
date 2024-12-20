@@ -3,12 +3,9 @@ import { ReactComponent as BoxSwitchLeft } from '../../../img/svg/btnbox-switch-
 import { ReactComponent as BoxSwitchRight } from '../../../img/svg/btnbox-switch-right-gray.svg';
 import { ReactComponent as AttendanceIcon } from '../../../img/svg/myap/attendance.svg';
 import { ReactComponent as CalendarIcon } from '../../../img/svg/myap/calendar.svg';
-import { ReactComponent as CupIcon } from '../../../img/svg/myap/cup.svg';
 import { ReactComponent as GuideIcon } from '../../../img/svg/myap/guide.svg';
 import { ReactComponent as PointerIcon } from '../../../img/svg/myap/pointer.svg';
 import { ReactComponent as ResetIcon } from '../../../img/svg/myap/reset.svg';
-import { ReactComponent as SearchIcon } from '../../../img/svg/myap/search.svg';
-import { ReactComponent as ToggleIcon } from '../../../img/svg/myap/toggle.svg';
 
 export const PanelBackdrop = styled.div`
   width: 100%;
@@ -191,47 +188,6 @@ export const APPanelToggleBtn = styled(APPanelResetBtn)`
   }
   &.tooltip-open::before {
     transform: translateY(-75%) scale(1, 1);
-  }
-`;
-
-export const SearchBtnIcon = styled(SearchIcon)`
-  height: 25px;
-  width: 25px;
-  user-select: none;
-  pointer-events: none;
-
-  @media screen and (min-width: 768px) {
-    height: 30px;
-    width: 30px;
-  }
-
-  &.active {
-    color: #525266;
-  }
-`;
-
-export const FaqSearchBtnIcon = styled(SearchIcon)`
-  height: 16px;
-  width: 16px;
-  color: #bebecc;
-  user-select: none;
-
-  transition: color var(--animation-global);
-`;
-
-export const CupBtnIcon = styled(CupIcon)`
-  height: 25px;
-  width: 25px;
-  user-select: none;
-  pointer-events: none;
-
-  @media screen and (min-width: 768px) {
-    height: 30px;
-    width: 30px;
-  }
-
-  &.active {
-    color: #525266;
   }
 `;
 
@@ -424,22 +380,6 @@ export const IframeSetLinkIcon = styled(ResetIcon)`
   transition: color var(--animation-global);
 `;
 
-export const IframeToggleLinkIcon = styled(ToggleIcon)`
-  height: 25px;
-  width: 25px;
-
-  @media screen and (min-width: 768px) {
-    height: 30px;
-    width: 30px;
-  }
-
-  color: #bebecc;
-  position: relative;
-  pointer-events: none;
-
-  transition: color var(--animation-global);
-`;
-
 export const IframeMarathonLinkPanel = styled(APPanel)`
   top: 0px;
   right: 0;
@@ -589,4 +529,13 @@ export const IframeMarathonPointerLinkIcon = styled(PointerIcon)`
     width: 20px;
     height: 20px;
   }
+`;
+
+export const LoginErrorNote = styled.p`
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: red;
+
+  transition: opacity var(--animation-global);
 `;

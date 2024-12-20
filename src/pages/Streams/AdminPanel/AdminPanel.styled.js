@@ -16,6 +16,8 @@ export const LoginForm = styled(Form)`
   left: 50%;
   transform: translate(-50%, -50%);
 
+  font-family: var(--new-font-family);
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,6 +50,7 @@ export const AdminFormBtn = styled(FormBtn)`
 `;
 
 export const AdminInput = styled(Input)`
+  font-family: var(--new-font-family);
   border: 2px solid var(--main-color);
   max-width: 600px;
 `;
