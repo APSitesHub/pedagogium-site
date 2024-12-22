@@ -1,7 +1,5 @@
 import axios from 'axios';
-import {
-  Label
-} from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import {
   LoginFormText,
   LoginLogo,
@@ -18,10 +16,10 @@ import {
 import { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import { MyPlatform } from './My Platform/MyPlatform';
-import { MyAPPanel } from './MyAPPanel/MyAPPanel';
-import { LoginErrorNote } from './MyAPPanel/MyAPPanel.styled';
+import { MyPedagogiumPanel } from './MyPedagogiumPanel/MyPedagogiumPanel';
+import { LoginErrorNote } from './MyPedagogiumPanel/MyPedagogiumPanel.styled';
 
-const MyAP = () => {
+const MyPedagogium = () => {
   const [isUserLogged, setIsUserLogged] = useState(false);
   const [timetable, setTimetable] = useState({});
   const [user, setUser] = useState({});
@@ -38,7 +36,7 @@ const MyAP = () => {
     const refreshToken = async () => {
       console.log('token refresher');
       try {
-        const res = await axios.post('/users/refresh', {
+        const res = await axios.post('/uniusers/refresh', {
           mail: localStorage.getItem('mail'),
         });
         setIsUserLogged(isLogged => (isLogged = true));
@@ -67,9 +65,9 @@ const MyAP = () => {
         ? `https://online.ap.education/Account/LoginByToken?token=${
             user.platformToken
           }&redirectUrl=${encodeURIComponent(
-            `https://online.ap.education/MarathonClass/?marathonId=37835&pupilId=${user.pupilId}&marathonLessonId=621674`
+            `https://online.ap.education/MarathonClass/?marathonId=72421&pupilId=${user.pupilId}&marathonLessonId=1160032`
           )}`
-        : `https://online.ap.education/MarathonClass/?marathonId=37835&pupilId=${user.pupilId}&marathonLessonId=621674`;
+        : `https://online.ap.education/MarathonClass/?marathonId=72421&pupilId=${user.pupilId}&marathonLessonId=1160032`;
 
       setPlatformLink(link => (link = authLink));
     };
@@ -95,7 +93,7 @@ const MyAP = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/users/login', values);
+      const response = await axios.post('/uniusers/login', values);
       console.log(response);
 
       setAuthToken(response.data.token);
@@ -143,7 +141,9 @@ const MyAP = () => {
               />
               <AdminInputNote component="p" name="password" />
             </Label>
-            <AdminFormBtn type="submit">Log In</AdminFormBtn>
+            <AdminFormBtn type="submit">
+              <FormBtnText>Log In</FormBtnText>
+            </AdminFormBtn>
             <LoginErrorNote
               style={isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }}
             >
@@ -153,7 +153,11 @@ const MyAP = () => {
         </Formik>
       ) : (
         <>
-          <MyAPPanel user={user} link={platformLink} timetable={timetable} />
+          <MyPedagogiumPanel
+            user={user}
+            link={platformLink}
+            timetable={timetable}
+          />
           <MyPlatform platformLink={platformLink} />
         </>
       )}
@@ -161,4 +165,4 @@ const MyAP = () => {
   );
 };
 
-export default MyAP;
+export default MyPedagogium;

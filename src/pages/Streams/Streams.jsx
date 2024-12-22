@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { StreamsBackgroundWrapper } from 'components/BackgroundWrapper/BackgroundWrappers';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { LoaderWrapper } from 'components/SharedLayout/Loaders/Loader.styled';
 import { Formik } from 'formik';
 import { nanoid } from 'nanoid';
-import { LoginErrorNote } from 'pages/MyAP/MyAPPanel/MyAPPanel.styled';
+import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import * as yup from 'yup';
 import {
   LoginFormText,
@@ -28,14 +28,11 @@ const setAuthToken = token => {
 };
 
 const Streams = () => {
-  let location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [links, setLinks] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [isUserLogged, setIsUserLogged] = useState(false);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
-
-  const room = location.pathname;
 
   const wakeupRequest = async () => {
     try {
@@ -87,7 +84,7 @@ const Streams = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/users/login', values);
+      const response = await axios.post('/uniusers/login', values);
       console.log(values);
       console.log(response);
       setAuthToken(response.data.token);
@@ -123,7 +120,7 @@ const Streams = () => {
       console.log('token refresher');
       try {
         const res = await axios.post(
-          'https://ap-server-8qi1.onrender.com/users/refresh',
+          'https://ap-server-8qi1.onrender.com/uniusers/refresh',
           { mail: localStorage.getItem('mail') }
         );
         setIsUserLogged(isLogged => (isLogged = true));
@@ -138,7 +135,7 @@ const Streams = () => {
       }
     };
     refreshToken();
-  }, [room]);
+  }, []);
 
   useEffect(() => {
     detectUser();
@@ -178,7 +175,9 @@ const Streams = () => {
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <AdminFormBtn type="submit">Log In</AdminFormBtn>
+              <AdminFormBtn type="submit">
+                <FormBtnText>Log In</FormBtnText>
+              </AdminFormBtn>
               <LoginErrorNote
                 style={
                   isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
@@ -189,7 +188,7 @@ const Streams = () => {
             </LoginForm>
           </Formik>
         ) : (
-          <Outlet context={[links, isLoading, currentUser, room]} />
+          <Outlet context={[links, isLoading, currentUser]} />
         )}
 
         {isLoading && (

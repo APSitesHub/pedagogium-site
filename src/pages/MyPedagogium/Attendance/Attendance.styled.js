@@ -4,7 +4,7 @@ import { ReactComponent as ArrowRight } from '../../../img/svg/month-switch-righ
 import {
   CalendarBtnIcon,
   TimetableBtnIcon,
-} from '../MyAPPanel/MyAPPanel.styled';
+} from '../MyPedagogiumPanel/MyPedagogiumPanel.styled';
 
 export const AttendanceBox = styled.div`
   position: absolute;
@@ -88,7 +88,12 @@ export const MonthSwitchBox = styled.div`
 
   padding: 3px 3px;
   border-radius: 6px;
-  background: linear-gradient(322deg, #0f645b 23.22%, #09c6cc 110.01%), #fff;
+  background: linear-gradient(
+      322deg,
+      var(--main-color) 23.22%,
+      var(--secondary-color) 110.11%
+    ),
+    #fff;
 `;
 
 export const AttendancePeriod = styled.span`

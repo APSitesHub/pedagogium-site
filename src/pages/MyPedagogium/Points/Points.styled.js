@@ -183,7 +183,11 @@ export const LeaderPlace = styled.div`
   font-weight: 500;
   color: var(--secondary-color);
   border-radius: 5px;
-  background: linear-gradient(322deg, #0f645b -5.61%, #09c6cc 93.88%);
+  background: linear-gradient(
+    322deg,
+    var(--main-color) -5.61%,
+    var(--secondary-color) 93.88%
+  );
 `;
 
 export const UserPlace = styled(LeaderPlace)`

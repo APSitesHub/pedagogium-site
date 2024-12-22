@@ -1,7 +1,6 @@
 import { ClickAwayListener } from '@mui/base';
 import EmojiPicker from 'emoji-picker-react';
 import { useState } from 'react';
-import { useLocation } from 'react-router';
 import { animateScroll } from 'react-scroll';
 import {
   ChatFooterBox,
@@ -17,7 +16,6 @@ import {
 export const ChatFooter = ({ socket, theme, currentUser }) => {
   const [message, setMessage] = useState('');
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const location = useLocation();
 
   const toggleEmojiPicker = () => {
     setIsPickerOpen(isOpen => !isOpen);
@@ -37,14 +35,6 @@ export const ChatFooter = ({ socket, theme, currentUser }) => {
     e.preventDefault();
     isPickerOpen && closeEmojiPicker();
 
-    let pilotLocation = '';
-    if (location.pathname.includes('pilot')) {
-      pilotLocation = '/streams/deutsch';
-    }
-    if (location.pathname.includes('pilot-a1')) {
-      pilotLocation = '/streams/a1';
-    }
-
     if (message.trim() && localStorage.getItem('userName')) {
       socket.emit('message', {
         text: message,
@@ -53,7 +43,11 @@ export const ChatFooter = ({ socket, theme, currentUser }) => {
         userIP: currentUser.ip,
         id: `${socket.id}${Math.random()}`,
         socketID: socket.id,
-        roomLocation: pilotLocation || location.pathname.split('-chat')[0],
+        roomLocation: document.title
+          .split('|')[1]
+          .trim()
+          .trimEnd()
+          .toLowerCase(),
       });
     }
     console.log({ userName: localStorage.getItem('userName'), message });
@@ -72,7 +66,7 @@ export const ChatFooter = ({ socket, theme, currentUser }) => {
           <ChatMessageLabel>
             <СhatMessageInput
               type="text"
-              placeholder="Введіть повідомлення..."
+              placeholder="Start typing..."
               maxLength={250}
               value={message}
               onChange={e => {

@@ -1,6 +1,5 @@
 import useSize from '@react-hook/size';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
 import { animateScroll } from 'react-scroll';
 import {
   ChatDeleteMessage,
@@ -19,7 +18,6 @@ import {
 } from './Chat.styled';
 
 export const ChatBody = ({ socket, messages, isChatOpen }) => {
-  const location = useLocation();
   const ChatBodyEl = useRef();
   // eslint-disable-next-line
   const [_, height] = useSize(ChatBodyEl);
@@ -31,24 +29,9 @@ export const ChatBody = ({ socket, messages, isChatOpen }) => {
     scrollToBottom();
   });
 
-  const room = location.pathname.includes('pilot-a1')
-    ? '/streams/a1'
-    : location.pathname.includes('pilot')
-    ? '/streams/deutsch'
-    : location.pathname.includes('b1beginner')
-    ? '/streams-kids/a2'
-    : location.pathname.includes('b2beginner')
-    ? '/streams-kids/a2'
-    : location.pathname.includes('streams-kids/a2')
-    ? '/streams-kids/b1beginner'
-    : location.pathname;
+  const room = document.title.split('|')[1]?.trim().trimEnd().toLowerCase();
 
   const calculateHeights = () => {
-    // console.log('scroll:', scroll);
-    // console.log('height:', height);
-    // console.log('scrollHeight:', ChatBodyEl.current.scrollHeight);
-    // console.log('scrollTop:', Math.ceil(ChatBodyEl.current.scrollTop));
-
     setScroll(
       height ===
         ChatBodyEl.current.scrollHeight -
@@ -125,30 +108,18 @@ export const ChatBody = ({ socket, messages, isChatOpen }) => {
                         ),
                       }}
                     ></ChatMessageText>
-                    {/* <ChatMessageTime>
-                      {new Date(message.createdAt).toLocaleTimeString(
-                        'uk-UA'
-                      ) || new Date(Date.now()).toLocaleTimeString('uk-UA')}
-                    </ChatMessageTime> */}
                   </ChatMessagePinnedCloud>
                 </ChatMessageWrapper>
               ))}
           </ChatPinnedMessage>
         )}
         {messages.map(message =>
-          message.roomLocation === room ||
-          (message.roomLocation.includes('kids/a2') &&
-            room === 'stream-kids/a2') ||
-          (message.roomLocation.includes('b1beginner') &&
-            room === 'stream-kids/a2') ||
-          (message.roomLocation.includes('b2beginner') &&
-            room === 'stream-kids/a2') ||
-          message.roomLocation === location.pathname.split('-chat')[0] ? (
+          message.roomLocation === room ? (
             message.username === localStorage.getItem('userName') &&
             message.userID === localStorage.getItem('userID') ? (
               <ChatMessageWrapper key={message.id}>
                 <ChatMessageYou className="sender__name">
-                  Ви ({message.username})
+                  You ({message.username})
                 </ChatMessageYou>
                 <ChatMessageYouCloud>
                   <ChatDeleteMessage
@@ -164,9 +135,6 @@ export const ChatBody = ({ socket, messages, isChatOpen }) => {
                       ),
                     }}
                   ></ChatMessageText>
-                  {/* <ChatMessageTime>
-                    {new Date(message.createdAt).toLocaleTimeString('uk-UA')}
-                  </ChatMessageTime> */}
                 </ChatMessageYouCloud>
               </ChatMessageWrapper>
             ) : (
@@ -182,9 +150,6 @@ export const ChatBody = ({ socket, messages, isChatOpen }) => {
                       ),
                     }}
                   ></ChatMessageText>
-                  {/* <ChatMessageTime>
-                    {new Date(message.createdAt).toLocaleTimeString('uk-UA')}
-                  </ChatMessageTime> */}
                 </ChatMessageUserCloud>
               </ChatMessageWrapper>
             )

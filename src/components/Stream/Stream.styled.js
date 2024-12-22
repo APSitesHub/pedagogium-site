@@ -64,67 +64,6 @@ export const pulse = keyframes`
   }
 `;
 
-export const SupportMarkerRight = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 250px;
-  height: 40px;
-  pointer-events: none;
-  z-index: 10;
-
-  background: transparent;
-  background-clip: padding-box;
-
-  &:before {
-    content: '';
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-  }
-
-  &.animated:before {
-    content: '';
-    z-index: -1;
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: 150%;
-
-    filter: blur(10px);
-    opacity: 0.5;
-    background: linear-gradient(360deg, var(--main-color), #f9ea38);
-  }
-`;
-
-export const SupportMarkerLeft = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 240px;
-  height: 40px;
-  pointer-events: none;
-  z-index: 10;
-
-  &:before {
-    content: '';
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-  }
-
-  &.animated:before {
-    content: '';
-    z-index: -1;
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: 100%;
-
-    filter: blur(10px);
-    opacity: 0.5;
-    background: linear-gradient(360deg, var(--main-color), #f9ea38);
-  }
-`;
-
 export const VideoBox = styled.div`
   padding-top: 100vh;
   max-height: 100vh;
@@ -213,7 +152,7 @@ export const ChatWindowedBox = styled(ChatBox)`
 
 export const ButtonBox = styled.div`
   position: absolute;
-  top: 60px;
+  top: 150px;
   left: 25px;
   z-index: 100;
   display: flex;
@@ -224,15 +163,6 @@ export const ButtonBox = styled.div`
 
   &.hidden {
     transform: translateX(calc(-100% - 30px));
-  }
-`;
-
-export const ButtonBoxFree = styled(ButtonBox)`
-  top: 50%;
-  transform: translateY(-50%);
-
-  &.hidden {
-    transform: translate(calc(-100% - 30px), -50%);
   }
 `;
 
@@ -256,38 +186,7 @@ export const ChatBtn = styled.button`
   &:focus,
   &:hover,
   &:active {
-    background-color: var(--accent-color);
-    box-shadow: -10px -10px 30px 0px rgba(0, 0, 0, 0.25);
-  }
-
-  &.animated {
-    animation: ${pulse} 1000ms infinite ease-in-out alternate;
-  }
-
-  &:before {
-    content: '';
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-  }
-
-  &.animated:before {
-    content: '';
-    z-index: -1;
-    position: absolute;
-    border-radius: 50%;
-    display: block;
-    width: 55px;
-    height: 55px;
-    /* animation: ${pulse} 1000ms infinite ease-in-out alternate; */
-
-    filter: blur(10px);
-    opacity: 1;
-    background: linear-gradient(360deg, var(--main-color), #f9ea38);
-
-    @media screen and (min-width: 768px) {
-      width: 80px;
-      height: 80px;
-    }
+    box-shadow: 0px 0px 2px 7px rgba(255, 255, 255, 0.25);
   }
 `;
 
@@ -314,8 +213,6 @@ export const ChatLogo = styled(ChatIcon)`
     height: 40px;
   }
 `;
-
-export const SupportBtn = styled(ChatBtn)``;
 
 export const SpeakingLink = styled.a`
   background-color: rgb(240, 240, 240);
@@ -393,6 +290,8 @@ export const BoxHideSwitch = styled.div`
 
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
+
+  transition: stroke var(--animation-global);
 
   &:hover * {
     stroke: var(--accent-color);
@@ -472,14 +371,14 @@ export const LoginFormText = styled.p`
 `;
 
 export const LoginLogo = styled(LogoClean)`
-  width: 240px;
+  width: 300px;
 
   @media screen and (min-width: 768px) {
-    width: 360px;
+    width: 540px;
   }
 
   @media screen and (min-width: 1280px) {
-    width: 452px;
+    width: 720px;
   }
 `;
 

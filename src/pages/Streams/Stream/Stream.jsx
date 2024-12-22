@@ -24,7 +24,7 @@ import {
 const StreamA0 = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
-  const [links, isLoading, currentUser, room] = useOutletContext();
+  const [links, isLoading, currentUser] = useOutletContext();
   const chatEl = useRef();
   // eslint-disable-next-line
   const [chatWidth, chatHeight] = useSize(chatEl);
@@ -44,8 +44,10 @@ const StreamA0 = () => {
 
   const socketRef = useRef(null);
 
+  const room = document.title.split('|')[1]?.trim().trimEnd().toLowerCase();
+
   useEffect(() => {
-    document.title = 'A0 English | AP Education';
+    document.title = 'Lesson Online | Pedagogium';
 
     socketRef.current = io('https://ap-chat-server.onrender.com/');
 
@@ -55,7 +57,6 @@ const StreamA0 = () => {
     });
 
     const getMessages = async () => {
-      console.log('get');
       try {
         const dbMessages = await axios.get(
           `https://ap-chat-server.onrender.com/messages/room`,
@@ -140,7 +141,7 @@ const StreamA0 = () => {
 
   return (
     <>
-      {(links.a0 === undefined || links.a0[0] < 10) && !isLoading ? (
+      {(links[room] === undefined || links[room][0] < 10) && !isLoading ? (
         <StreamPlaceHolder>
           <StreamPlaceHolderText>
             No stream yet! <br />
@@ -176,7 +177,7 @@ const StreamA0 = () => {
                 }}
                 width="100%"
                 height="100vh"
-                url={links.a0}
+                url={links[room]}
               />
             </VideoBox>
 
@@ -191,10 +192,7 @@ const StreamA0 = () => {
             </BoxHideSwitch>
 
             {height > width && (
-              <ChatBox
-                ref={chatEl}
-                className={isChatOpen ? 'shown' : 'hidden'}
-              >
+              <ChatBox ref={chatEl} className={isChatOpen ? 'shown' : 'hidden'}>
                 <Chat
                   socket={socketRef.current}
                   messages={messages}
@@ -205,10 +203,7 @@ const StreamA0 = () => {
             )}
           </StreamSection>
           {width >= height && (
-            <ChatBox
-              ref={chatEl}
-              className={isChatOpen ? 'shown' : 'hidden'}
-            >
+            <ChatBox ref={chatEl} className={isChatOpen ? 'shown' : 'hidden'}>
               <Chat
                 socket={socketRef.current}
                 messages={messages}

@@ -212,10 +212,16 @@ export const FormBtn = styled.button`
   font-size: 16px;
   font-weight: 700;
 
+  position: relative;
   text-transform: uppercase;
   color: var(--secondary-color);
   border-radius: 50px;
-  background: linear-gradient(322deg, #0f645b 23.22%, #09c6cc 110.01%), #0f645b;
+  background: linear-gradient(
+      322deg,
+      var(--main-color) 23.22%,
+      var(--secondary-color) 110.01%
+    ),
+    var(--secondary-color);
   border: none;
   flex-shrink: 0;
   cursor: pointer;
@@ -228,7 +234,38 @@ export const FormBtn = styled.button`
     height: 70px;
   }
 
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+
+    transition: opacity 350ms linear;
+
+    background: linear-gradient(
+        322deg,
+        var(--secondary-color) -5.61%,
+        var(--main-color) 93.88%
+      ),
+      var(--secondary-color);
+  }
+
   &:hover,
   &:focus {
+    &::before {
+      opacity: 1;
+    }
   }
+`;
+
+export const FormBtnText = styled.span`
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;

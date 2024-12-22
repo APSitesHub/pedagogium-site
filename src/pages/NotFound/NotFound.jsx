@@ -10,11 +10,11 @@ import {
 const NotFound = () => {
   return (
     <NotFoundSection id="hero">
-      <NotFoundTitle>Такої сторінки в нас нема!</NotFoundTitle>
+      <NotFoundTitle>No such page!</NotFoundTitle>
       <NotFoundLinkWrapper>
-        <NotFoundLinkTitle>Але є інші!</NotFoundLinkTitle>
+        <NotFoundLinkTitle>Try something else!</NotFoundLinkTitle>
         <NotFoundLinks>
-          <NotFoundLink to="/">На головну</NotFoundLink>
+          <NotFoundLink to="/">Main</NotFoundLink>
         </NotFoundLinks>
       </NotFoundLinkWrapper>
     </NotFoundSection>

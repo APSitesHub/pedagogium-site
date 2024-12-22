@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { TimetableBtnIcon } from '../MyAPPanel/MyAPPanel.styled';
+import { TimetableBtnIcon } from '../MyPedagogiumPanel/MyPedagogiumPanel.styled';
 
 export const TimetableBox = styled.div`
   position: absolute;
@@ -122,7 +122,12 @@ export const TimetableLessonLink = styled.a`
   width: 110px;
   color: #fff;
   font-weight: 500;
-  background: linear-gradient(322deg, #0f645b 23.22%, #09c6cc 110.01%), #09c6cc;
+  background: linear-gradient(
+      322deg,
+      var(--main-color) 23.22%,
+      var(--secondary-color) 110.01%
+    ),
+    var(--secondary-color);
 
   border-radius: 5px;
   overflow: hidden;
@@ -140,8 +145,12 @@ export const TimetableLessonLink = styled.a`
 
     transition: opacity var(--animation-global);
 
-    background: linear-gradient(322deg, #09c6cc 23.22%, #0f645b 110.01%),
-      #09c6cc;
+    background: linear-gradient(
+        322deg,
+        var(--main-color) 23.22%,
+        var(--secondary-color) 110.01%
+      ),
+      var(--secondary-color);
   }
 
   &:hover,

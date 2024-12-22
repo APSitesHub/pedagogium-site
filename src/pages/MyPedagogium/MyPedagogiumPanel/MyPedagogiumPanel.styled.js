@@ -32,7 +32,7 @@ export const APPanel = styled.div`
   padding: 6px 4px;
 
   position: absolute;
-  top: 142px;
+  top: 178px;
   right: 14px;
   z-index: 5;
   border-radius: 8px;
@@ -52,6 +52,7 @@ export const APPanel = styled.div`
     gap: 10px;
     padding: 10px;
     border-radius: 21px;
+    top: 188px;
 
     right: 24px;
   }
@@ -433,7 +434,11 @@ export const APPanelMarathonBtn = styled.button`
 
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
   border-radius: 12px;
-  background: linear-gradient(322deg, #0f645b -5.61%, #09c6cc 93.88%);
+  background: linear-gradient(
+    322deg,
+    var(--main-color) -5.61%,
+    var(--secondary-color) 93.88%
+  );
   border: none;
 
   padding: 15px;
@@ -461,8 +466,12 @@ export const APPanelMarathonBtn = styled.button`
 
     transition: opacity 350ms linear;
 
-    background: linear-gradient(322deg, #09c6cc 23.22%, #0f645b 110.01%),
-      #09c6cc;
+    background: linear-gradient(
+        322deg,
+        var(--main-color) -5.61%,
+        var(--secondary-color) 93.88%
+      ),
+      var(--secondary-color);
   }
 
   &:hover,

@@ -8,9 +8,14 @@ import {
   PanelHideRightSwitch,
   PanelHideSwitch,
   TimetableBtnIcon,
-} from './MyAPPanel.styled';
+} from './MyPedagogiumPanel.styled';
 
-export const MyAPPanel = ({ user, language, timetable, isMultipleCourses }) => {
+export const MyPedagogiumPanel = ({
+  user,
+  language,
+  timetable,
+  isMultipleCourses,
+}) => {
   const [isBackdropShown, setIsBackdropShown] = useState(false);
   const [isTimetableShown, setIsTimetableShown] = useState(false);
   const [isButtonBoxShown, setIsButtonBoxShown] = useState(true);
@@ -33,47 +38,6 @@ export const MyAPPanel = ({ user, language, timetable, isMultipleCourses }) => {
 
     setIsTimetableShown(isTimetableShown => !isTimetableShown);
   };
-
-  const panelStyles = () => {
-    return {
-      top: isMultipleCourses ? '184px' : '142px',
-    };
-  };
-
-  //   if (isDisclaimerTimeoutActive) {
-  //     setTimeout(() => {
-  //       resetBtnEl.classList.add('tooltip-open');
-  //     }, 10000);
-
-  //     setTimeout(() => {
-  //       resetBtnEl.classList.remove('tooltip-open');
-  //       setIsDisclaimerTimeoutActive(false);
-  //     }, 20000);
-  //   }
-  // };
-
-  // const toggleLangTooltipTimeout = () => {
-  //   const resetBtnEl = document.querySelector('#toggle-btn');
-
-  //   if (isDisclaimerTimeoutActive) {
-  //     setTimeout(() => {
-  //       resetBtnEl.classList.add('tooltip-open');
-  //     }, 10000);
-
-  //     setTimeout(() => {
-  //       resetBtnEl.classList.remove('tooltip-open');
-  //       setIsDisclaimerTimeoutActive(false);
-  //     }, 20000);
-  //   }
-  // };
-
-  // const toggleMarathonButtonTimeout = () => {
-  //   if (!isMarathonBtnClicked) {
-  //     setTimeout(() => {
-  //       setIsMarathonBtnShown(true);
-  //     }, 15000);
-  //   }
-  // };
 
   useEffect(() => {
     const onEscapeClose = event => {
@@ -99,10 +63,7 @@ export const MyAPPanel = ({ user, language, timetable, isMultipleCourses }) => {
       <PanelHideSwitch id="no-transform" onClick={toggleButtonBox}>
         {isButtonBoxShown ? <PanelHideRightSwitch /> : <PanelHideLeftSwitch />}
       </PanelHideSwitch>
-      <APPanel
-        className={isButtonBoxShown ? '' : 'hidden'}
-        style={{ ...panelStyles() }}
-      >
+      <APPanel className={isButtonBoxShown ? '' : 'hidden'}>
         {user.package !== 'online' && (
           <APPanelBtn onClick={toggleTimetable}>
             <TimetableBtnIcon

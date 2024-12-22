@@ -78,27 +78,6 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
       ? baseKidsStreamUrl + personalTimetable?.level + 'sc'
       : baseStreamUrl + language + personalTimetable?.level + 'sc';
   };
-  const getIndividualLink = () => {
-    const enUrl = 'https://n1313568.alteg.io';
-    const enKidsUrl = 'https://n1313571.alteg.io/';
-    const deUrl = 'https://n1313569.alteg.io';
-    const deKidsUrl = 'https://n1313572.alteg.io/';
-    const plUrl = 'https://n1313570.alteg.io';
-    const plKidsUrl = 'https://n1313573.alteg.io/';
-    return language === 'en'
-      ? enUrl
-      : language === 'enkids'
-      ? enKidsUrl
-      : language === 'de'
-      ? deUrl
-      : language === 'dekids'
-      ? deKidsUrl
-      : language === 'pl'
-      ? plUrl
-      : language === 'plkids'
-      ? plKidsUrl
-      : enUrl;
-  };
 
   const panelStyles = () => {
     return {
@@ -107,46 +86,44 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
   };
 
   const link = getLink();
-  const indLink = getIndividualLink();
-  console.log(indLink);
   const speakingLink = getSpeakingLink();
 
-  const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   return (
     <TimetableBox style={{ ...panelStyles() }}>
       <TimetableHeading>
         <CalendarIcon />
-        Графік занять
+        Class schedule
       </TimetableHeading>
       {!personalTimetable ? (
         <PointsPlaceHolder>
           <EyesEmoji src={eyesImg} alt="Eyes emoji" width="80" />
           <PointsPlaceHolderText>
-            Здається, у вас ще немає розкладу!
+            Looking for your schedule!
           </PointsPlaceHolderText>
           <PointsPlaceHolderText>
-            Але він з'явиться, коли у вас розпочнуться заняття!
+            Please, try again later!
           </PointsPlaceHolderText>
         </PointsPlaceHolder>
       ) : (
         <TimetableBody>
           <TimetableWebinars>
             <TimetableWebinarsHead>
-              <TimetableLessonType>Теоретичні заняття</TimetableLessonType>
+              <TimetableLessonType>Lesson online</TimetableLessonType>
               <TimetableLessonLink href={link} target="_blank">
-                <TimetableLessonLinkText>Перейти</TimetableLessonLinkText>
+                <TimetableLessonLinkText>Go to lesson</TimetableLessonLinkText>
               </TimetableLessonLink>
             </TimetableWebinarsHead>
             <TimetableTable>
               <thead>
                 <tr>
-                  <TimetableHead className="day">День</TimetableHead>
-                  <TimetableHead className="time">Час</TimetableHead>
+                  <TimetableHead className="day">Day</TimetableHead>
+                  <TimetableHead className="time">Time</TimetableHead>
                   <TimetableHead className="lessonNumber">
-                    № уроку
+                    Lesson №
                   </TimetableHead>
-                  <TimetableHead className="teacher">Викладач</TimetableHead>
+                  <TimetableHead className="teacher">Teacher</TimetableHead>
                 </tr>
               </thead>
               <tbody>
@@ -185,20 +162,20 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
           </TimetableWebinars>{' '}
           <TimetableSpeakings>
             <TimetableWebinarsHead>
-              <TimetableLessonType>Практичні заняття</TimetableLessonType>
+              <TimetableLessonType>Practice online</TimetableLessonType>
               <TimetableLessonLink href={speakingLink} target="_blank">
-                <TimetableLessonLinkText>Перейти</TimetableLessonLinkText>
+                <TimetableLessonLinkText>Go to lesson</TimetableLessonLinkText>
               </TimetableLessonLink>
             </TimetableWebinarsHead>
             <TimetableTable>
               <thead>
                 <tr>
-                  <TimetableHead className="day">День</TimetableHead>
-                  <TimetableHead className="time">Час</TimetableHead>
+                  <TimetableHead className="day">Day</TimetableHead>
+                  <TimetableHead className="time">Time</TimetableHead>
                   <TimetableHead className="lessonNumber">
-                    № уроку
+                    Lesson №
                   </TimetableHead>
-                  <TimetableHead className="teacher">Викладач</TimetableHead>
+                  <TimetableHead className="teacher">Teacher</TimetableHead>
                 </tr>
               </thead>
               <tbody>
@@ -231,16 +208,6 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
               </tbody>
             </TimetableTable>
           </TimetableSpeakings>
-          {/* {userPackage.current !== 'simple' && userPackage.current !== 'student' && (
-            <TimetableSpeakings>
-              <TimetableWebinarsHead>
-                <TimetableLessonType>Індивідуальні заняття</TimetableLessonType>
-                <TimetableLessonLink href={indLink} target="_blank">
-                  <TimetableLessonLinkText>Перейти</TimetableLessonLinkText>
-                </TimetableLessonLink>
-              </TimetableWebinarsHead>
-            </TimetableSpeakings>
-          )} */}
         </TimetableBody>
       )}
     </TimetableBox>
