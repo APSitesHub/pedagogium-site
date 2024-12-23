@@ -36,8 +36,10 @@ export const App = () => {
             <Route path="*" element={<NotFound />} noindex={true} />
           </Route>
           <Route path="lesson" element={<Streams />} noindex={true}>
-            <Route path="online" element={<Stream />} noindex={true} />
-            <Route path="a0-chat" element={<WindowedChat />} />
+            <Route path="logistics" element={<Stream />} noindex={true} />
+            <Route path="logistics-chat" element={<WindowedChat />} />
+            <Route path="prep" element={<Stream />} noindex={true} />
+            <Route path="prep-chat" element={<WindowedChat />} />
           </Route>
         </Routes>
       </Suspense>

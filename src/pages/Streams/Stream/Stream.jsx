@@ -2,7 +2,7 @@ import useSize from '@react-hook/size';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
-import { useOutletContext } from 'react-router-dom';
+import { useLocation, useOutletContext } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { Chat } from 'utils/Chat/Chat';
 import {
@@ -21,7 +21,7 @@ import {
   VideoBox,
 } from '../../../components/Stream/Stream.styled';
 
-const StreamA0 = () => {
+const Stream = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
   const [links, isLoading, currentUser] = useOutletContext();
@@ -30,6 +30,9 @@ const StreamA0 = () => {
   const [chatWidth, chatHeight] = useSize(chatEl);
   const [width, height] = useSize(document.body);
   const [messages, setMessages] = useState([]);
+  const location = useLocation().pathname;
+
+  console.log(location);
 
   const toggleChat = () => {
     setIsChatOpen(isChatOpen => !isChatOpen);
@@ -44,10 +47,18 @@ const StreamA0 = () => {
 
   const socketRef = useRef(null);
 
-  const room = document.title.split('|')[1]?.trim().trimEnd().toLowerCase();
+  const room = `${document.title
+    .split('|')[1]
+    ?.trim()
+    .trimEnd()
+    .toLowerCase()}_${location.replace('/lesson/', '')}`;
+
+  console.log(room);
 
   useEffect(() => {
-    document.title = 'Lesson Online | Pedagogium';
+    document.title = `Lesson Online | Pedagogium | ${location
+      .replace('/lesson/', '')[0]
+      .toUpperCase()}${location.replace('/lesson/', '').slice(1)}`;
 
     socketRef.current = io('https://ap-chat-server.onrender.com/');
 
@@ -137,7 +148,7 @@ const StreamA0 = () => {
       socketRef.current.off('message');
       socketRef.current.disconnect();
     };
-  }, [currentUser, room]);
+  }, [currentUser, location, room]);
 
   return (
     <>
@@ -218,4 +229,4 @@ const StreamA0 = () => {
   );
 };
 
-export default StreamA0;
+export default Stream;
