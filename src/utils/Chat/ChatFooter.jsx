@@ -13,7 +13,7 @@ import {
   СhatSendMessageButton,
 } from './Chat.styled';
 
-export const ChatFooter = ({ socket, theme, currentUser }) => {
+export const ChatFooter = ({ socket, theme, currentUser, room }) => {
   const [message, setMessage] = useState('');
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
@@ -43,11 +43,7 @@ export const ChatFooter = ({ socket, theme, currentUser }) => {
         userIP: currentUser.ip,
         id: `${socket.id}${Math.random()}`,
         socketID: socket.id,
-        roomLocation: document.title
-          .split('|')[1]
-          .trim()
-          .trimEnd()
-          .toLowerCase(),
+        roomLocation: room,
       });
     }
     console.log({ userName: localStorage.getItem('userName'), message });

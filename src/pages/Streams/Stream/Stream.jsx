@@ -32,8 +32,6 @@ const Stream = () => {
   const [messages, setMessages] = useState([]);
   const location = useLocation().pathname;
 
-  console.log(location);
-
   const toggleChat = () => {
     setIsChatOpen(isChatOpen => !isChatOpen);
   };
@@ -209,6 +207,7 @@ const Stream = () => {
                   messages={messages}
                   isChatOpen={isChatOpen}
                   currentUser={currentUser}
+                  room={room}
                 />
               </ChatBox>
             )}
@@ -220,6 +219,7 @@ const Stream = () => {
                 messages={messages}
                 isChatOpen={isChatOpen}
                 currentUser={currentUser}
+                room={room}
               />
             </ChatBox>
           )}

@@ -11,7 +11,7 @@ import { ChatBody } from './ChatBody';
 import { ChatFooter } from './ChatFooter';
 import { useState } from 'react';
 
-export const Chat = ({ socket, messages, isChatOpen, currentUser }) => {
+export const Chat = ({ socket, messages, isChatOpen, currentUser, room }) => {
   const [theme, setTheme] = useState('auto');
 
   const handleThemeClick = () => {
@@ -36,8 +36,18 @@ export const Chat = ({ socket, messages, isChatOpen, currentUser }) => {
             <Toggle />
           </ToggleContainer>
         </ChatHeader>
-        <ChatBody socket={socket} messages={messages} isChatOpen={isChatOpen} />
-        <ChatFooter socket={socket} theme={theme} currentUser={currentUser} />
+        <ChatBody
+          socket={socket}
+          messages={messages}
+          room={room}
+          isChatOpen={isChatOpen}
+        />
+        <ChatFooter
+          socket={socket}
+          theme={theme}
+          room={room}
+          currentUser={currentUser}
+        />
       </ChatContainer>
     </ThemeProvider>
   );

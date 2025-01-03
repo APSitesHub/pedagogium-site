@@ -107,7 +107,7 @@ const Streams = () => {
     const getLinksRequest = async () => {
       try {
         setIsLoading(isLoading => (isLoading = true));
-        setLinks((await axios.get('/links')).data);
+        setLinks((await axios.get('/unilinks')).data);
       } catch (error) {
         console.log(error);
       } finally {

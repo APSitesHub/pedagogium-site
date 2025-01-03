@@ -17,7 +17,7 @@ import {
   ChatScrollDownIcon,
 } from './Chat.styled';
 
-export const ChatBody = ({ socket, messages, isChatOpen }) => {
+export const ChatBody = ({ socket, messages, isChatOpen, room }) => {
   const ChatBodyEl = useRef();
   // eslint-disable-next-line
   const [_, height] = useSize(ChatBodyEl);
@@ -28,8 +28,6 @@ export const ChatBody = ({ socket, messages, isChatOpen }) => {
   useEffect(() => {
     scrollToBottom();
   });
-
-  const room = document.title.split('|')[1]?.trim().trimEnd().toLowerCase();
 
   const calculateHeights = () => {
     setScroll(

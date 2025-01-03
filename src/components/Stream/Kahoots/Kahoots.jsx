@@ -130,20 +130,20 @@ export const Kahoots = ({
 
   const kahootLinksRefresher = async e => {
     if (e.target === e.currentTarget) {
-      setKahoots((await axios.get('/kahoots')).data);
+      setKahoots((await axios.get('/unikahoots')).data);
     }
   };
 
   const setKahootNumber = async e => {
     const kahootNumber = parseInt(e.currentTarget.innerText);
-    setKahoots((await axios.get('/kahoots')).data);
+    setKahoots((await axios.get('/unikahoots')).data);
     setActiveKahoot(kahootNumber);
   };
 
   useLayoutEffect(() => {
     const getLinksRequest = async () => {
       try {
-        setKahoots((await axios.get('/kahoots')).data);
+        setKahoots((await axios.get('/unikahoots')).data);
       } catch (error) {
         console.log(error);
       }
