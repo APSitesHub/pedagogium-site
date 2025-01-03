@@ -7,7 +7,7 @@ import { Formik } from 'formik';
 import { nanoid } from 'nanoid';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import * as yup from 'yup';
 import {
   LoginFormText,
@@ -33,6 +33,9 @@ const Streams = () => {
   const [currentUser, setCurrentUser] = useState({});
   const [isUserLogged, setIsUserLogged] = useState(false);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
+  const location = useLocation();
+
+  console.log(location);
 
   const wakeupRequest = async () => {
     try {
@@ -144,7 +147,7 @@ const Streams = () => {
   return (
     <>
       <StreamsBackgroundWrapper>
-        {!isUserLogged ? (
+        {!isUserLogged && !location.pathname.includes('-chat') ? (
           <Formik
             initialValues={initialLoginValues}
             onSubmit={handleLoginSubmit}
