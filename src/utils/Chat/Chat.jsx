@@ -30,7 +30,7 @@ export const Chat = ({ socket, messages, isChatOpen, currentUser, room }) => {
       <ChatContainer>
         <ChatHeader>
           <ChatHeading>
-            <ChatHeaderLogo /> AP Open Chat
+            <ChatHeaderLogo /> Lesson Chat
           </ChatHeading>
           <ToggleContainer onClick={handleThemeClick}>
             <Toggle />

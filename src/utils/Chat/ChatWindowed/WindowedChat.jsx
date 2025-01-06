@@ -7,15 +7,25 @@ import { ChatWindowedBox } from '../../../components/Stream/Stream.styled';
 
 export const WindowedChat = () => {
   const [messages, setMessages] = useState([]);
+  const location = useLocation().pathname;
 
-  const room = useLocation().pathname.split('-chat')[0];
+  const room = `${document.title
+    .split(' ')[0]
+    .trim()
+    .trimEnd()
+    .toLowerCase()}_${location.replace('/lesson/', '').split('-chat')[0]}`;
 
   console.log(room);
 
   const socketRef = useRef(null);
 
   useEffect(() => {
-    document.title = 'AP Chat Window';
+    document.title = `Pedagogium ${location
+      .replace('/lesson/', '')[0]
+      .toUpperCase()}${location
+      .replace('/lesson/', '')
+      .slice(1)
+      .replace('-chat', '')} Chat Window`;
 
     socketRef.current = io('https://ap-chat-server.onrender.com/');
 
@@ -164,7 +174,7 @@ export const WindowedChat = () => {
       socketRef.current.off('message');
       socketRef.current.disconnect();
     };
-  }, [room]);
+  }, [room, location]);
 
   return (
     <>
