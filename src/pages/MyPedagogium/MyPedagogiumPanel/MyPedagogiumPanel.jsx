@@ -73,14 +73,7 @@ export const MyPedagogiumPanel = ({
           </APPanelBtn>
         )}
       </APPanel>
-      {isTimetableShown && (
-        <Timetable
-          user={user}
-          language={language}
-          timetable={timetable}
-          isMultipleCourses={isMultipleCourses}
-        />
-      )}
+      {isTimetableShown && <Timetable user={user} timetable={timetable} />}
     </>
   );
 };

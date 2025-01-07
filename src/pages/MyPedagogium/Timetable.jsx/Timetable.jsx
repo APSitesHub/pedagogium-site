@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import eyesImg from '../../../img/quiz/eyes.png';
 import { CalendarIcon } from '../Attendance/Attendance.styled';
 import {
@@ -16,82 +15,30 @@ import {
   TimetableLessonLink,
   TimetableLessonLinkText,
   TimetableLessonType,
-  TimetableSpeakings,
   TimetableTable,
   TimetableWebinars,
   TimetableWebinarsHead,
 } from './Timetable.styled';
 
-// const PACKAGEARRAY = [
-//   'online',
-//   'simple',
-//   'student',
-//   'basic',
-//   'standart',
-//   'pro',
-// ];
-
-export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
-  const userPackage = useRef(user.package === undefined ? 'pro' : user.package);
-  const personalTimetable = timetable.find(timeline =>
-    language === 'enkids' && user.knowledge.includes('beginner')
-      ? timeline.lang === language &&
-        timeline.course === user.course &&
-        timeline.level === user.knowledge
-      : timeline.lang === language && timeline.course === user.course
+export const Timetable = ({ user, timetable }) => {
+  const personalTimetable = timetable.find(
+    timeline => user.marathonId === timeline.marathon
   );
 
   const getLink = () => {
-    const baseStreamUrl = 'https://academy.ap.education/streams/';
-    const baseKidsStreamUrl = 'https://academy.ap.education/streams-kids/';
-    console.log(user.lang);
-    console.log(language);
-    console.log(user.adult === undefined ? true : user.adult);
-    console.log(user.knowledge);
-    console.log(user.package === undefined ? 'student' : user.package);
-    console.log(userPackage.current);
+    const baseStreamUrl = 'https://pedagogium.ap.education/lesson/';
 
-    return language === 'en'
-      ? baseStreamUrl + personalTimetable?.level
-      : language === 'enkids'
-      ? baseKidsStreamUrl + personalTimetable?.level
-      : language === 'de' && personalTimetable?.level !== 'a1'
-      ? baseStreamUrl + 'deutsch' + personalTimetable?.level
-      : language === 'de' && personalTimetable?.level === 'a1'
-      ? baseStreamUrl + 'deutsch'
-      : language === 'dekids'
-      ? baseKidsStreamUrl + 'de' + personalTimetable?.level
-      : language === 'pl' && personalTimetable?.level !== 'a1'
-      ? baseStreamUrl + 'polski' + personalTimetable?.level
-      : language === 'pl' && personalTimetable?.level === 'a1'
-      ? baseStreamUrl + 'polski'
-      : language === 'plkids'
-      ? baseKidsStreamUrl + 'pl' + personalTimetable?.level
-      : baseStreamUrl;
-  };
-  const getSpeakingLink = () => {
-    const baseStreamUrl = 'https://academy.ap.education/streams/';
-    const baseKidsStreamUrl = 'https://academy.ap.education/streams-kids/';
-    return language === 'en'
-      ? baseStreamUrl + personalTimetable?.level + 'sc'
-      : language === 'enkids'
-      ? baseKidsStreamUrl + personalTimetable?.level + 'sc'
-      : baseStreamUrl + language + personalTimetable?.level + 'sc';
-  };
-
-  const panelStyles = () => {
-    return {
-      top: isMultipleCourses ? '184px' : '142px',
-    };
+    return user.marathonId === '72421'
+      ? baseStreamUrl + 'logistics'
+      : baseStreamUrl + 'prep';
   };
 
   const link = getLink();
-  const speakingLink = getSpeakingLink();
 
   const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   return (
-    <TimetableBox style={{ ...panelStyles() }}>
+    <TimetableBox style={{ top: '142px' }}>
       <TimetableHeading>
         <CalendarIcon />
         Class schedule
@@ -123,15 +70,15 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
                   <TimetableHead className="lessonNumber">
                     Lesson №
                   </TimetableHead>
-                  <TimetableHead className="teacher">Teacher</TimetableHead>
+                  <TimetableHead className="topic">Topic</TimetableHead>
                 </tr>
               </thead>
               <tbody>
                 {personalTimetable.schedule
                   .filter(
                     lesson =>
-                      lesson.type === 'webinar' ||
-                      lesson.type === 'webinar, repeat'
+                      lesson.type.toLowerCase() === 'webinar' ||
+                      lesson.type.toLowerCase() === 'webinar, repeat'
                   )
                   .sort((a, b) => a.day - b.day)
                   .map((lesson, i) => (
@@ -139,7 +86,7 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
                       key={i}
                       style={
                         lesson.day === new Date().getDay()
-                          ? { backgroundColor: '#F9C838' }
+                          ? { backgroundColor: '#0088f780' }
                           : {}
                       }
                     >
@@ -152,15 +99,15 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
                       <TimetableDaysCell className="lessonNumber">
                         {lesson.lessonNumber}
                       </TimetableDaysCell>
-                      <TimetableDaysCell className="teacher">
-                        {lesson.teacher}
+                      <TimetableDaysCell className="topic">
+                        {lesson.topic}
                       </TimetableDaysCell>
                     </TimetableDaysItem>
                   ))}
               </tbody>
             </TimetableTable>
           </TimetableWebinars>{' '}
-          <TimetableSpeakings>
+          {/* <TimetableSpeakings>
             <TimetableWebinarsHead>
               <TimetableLessonType>Practice online</TimetableLessonType>
               <TimetableLessonLink href={speakingLink} target="_blank">
@@ -207,7 +154,7 @@ export const Timetable = ({ user, language, timetable, isMultipleCourses }) => {
                   ))}
               </tbody>
             </TimetableTable>
-          </TimetableSpeakings>
+          </TimetableSpeakings> */}
         </TimetableBody>
       )}
     </TimetableBox>
