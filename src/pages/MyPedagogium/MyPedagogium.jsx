@@ -65,9 +65,9 @@ const MyPedagogium = () => {
         ? `https://online.ap.education/Account/LoginByToken?token=${
             user.platformToken
           }&redirectUrl=${encodeURIComponent(
-            `https://online.ap.education/MarathonClass/?marathonId=72421&pupilId=${user.pupilId}&marathonLessonId=1160032`
+            `https://online.ap.education/cabinet/student/lessons`
           )}`
-        : `https://online.ap.education/MarathonClass/?marathonId=72421&pupilId=${user.pupilId}&marathonLessonId=1160032`;
+        : `https://online.ap.education/cabinet/student/lessons`;
 
       setPlatformLink(link => (link = authLink));
     };
