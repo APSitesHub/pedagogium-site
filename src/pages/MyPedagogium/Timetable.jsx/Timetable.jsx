@@ -86,7 +86,7 @@ export const Timetable = ({ user, timetable }) => {
               <TimetableLessonType
                 className={isAnimated ? 'animated' : undefined}
               >
-                {marathonId === '72421' ? 'Logistics' : 'Kurs Przygotowawczy'}
+                {marathonId === '72421' ? 'Logistics' : 'Preparation Course'}
               </TimetableLessonType>
               <TimetableLessonLink href={link} target="_blank">
                 <TimetableLessonLinkText>Go to lesson</TimetableLessonLinkText>
