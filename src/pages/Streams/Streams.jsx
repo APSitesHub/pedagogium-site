@@ -87,7 +87,7 @@ const Streams = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/uniusers/login', values);
+      const response = await axios.post('/uniusers/login/lesson', values);
       console.log(values);
       console.log(response);
       setAuthToken(response.data.token);
@@ -123,7 +123,7 @@ const Streams = () => {
       console.log('token refresher');
       try {
         const res = await axios.post(
-          'https://ap-server-8qi1.onrender.com/uniusers/refresh',
+          '/uniusers/refresh/lesson',
           { mail: localStorage.getItem('mail') }
         );
         setIsUserLogged(isLogged => (isLogged = true));
