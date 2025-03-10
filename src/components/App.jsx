@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { Route, Routes } from 'react-router-dom';
 import { WindowedChat } from 'utils/Chat/ChatWindowed/WindowedChat';
 import { Loader } from './SharedLayout/Loaders/Loader';
-import StreamToZoomRedirecter from './StreamToZoomRedirecter/StreamToZoomRedirecter';
+// import StreamToZoomRedirecter from './StreamToZoomRedirecter/StreamToZoomRedirecter';
 
 const Streams = lazy(() =>
   import(/* webpackChunkName: "Streams page" */ '../pages/Streams/Streams')
@@ -38,11 +38,11 @@ export const App = () => {
             <Route path="*" element={<NotFound />} noindex={true} />
           </Route>
           <Route path="lesson" element={<Streams />} noindex={true}>
-            <Route path="logistics" element={<StreamToZoomRedirecter />} noindex={true} />
-            {/* <Route path="logistics" element={<Stream />} noindex={true} /> */}
+            {/* <Route path="logistics" element={<StreamToZoomRedirecter />} noindex={true} /> */}
+            <Route path="logistics" element={<Stream />} noindex={true} />
             <Route path="logistics-chat" element={<WindowedChat />} noindex={true} />
-            <Route path="prep" element={<StreamToZoomRedirecter />} noindex={true} />
-            {/* <Route path="prep" element={<Stream />} noindex={true} /> */}
+            {/* <Route path="prep" element={<StreamToZoomRedirecter />} noindex={true} /> */}
+            <Route path="prep" element={<Stream />} noindex={true} />
             <Route path="prep-chat" element={<WindowedChat />} noindex={true} />
           </Route>
         </Routes>
