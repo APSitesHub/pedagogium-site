@@ -67,13 +67,15 @@ const MyPedagogium = () => {
           }&redirectUrl=${encodeURIComponent(
             `https://online.ap.education/cabinet/student/lessons`
           )}`
+        : user.mail.includes('teacher')
+        ? `https://online.ap.education/cabinet/school/marathons/folder/3547`
         : `https://online.ap.education/cabinet/student/lessons`;
 
       setPlatformLink(link => (link = authLink));
     };
 
     setIframeLinks();
-  }, [user.pupilId, user.marathonNumber, user.platformToken]);
+  }, [user.mail, user.pupilId, user.marathonNumber, user.platformToken]);
 
   const setAuthToken = token => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;

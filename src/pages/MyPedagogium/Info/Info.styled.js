@@ -41,7 +41,7 @@ export const InfoBox = styled.div`
     height: 520px;
   }
 
-  @media screen and (min-height: 768px) {
+  @media screen and (min-height: 1024px) {
     height: auto;
   }
 `;

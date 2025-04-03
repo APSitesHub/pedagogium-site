@@ -33,7 +33,7 @@ export const APPanel = styled.div`
   padding: 6px 4px;
 
   position: absolute;
-  top: 178px;
+  top: 142px;
   right: 14px;
   z-index: 5;
   border-radius: 8px;
@@ -53,17 +53,12 @@ export const APPanel = styled.div`
     gap: 10px;
     padding: 10px;
     border-radius: 21px;
-    top: 188px;
 
     right: 24px;
   }
 
   &.hidden {
     transform: translateX(200%);
-  }
-
-  &.multiple {
-    top: 184px;
   }
 `;
 
