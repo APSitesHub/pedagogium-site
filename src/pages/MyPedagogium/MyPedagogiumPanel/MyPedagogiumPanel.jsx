@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Timetable } from '../Timetable.jsx/Timetable';
+import { Timetable } from '../Timetable/Timetable';
 import {
+  AdminBtnIcon,
   APPanel,
   APPanelBtn,
+  InfoBtnIcon,
   PanelBackdrop,
   PanelHideLeftSwitch,
   PanelHideRightSwitch,
   PanelHideSwitch,
   TimetableBtnIcon,
 } from './MyPedagogiumPanel.styled';
+import { Info } from '../Info/Info';
 
 export const MyPedagogiumPanel = ({
   user,
@@ -18,6 +21,7 @@ export const MyPedagogiumPanel = ({
 }) => {
   const [isBackdropShown, setIsBackdropShown] = useState(false);
   const [isTimetableShown, setIsTimetableShown] = useState(false);
+  const [isInfoShown, setIsInfoShown] = useState(false);
   const [isButtonBoxShown, setIsButtonBoxShown] = useState(true);
 
   const toggleButtonBox = () => {
@@ -28,6 +32,7 @@ export const MyPedagogiumPanel = ({
   const hideBackdrop = () => {
     setIsBackdropShown(false);
     setIsTimetableShown(false);
+    setIsInfoShown(false);
   };
 
   const toggleTimetable = () => {
@@ -37,6 +42,15 @@ export const MyPedagogiumPanel = ({
       setIsBackdropShown(isBackdropShown => (isBackdropShown = false));
 
     setIsTimetableShown(isTimetableShown => !isTimetableShown);
+  };
+
+  const toggleInfo = () => {
+    !isBackdropShown &&
+      setIsBackdropShown(isBackdropShown => (isBackdropShown = true));
+    isBackdropShown &&
+      setIsBackdropShown(isBackdropShown => (isBackdropShown = false));
+
+    setIsInfoShown(isInfoShown => !isInfoShown);
   };
 
   useEffect(() => {
@@ -65,15 +79,33 @@ export const MyPedagogiumPanel = ({
       </PanelHideSwitch>
       <APPanel className={isButtonBoxShown ? '' : 'hidden'}>
         {user.package !== 'online' && (
-          <APPanelBtn onClick={toggleTimetable}>
-            <TimetableBtnIcon
-              className={isTimetableShown && 'active'}
-              id="timetable-btn"
-            />
-          </APPanelBtn>
+          <>
+            <APPanelBtn onClick={toggleInfo}>
+              <InfoBtnIcon className={isInfoShown && 'active'} id="info-btn" />
+            </APPanelBtn>
+            <APPanelBtn onClick={toggleTimetable}>
+              <TimetableBtnIcon
+                className={isTimetableShown && 'active'}
+                id="timetable-btn"
+              />
+            </APPanelBtn>
+            {(user.mail === 'dev@mail.com' ||
+              user.mail === 'teacher2535@pedagogium.pl') && (
+              <APPanelBtn
+                onClick={() =>
+                  window.open(
+                    'https://academy.ap.education/streams/pedagogium-admin-panel'
+                  )
+                }
+              >
+                <AdminBtnIcon id="admin-btn" />
+              </APPanelBtn>
+            )}
+          </>
         )}
       </APPanel>
       {isTimetableShown && <Timetable user={user} timetable={timetable} />}
+      {isInfoShown && <Info />}
     </>
   );
 };

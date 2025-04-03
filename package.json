@@ -1,6 +1,6 @@
 {
   "name": "pedagogium",
-  "version": "1.0.3.0",
+  "version": "1.0.3.1",
   "private": true,
   "homepage": "https://apsiteshub.github.io/pedagogium-site/",
   "dependencies": {
