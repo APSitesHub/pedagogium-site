@@ -454,12 +454,19 @@ export const Attendance = ({
   };
 
   const calculateYearlyVisits = () => {
-    const lessonDays = lessonDaysForYear.map(
-      lessonDay =>
-        `${new Date(lessonDay).getDate()}.${editDateFormat(
-          new Date(lessonDay).getMonth() + 1
-        )}.${editDateFormat(new Date(lessonDay).getFullYear())}`
-    );
+    const lessonDays = lessonDaysForYear
+      .map(
+        lessonDay =>
+          `${new Date(lessonDay).getDate()}.${editDateFormat(
+            new Date(lessonDay).getMonth() + 1
+          )}.${editDateFormat(new Date(lessonDay).getFullYear())}`
+      )
+      .map(date =>
+        date
+          .split('.')
+          .map(value => (value.length === 1 ? '0' + value : value)) // Add leading zero if needed)
+          .join('.')
+      );
     return user.visited.filter(date => lessonDays.includes(date)).length;
   };
 

@@ -156,7 +156,14 @@ const MyPedagogium = () => {
       ) : (
         <>
           <MyPedagogiumPanel
-            user={user}
+            user={{
+              ...user,
+              visited: [
+                ...new Set(
+                  user.visited.map(date => date.replace(' lesson', ''))
+                ),
+              ],
+            }}
             link={platformLink}
             timetable={timetable}
           />
