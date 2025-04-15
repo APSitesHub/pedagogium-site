@@ -25,7 +25,9 @@ import {
 
 export const Timetable = ({ user, timetable }) => {
   const [isAnimated, setIsAnimated] = useState(false);
-  const [marathonId, setMarathonId] = useState('72421');
+  const [marathonId, setMarathonId] = useState(
+    user.group === '2' ? '72421-2' : '72421'
+  );
   const [personalTimetable, setPersonalTimetable] = useState(
     timetable.find(timeline => marathonId === timeline.marathon)
   );
@@ -49,7 +51,9 @@ export const Timetable = ({ user, timetable }) => {
   const getLink = () => {
     const baseStreamUrl = 'https://pedagogium.ap.education/lesson/';
 
-    return marathonId === '72421'
+    return marathonId.includes('72421') && user.group === '2'
+      ? baseStreamUrl + 'logistics_2'
+      : marathonId.includes('72421')
       ? baseStreamUrl + 'logistics'
       : baseStreamUrl + 'prep';
   };
@@ -63,11 +67,13 @@ export const Timetable = ({ user, timetable }) => {
       <TimetableHeading>
         <CalendarIcon />
         Class schedule
-        <TimetableChangeCourseBtn onClick={changeTimetable}>
-          <TimetableChangeCourseBtnText>
-            Change course
-          </TimetableChangeCourseBtnText>
-        </TimetableChangeCourseBtn>
+        {user.group !== '2' && (
+          <TimetableChangeCourseBtn onClick={changeTimetable}>
+            <TimetableChangeCourseBtnText>
+              Change course
+            </TimetableChangeCourseBtnText>
+          </TimetableChangeCourseBtn>
+        )}
       </TimetableHeading>
       {!personalTimetable ? (
         <PointsPlaceHolder>
@@ -86,7 +92,9 @@ export const Timetable = ({ user, timetable }) => {
               <TimetableLessonType
                 className={isAnimated ? 'animated' : undefined}
               >
-                {marathonId === '72421' ? 'Logistics' : 'Preparation Course'}
+                {marathonId.includes('72421')
+                  ? 'Logistics'
+                  : 'Preparation Course'}
               </TimetableLessonType>
               <TimetableLessonLink href={link} target="_blank">
                 <TimetableLessonLinkText>Go to lesson</TimetableLessonLinkText>

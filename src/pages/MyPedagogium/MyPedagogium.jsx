@@ -40,7 +40,6 @@ const MyPedagogium = () => {
           mail: localStorage.getItem('mail'),
         });
         setIsUserLogged(isLogged => (isLogged = true));
-        console.log(73, res.data.user.platformToken);
         setUser(user => (user = { ...res.data.user }));
       } catch (error) {
         console.log(error);

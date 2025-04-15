@@ -40,7 +40,17 @@ export const App = () => {
           <Route path="lesson" element={<Streams />} noindex={true}>
             {/* <Route path="logistics" element={<StreamToZoomRedirecter />} noindex={true} /> */}
             <Route path="logistics" element={<Stream />} noindex={true} />
-            <Route path="logistics-chat" element={<WindowedChat />} noindex={true} />
+            <Route
+              path="logistics-chat"
+              element={<WindowedChat />}
+              noindex={true}
+            />
+            <Route path="logistics_2" element={<Stream />} noindex={true} />
+            <Route
+              path="logistics_2-chat"
+              element={<WindowedChat />}
+              noindex={true}
+            />
             {/* <Route path="prep" element={<StreamToZoomRedirecter />} noindex={true} /> */}
             <Route path="prep" element={<Stream />} noindex={true} />
             <Route path="prep-chat" element={<WindowedChat />} noindex={true} />
