@@ -13,11 +13,11 @@ const StreamToZoomRedirecter = () => {
   switch (location.pathname.replace('/lesson/', '')) {
     case 'logistics':
       page =
-        'https://us06web.zoom.us/j/87829130673?pwd=7IPRScsjRvqxteaaOOTwb3DSotTOl2.1';
+        'https://us04web.zoom.us/j/72514837988?pwd=ijQbKbf38FsKpXmOU1b8bmlxxWdIaZ.1';
       break;
-    case 'prep':
+    case 'logistics_2':
       page =
-        'https://us06web.zoom.us/j/87829130673?pwd=7IPRScsjRvqxteaaOOTwb3DSotTOl2.1';
+        'https://us04web.zoom.us/j/72514837988?pwd=ijQbKbf38FsKpXmOU1b8bmlxxWdIaZ.1';
       break;
     default:
       break;
