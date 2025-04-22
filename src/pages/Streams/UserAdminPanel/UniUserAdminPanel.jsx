@@ -34,6 +34,48 @@ const Universities = {
   PEDAGOGIUM: 'Pedagogium',
 };
 
+const getAttendancePercentage = (attendance, group) => {
+  const startDate = !group || group === '1' ? '2025-01-06' : '2025-04-01';
+
+  const endDate = new Date();
+
+  const excludedDates = ['2025-04-21'];
+
+  const validLessonDates = [];
+
+  const current = new Date(startDate);
+
+  while (current <= endDate) {
+    const day = current.getDay();
+
+    const isoDate = current.toISOString().split('T')[0];
+
+    // Weekdays only (Mon-Fri), exclude holiday
+    if (day >= 1 && day <= 5 && !excludedDates.includes(isoDate)) {
+      validLessonDates.push(isoDate);
+    }
+
+    current.setDate(current.getDate() + 1);
+  }
+
+  // Normalize student's dates (in case formats vary slightly)
+  const normalizedAttended = attendance.map(date => {
+    const parts = date.split('.');
+    return `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
+  });
+
+  const attendedCount = validLessonDates.filter(date =>
+    normalizedAttended.includes(date)
+  ).length;
+
+  // Calculate percentage
+  const percentage = (attendedCount / validLessonDates.length) * 100;
+
+  return `${attendedCount} z ${validLessonDates.length} = ${percentage.toFixed(
+    2
+  )}%`;
+};
+
 const translations = {
   pl: {
     loginPlaceholder: 'Login',
@@ -52,6 +94,7 @@ const translations = {
     points: 'Punkty',
     platformId: 'ID na platformie',
     attendance: 'Obecność',
+    percentage: 'Procent obecności',
     visitsWithTime: 'Odwiedziny z czasem',
     deleteUserConfirmation: 'Czy na pewno usunąć',
     userDeleted: 'Użytkownik został usunięty',
@@ -307,6 +350,7 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                 <UserHeadCell>{translations[lang]?.points}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.platformId}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.attendance}</UserHeadCell>
+                <UserHeadCell>{translations[lang]?.percentage}</UserHeadCell>
                 {!uni && (
                   <UserHeadCell>
                     {translations[lang]?.visitsWithTime}
@@ -366,6 +410,35 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                     {user.visited[user.visited.length - 1]?.replace(
                       ' lesson',
                       ''
+                    )}
+                  </UserCell>
+                  <UserCell
+                    className={
+                      getAttendancePercentage(
+                        [
+                          ...new Set(
+                            user.visited.map(visit =>
+                              visit.replace(' lesson', '')
+                            )
+                          ),
+                        ],
+                        user.group
+                      )
+                        .replace('%', '')
+                        .split(' = ')[1] < 50
+                        ? 'attention'
+                        : ''
+                    }
+                  >
+                    {getAttendancePercentage(
+                      [
+                        ...new Set(
+                          user.visited.map(visit =>
+                            visit.replace(' lesson', '')
+                          )
+                        ),
+                      ],
+                      user.group
                     )}
                   </UserCell>
                   {!uni && (
