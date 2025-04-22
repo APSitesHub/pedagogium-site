@@ -21,6 +21,8 @@ import {
 } from './UserAdminPanel.styled';
 import { LoginLogo } from 'components/Stream/Stream.styled';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
+import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
+import { UserVisitedEditForm } from './UserVisitedHistory';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -115,9 +117,11 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
   const [users, setUsers] = useState([]);
+  const [userToView, setUserToView] = useState({});
   // eslint-disable-next-line
   const [daysAfterLastLogin, setDaysAfterLastLogin] = useState(7);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
+  const [isVisitedHistoryOpen, setIsVisitedHistoryOpen] = useState(false);
 
   useEffect(() => {
     document.title = uni
@@ -193,6 +197,23 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
+    }
+  };
+
+  const handleVisitedView = async id => {
+    setIsVisitedHistoryOpen(true);
+    setUserToView(
+      userToView => (userToView = users.find(user => user._id === id))
+    );
+  };
+
+  const closeHistory = e => {
+    setIsVisitedHistoryOpen(false);
+  };
+
+  const closeHistoryOnClick = e => {
+    if (e.target.id === 'close-on-click') {
+      setIsVisitedHistoryOpen(false);
     }
   };
 
@@ -325,6 +346,8 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                   <UserCell>{user.points ? user.points : '0'}</UserCell>
                   <UserCell>{user.pupilId}</UserCell>
                   <UserCell
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => handleVisitedView(user._id)}
                     className={
                       Math.floor(
                         (Date.now() -
@@ -366,6 +389,14 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
               ))}
             </tbody>
           </UserDBTable>
+        )}
+        {isVisitedHistoryOpen && (
+          <Backdrop onMouseDown={closeHistoryOnClick} id="close-on-click">
+            <UserVisitedEditForm
+              userToView={userToView}
+              closeHistory={closeHistory}
+            />
+          </Backdrop>
         )}
         {isLoading && <Loader />}
       </AdminPanelSection>
