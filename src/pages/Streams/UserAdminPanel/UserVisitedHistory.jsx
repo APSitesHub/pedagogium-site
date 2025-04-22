@@ -10,7 +10,14 @@ export const UserVisitedEditForm = ({ userToView }) => {
   const [editedVisited, setEditedVisited] = useState([]);
 
   useEffect(() => {
-    const reversedVisited = [...userToView.visited].reverse();
+    const reversedVisited = [...userToView.visited]
+      .filter(
+        visit =>
+          visit !== '21.04.2025' &&
+          new Date(visit.split('.').reverse().join('-')).getDay() > 0 &&
+          new Date(visit.split('.').reverse().join('-')).getDay() < 6
+      )
+      .reverse();
     setEditedVisited(reversedVisited);
   }, [userToView]);
 
