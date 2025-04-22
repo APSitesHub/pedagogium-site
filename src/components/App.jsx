@@ -20,6 +20,12 @@ const MyPedagogium = lazy(() =>
   )
 );
 
+const UniUserAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Polish University Users Admin Panel page" */ '../pages/Streams/UserAdminPanel/UniUserAdminPanel'
+  )
+);
+
 const NotFound = lazy(() =>
   import(/* webpackChunkName: "Not Found" */ '../pages/NotFound/NotFound')
 );
@@ -34,9 +40,19 @@ export const App = () => {
       />
       <Suspense fallback={Loader} noindex={true}>
         <Routes noindex={true}>
-          <Route path="/" element={<MyPedagogium />} noindex={true}>
-            <Route path="*" element={<NotFound />} noindex={true} />
-          </Route>
+          <Route
+            index
+            path="/"
+            element={<MyPedagogium />}
+            noindex={true}
+          ></Route>
+          <Route
+            path="admin"
+            element={<UniUserAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
+            noindex={true}
+          />
+          <Route path="*" element={<NotFound />} noindex={true} />
+
           <Route path="lesson" element={<Streams />} noindex={true}>
             {/* <Route
               path="logistics"

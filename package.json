@@ -1,6 +1,6 @@
 {
   "name": "pedagogium",
-  "version": "1.0.3.5",
+  "version": "1.0.3.6",
   "private": true,
   "homepage": "https://pedagogium.ap.education/",
   "dependencies": {
