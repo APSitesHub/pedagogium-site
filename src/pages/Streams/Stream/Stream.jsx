@@ -572,32 +572,6 @@ const Stream = () => {
                   </JitsiContainer>
                 </>
               )}
-              <StudentInput
-                isInputOpen={isQuizInputOpen}
-                socket={socketRef.current}
-                toggleQuiz={toggleQuizInput}
-                page={room}
-                currentUser={currentUser}
-                questionID={questionID.current}
-              />
-
-              <StudentOptions
-                isInputOpen={isQuizOptionsOpen}
-                socket={socketRef.current}
-                toggleQuiz={toggleQuizOptions}
-                page={room}
-                currentUser={currentUser}
-                questionID={questionID.current}
-              />
-
-              <StudentTrueFalse
-                isInputOpen={isQuizTrueFalseOpen}
-                socket={socketRef.current}
-                toggleQuiz={toggleQuizTrueFalse}
-                page={room}
-                currentUser={currentUser}
-                questionID={questionID.current}
-              />
             </PlayerWrapper>
 
             <ButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
@@ -608,21 +582,19 @@ const Stream = () => {
                 <ChatLogo />
               </ChatBtn>
             </ButtonBox>
-            <Kahoots
-              sectionWidth={width}
-              sectionHeight={height}
-              isKahootOpen={isKahootOpen}
-              isChatOpen={isChatOpen}
-              isOpenedLast={isOpenedLast}
-              room={room}
-            />
 
             <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
             </BoxHideSwitch>
 
             {height > width && (
-              <ChatBox ref={chatEl} className={isChatOpen ? 'shown' : 'hidden'}>
+              <ChatBox
+                ref={chatEl}
+                className={isChatOpen ? 'shown' : 'hidden'}
+                style={
+                  isOpenedLast === 'chat' ? { zIndex: '2' } : { zIndex: '1' }
+                }
+              >
                 <Chat
                   socket={socketRef.current}
                   messages={messages}
@@ -632,9 +604,51 @@ const Stream = () => {
                 />
               </ChatBox>
             )}
+
+            <Kahoots
+              sectionWidth={width}
+              sectionHeight={height}
+              isKahootOpen={isKahootOpen}
+              isChatOpen={isChatOpen}
+              isOpenedLast={isOpenedLast}
+              room={room}
+            />
+
+            <StudentInput
+              isInputOpen={isQuizInputOpen}
+              socket={socketRef.current}
+              toggleQuiz={toggleQuizInput}
+              page={room}
+              currentUser={currentUser}
+              questionID={questionID.current}
+            />
+
+            <StudentOptions
+              isInputOpen={isQuizOptionsOpen}
+              socket={socketRef.current}
+              toggleQuiz={toggleQuizOptions}
+              page={room}
+              currentUser={currentUser}
+              questionID={questionID.current}
+            />
+
+            <StudentTrueFalse
+              isInputOpen={isQuizTrueFalseOpen}
+              socket={socketRef.current}
+              toggleQuiz={toggleQuizTrueFalse}
+              page={room}
+              currentUser={currentUser}
+              questionID={questionID.current}
+            />
           </StreamSection>
           {width >= height && (
-            <ChatBox ref={chatEl} className={isChatOpen ? 'shown' : 'hidden'}>
+            <ChatBox
+              ref={chatEl}
+              className={isChatOpen ? 'shown' : 'hidden'}
+              style={
+                isOpenedLast === 'chat' ? { zIndex: '2' } : { zIndex: '1' }
+              }
+            >
               <Chat
                 socket={socketRef.current}
                 messages={messages}
