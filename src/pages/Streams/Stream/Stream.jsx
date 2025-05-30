@@ -614,6 +614,7 @@ const Stream = () => {
               isKahootOpen={isKahootOpen}
               isChatOpen={isChatOpen}
               isOpenedLast={isOpenedLast}
+              room={room}
             />
 
             <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>

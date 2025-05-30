@@ -3,7 +3,6 @@ import { nanoid } from 'nanoid';
 import { useLayoutEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
-import { useLocation } from 'react-router-dom';
 
 import {
   ClipBoardAdd,
@@ -36,6 +35,7 @@ export const Kahoots = ({
   isKahootOpen,
   isChatOpen,
   isOpenedLast,
+  room,
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
@@ -46,73 +46,16 @@ export const Kahoots = ({
   const [kahoots, setKahoots] = useState({});
   const [activeKahoot, setActiveKahoot] = useState(1);
 
-  let location = useLocation();
-
   const { ref, inView } = useInView({
     triggerOnce: true,
     delay: 1000,
   });
 
-  const trialsSwitch = path => {
-    switch (path) {
-      case 'a1free':
-        return 'a1kidsfree';
-      case 'pilot':
-        return 'deutsch';
-      case 'b1beginner':
-        return 'b1kidsbeginner';
-      case 'b2beginner':
-        return 'b2kidsbeginner';
-      case 'trendets':
-        return 'trendets';
-      case 'pilot-a1':
-        return 'a1';
-      case 'test1':
-        return 'test';
-      case 'trial-en':
-        return 'trials';
-      case 'trial-de':
-        return 'trials_de';
-      case 'trial-pl':
-        return 'trials_pl';
-      case 'trial-kids':
-        return 'trials_kids';
-      default:
-        break;
-    }
-  };
-
-  let page =
-    location.pathname.includes('pilot') ||
-    location.pathname.includes('beginner') ||
-    location.pathname.includes('trendets') ||
-    (location.pathname.includes('streams-kids') &&
-      location.pathname.includes('free'))
-      ? trialsSwitch(location.pathname.match(/\/([^/]+)\/?$/)[1])
-      : location.pathname.includes('preschool')
-      ? location.pathname.match(/\/([^/]+)\/?$/)[1]
-      : location.pathname.includes('pre') ||
-        location.pathname.includes('beg') ||
-        location.pathname.includes('mid') ||
-        location.pathname.includes('high')
-      ? 'kids' + location.pathname.match(/\/([^/]+)\/?$/)[1]
-      : location.pathname.includes('streams-kids')
-      ? location.pathname.match(/\/([^/]+)\/?$/)[1] + 'kids'
-      : location.pathname.includes('trial') ||
-        location.pathname.includes('pilot') ||
-        location.pathname.includes('test1')
-      ? trialsSwitch(location.pathname.match(/\/([^/]+)\/?$/)[1])
-      : location.pathname.match(/\/([^/]+)\/?$/)[1];
-
-  page = 'pedagogium_' + page;
-
-  console.log(111, page);
-
   const kahootWidth = isFullScreen ? sectionWidth : (sectionWidth / 10) * 4;
 
   const getLinksForLocation = () => {
     const entries = [];
-    Object.values(kahoots[page].links).map(entry => {
+    Object.values(kahoots[room].links).map(entry => {
       entries.push(entry);
       return entries;
     });
@@ -195,12 +138,12 @@ export const Kahoots = ({
             <DismissIcon />
           </ClipBoardFormDismissBtn>
           <ClipBoardFormText>
-            Wpisz swoje imię i nazwisko w to pole, aby nie musieć wpisywać go
-            kilka razy podczas lekcji.
+            Enter your full first and last name in this field so you don't have
+            to enter it multiple times during the lesson.
           </ClipBoardFormText>
           <ClipBoardFormText>
-            Proszę podać pełne imię i nazwisko bez skrótów, abyśmy mogli
-            prawidłowo zaliczyć Twoje punkty!
+            Please provide your full first and last name without abbreviations
+            so we can properly assign your points!
           </ClipBoardFormText>
           <ClipBoardInput
             name="username"
@@ -212,7 +155,7 @@ export const Kahoots = ({
               }
             }}
           />
-          <ClipBoardSubmitBtn>Zapisz</ClipBoardSubmitBtn>
+          <ClipBoardSubmitBtn>Save</ClipBoardSubmitBtn>
         </ClipBoardInputForm>
       ),
       { duration: Infinity }
@@ -227,7 +170,7 @@ export const Kahoots = ({
             <DismissIcon />
           </ClipBoardFormDismissBtn>
           <KahootNameValidation>
-            Imię i nazwisko są wymagane!
+            First and last name are required!
           </KahootNameValidation>
         </>
       ),
@@ -243,7 +186,7 @@ export const Kahoots = ({
             <DismissIcon />
           </ClipBoardFormDismissBtn>
           <KahootNameValidation>
-            Imię i nazwisko, proszę, 2 słowa!
+            First and last name, please — 2 words!
           </KahootNameValidation>
         </>
       ),
@@ -260,12 +203,12 @@ export const Kahoots = ({
             <ClipBoardFormDismissBtn onClick={() => toast.dismiss(t.id)}>
               <DismissIcon />
             </ClipBoardFormDismissBtn>
-            {`${localStorage.getItem('userName')}`}, twoje imię zostało dodane
-            do schowka, możesz je wkleić w odpowiednie pole!
+            {`${localStorage.getItem('userName')}`}, your name has been added to
+            the clipboard, you can paste it into the appropriate field!
           </ClipBoardFormText>
 
           <ClipBoardFormText>
-            Popełniłeś błąd? Kliknij ten przycisk:{' '}
+            Need to fix a mistake? Click this button:
           </ClipBoardFormText>
           <ClipBoardSubmitBtn
             onClick={() => {
@@ -273,7 +216,7 @@ export const Kahoots = ({
               createNameInput(btn);
             }}
           >
-            Popraw błąd
+            Fix the mistake
           </ClipBoardSubmitBtn>
         </ClipBoardNotification>
       ),
@@ -291,13 +234,13 @@ export const Kahoots = ({
             <ClipBoardFormDismissBtn onClick={() => toast.dismiss(t.id)}>
               <DismissIcon />
             </ClipBoardFormDismissBtn>
-            {`${localStorage.getItem('userName')}`}, twoje imię i nazwisko
-            zostały dodane do schowka w odwrotnej kolejności, możesz je wkleić w
-            odpowiednie pole i spróbować ponownie dołączyć do Kahoota!
+            {`${localStorage.getItem('userName')}`}, your first and last name
+            have been added to the clipboard in reverse order, you can paste
+            them into the appropriate field and try joining Kahoot again!
           </ClipBoardFormText>
 
           <ClipBoardFormText>
-            Musisz poprawić błąd? Kliknij ten przycisk:{' '}
+            Need to fix a mistake? Click this button:
           </ClipBoardFormText>
 
           <ClipBoardSubmitBtn
@@ -306,7 +249,7 @@ export const Kahoots = ({
               createNameInput(btn);
             }}
           >
-            Popraw błąd
+            Fix the mistake
           </ClipBoardSubmitBtn>
         </ClipBoardNotification>
       ),
@@ -352,7 +295,7 @@ export const Kahoots = ({
             <KahootPickerBtn />
           </KahootNumbersHider>
           <KahootPicker className={isPickerOpen ? 'shown' : 'hidden'}>
-            {Object.values(kahoots[page].links).map((link, i) => (
+            {Object.values(kahoots[room].links).map((link, i) => (
               <KahootNumbersBtn
                 key={i}
                 onClick={setKahootNumber}

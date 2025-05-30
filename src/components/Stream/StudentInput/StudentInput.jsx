@@ -40,22 +40,13 @@ export const StudentInput = ({
       page: page,
     });
 
-    console.log(43, 'answer:given', {
-      answer: answer,
-      username: user?.name || currentUser.username,
-      page: page,
-      socketID: socket.id,
-      questionID: questionID,
-      userID: user?.id || currentUser.userID,
-    });
-
     await axios.post('/answers', {
       answer: answer,
-      username: user?.name || currentUser.username,
+      username: currentUser.name,
       page: page,
       socketID: socket.id,
       questionID: questionID,
-      userID: user?.id || currentUser.userID,
+      userID: currentUser.id,
     });
   };
 
@@ -76,7 +67,9 @@ export const StudentInput = ({
             return e.target.value && setIsValid(true);
           }}
         />
-        <StudentQuizSubmitBtn onClick={e => handleSubmit(e)}>Send</StudentQuizSubmitBtn>
+        <StudentQuizSubmitBtn onClick={e => handleSubmit(e)}>
+          Send
+        </StudentQuizSubmitBtn>
         {!isValid && (
           <StudentQuizBoxInputNote>Answer is required</StudentQuizBoxInputNote>
         )}

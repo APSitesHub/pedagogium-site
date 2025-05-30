@@ -26,11 +26,11 @@ export const StudentTrueFalse = ({
 
     await axios.post('/answers', {
       answer: answer,
-      username: user?.name || currentUser.username,
+      username: currentUser.name,
       page: page,
       socketID: socket.id,
       questionID: questionID,
-      userID: user?.id || currentUser.userID,
+      userID: currentUser.id,
     });
   };
 
