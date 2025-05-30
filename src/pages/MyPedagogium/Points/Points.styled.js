@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { CupBtnIcon } from '../MyPedagogiumPanel/MyPedagogiumPanel.styled';
 
 export const PointsBox = styled.div`
   position: absolute;
@@ -194,6 +195,8 @@ export const UserPlace = styled(LeaderPlace)`
   color: #525266;
   background: transparent;
 `;
+
+export const CupIcon = styled(CupBtnIcon)``;
 
 export const PointsPlaceHolder = styled.div`
   display: flex;

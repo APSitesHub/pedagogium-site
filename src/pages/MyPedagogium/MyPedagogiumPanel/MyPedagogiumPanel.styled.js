@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { ReactComponent as BoxSwitchLeft } from '../../../img/svg/btnbox-switch-left-gray.svg';
 import { ReactComponent as BoxSwitchRight } from '../../../img/svg/btnbox-switch-right-gray.svg';
 import { ReactComponent as AttendanceIcon } from '../../../img/svg/myap/attendance.svg';
+import { ReactComponent as CupIcon } from '../../../img/svg/myap/ranking.svg';
 import { ReactComponent as CalendarIcon } from '../../../img/svg/myap/calendar.svg';
 import { ReactComponent as GuideIcon } from '../../../img/svg/myap/guide.svg';
 import { ReactComponent as PointerIcon } from '../../../img/svg/myap/pointer.svg';
@@ -189,6 +190,22 @@ export const APPanelToggleBtn = styled(APPanelResetBtn)`
   }
   &.tooltip-open::before {
     transform: translateY(-75%) scale(1, 1);
+  }
+`;
+
+export const CupBtnIcon = styled(CupIcon)`
+  height: 25px;
+  width: 25px;
+  user-select: none;
+  pointer-events: none;
+
+  @media screen and (min-width: 768px) {
+    height: 30px;
+    width: 30px;
+  }
+
+  &.active {
+    color: #525266;
   }
 `;
 
