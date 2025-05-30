@@ -3,13 +3,7 @@ import { nanoid } from 'nanoid';
 import { useLayoutEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
-import { useLocation } from 'react-router-dom';
-import {
-  SupportClipBoardAdd,
-  SupportClipBoardCopy,
-  SupportKahootPickerIcon,
-  SupportNameReverse,
-} from '../Support/Support.styled';
+
 import {
   ClipBoardAdd,
   ClipBoardBtn,
@@ -23,12 +17,6 @@ import {
   DismissIcon,
   KahootBackground,
   KahootBox,
-  KahootDisclaimerBackground,
-  KahootDisclaimerBox,
-  KahootDisclaimerHeader,
-  KahootDisclaimerItem,
-  KahootDisclaimerList,
-  KahootDisclaimerText,
   KahootExitFullScreenIcon,
   KahootFullScreenBtn,
   KahootFullScreenIcon,
@@ -47,6 +35,7 @@ export const Kahoots = ({
   isKahootOpen,
   isChatOpen,
   isOpenedLast,
+  room,
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
@@ -55,73 +44,18 @@ export const Kahoots = ({
     localStorage.getItem('userName') || ''
   );
   const [kahoots, setKahoots] = useState({});
-  const [activeKahoot, setActiveKahoot] = useState(0);
-
-  let location = useLocation();
+  const [activeKahoot, setActiveKahoot] = useState(1);
 
   const { ref, inView } = useInView({
     triggerOnce: true,
     delay: 1000,
   });
 
-  const trialsSwitch = path => {
-    switch (path) {
-      case 'a1free':
-        return 'a1kidsfree';
-      case 'pilot':
-        return 'deutsch';
-      case 'b1beginner':
-        return 'b1kidsbeginner';
-      case 'b2beginner':
-        return 'b2kidsbeginner';
-      case 'trendets':
-        return 'trendets';
-      case 'pilot-a1':
-        return 'a1';
-      case 'test1':
-        return 'test';
-      case 'trial-en':
-        return 'trials';
-      case 'trial-de':
-        return 'trials_de';
-      case 'trial-pl':
-        return 'trials_pl';
-      case 'trial-kids':
-        return 'trials_kids';
-      default:
-        break;
-    }
-  };
-
-  const page =
-    location.pathname.includes('pilot') ||
-    location.pathname.includes('beginner') ||
-    location.pathname.includes('trendets') ||
-    (location.pathname.includes('streams-kids') &&
-      location.pathname.includes('free'))
-      ? trialsSwitch(location.pathname.match(/\/([^/]+)\/?$/)[1])
-      : location.pathname.includes('preschool')
-      ? location.pathname.match(/\/([^/]+)\/?$/)[1]
-      : location.pathname.includes('pre') ||
-        location.pathname.includes('beg') ||
-        location.pathname.includes('mid') ||
-        location.pathname.includes('high')
-      ? 'kids' + location.pathname.match(/\/([^/]+)\/?$/)[1]
-      : location.pathname.includes('streams-kids')
-      ? location.pathname.match(/\/([^/]+)\/?$/)[1] + 'kids'
-      : location.pathname.includes('trial') ||
-        location.pathname.includes('pilot') ||
-        location.pathname.includes('test1')
-      ? trialsSwitch(location.pathname.match(/\/([^/]+)\/?$/)[1])
-      : location.pathname.match(/\/([^/]+)\/?$/)[1];
-
-  console.log(111, page);
-
   const kahootWidth = isFullScreen ? sectionWidth : (sectionWidth / 10) * 4;
 
   const getLinksForLocation = () => {
     const entries = [];
-    Object.values(kahoots[page].links).map(entry => {
+    Object.values(kahoots[room].links).map(entry => {
       entries.push(entry);
       return entries;
     });
@@ -204,16 +138,16 @@ export const Kahoots = ({
             <DismissIcon />
           </ClipBoardFormDismissBtn>
           <ClipBoardFormText>
-            Введіть ваше ім'я в це поле, щоб вам не доводилося вводити його
-            декілька разів під час уроку.
+            Enter your full first and last name in this field so you don't have
+            to enter it multiple times during the lesson.
           </ClipBoardFormText>
           <ClipBoardFormText>
-            Будь ласка, вводьте повне ім'я без скорочень, щоб ми могли правильно
-            зарахувати ваші бали!
+            Please provide your full first and last name without abbreviations
+            so we can properly assign your points!
           </ClipBoardFormText>
           <ClipBoardInput
             name="username"
-            placeholder="Ім'я"
+            placeholder="Imię"
             defaultValue={localStorage.getItem('userName')}
             onChange={e => {
               if (e.target.value) {
@@ -221,7 +155,7 @@ export const Kahoots = ({
               }
             }}
           />
-          <ClipBoardSubmitBtn>Зберегти</ClipBoardSubmitBtn>
+          <ClipBoardSubmitBtn>Save</ClipBoardSubmitBtn>
         </ClipBoardInputForm>
       ),
       { duration: Infinity }
@@ -236,7 +170,7 @@ export const Kahoots = ({
             <DismissIcon />
           </ClipBoardFormDismissBtn>
           <KahootNameValidation>
-            Ім'я та прізвище обов'язкові!
+            First and last name are required!
           </KahootNameValidation>
         </>
       ),
@@ -252,7 +186,7 @@ export const Kahoots = ({
             <DismissIcon />
           </ClipBoardFormDismissBtn>
           <KahootNameValidation>
-            Прізвище та ім'я, будь ласка, 2 слова!
+            First and last name, please — 2 words!
           </KahootNameValidation>
         </>
       ),
@@ -269,12 +203,12 @@ export const Kahoots = ({
             <ClipBoardFormDismissBtn onClick={() => toast.dismiss(t.id)}>
               <DismissIcon />
             </ClipBoardFormDismissBtn>
-            {`${localStorage.getItem('userName')}`}, ваше ім'я додано в буфер
-            обміну, можете вставити його у відповідне поле!
+            {`${localStorage.getItem('userName')}`}, your name has been added to
+            the clipboard, you can paste it into the appropriate field!
           </ClipBoardFormText>
 
           <ClipBoardFormText>
-            Випадково помилились? Натисніть на цю кнопку:{' '}
+            Need to fix a mistake? Click this button:
           </ClipBoardFormText>
           <ClipBoardSubmitBtn
             onClick={() => {
@@ -282,7 +216,7 @@ export const Kahoots = ({
               createNameInput(btn);
             }}
           >
-            Виправити помилку
+            Fix the mistake
           </ClipBoardSubmitBtn>
         </ClipBoardNotification>
       ),
@@ -300,13 +234,13 @@ export const Kahoots = ({
             <ClipBoardFormDismissBtn onClick={() => toast.dismiss(t.id)}>
               <DismissIcon />
             </ClipBoardFormDismissBtn>
-            {`${localStorage.getItem('userName')}`}, ваші ім'я та прізвище
-            додані до буферу обміну в зворотньому порядку, можете вставити їх у
-            відповідне поле і спробувати підключитись до Кахуту знов!
+            {`${localStorage.getItem('userName')}`}, your first and last name
+            have been added to the clipboard in reverse order, you can paste
+            them into the appropriate field and try joining Kahoot again!
           </ClipBoardFormText>
 
           <ClipBoardFormText>
-            Треба виправити помилку? Натисніть на цю кнопку:{' '}
+            Need to fix a mistake? Click this button:
           </ClipBoardFormText>
 
           <ClipBoardSubmitBtn
@@ -315,7 +249,7 @@ export const Kahoots = ({
               createNameInput(btn);
             }}
           >
-            Виправити помилку
+            Fix the mistake
           </ClipBoardSubmitBtn>
         </ClipBoardNotification>
       ),
@@ -361,7 +295,7 @@ export const Kahoots = ({
             <KahootPickerBtn />
           </KahootNumbersHider>
           <KahootPicker className={isPickerOpen ? 'shown' : 'hidden'}>
-            {Object.values(kahoots[page].links).map((link, i) => (
+            {Object.values(kahoots[room].links).map((link, i) => (
               <KahootNumbersBtn
                 key={i}
                 onClick={setKahootNumber}
@@ -380,110 +314,35 @@ export const Kahoots = ({
               <NameReverse />
             </NameReverseBtn>
           )}
-          {activeKahoot ? (
-            getLinksForLocation().map(
-              (link, i) =>
-                activeKahoot === i + 1 && (
-                  <KahootBackground key={i}>
-                    <iframe
-                      id="kahoot-window"
-                      title="kahoot-pin"
-                      src={link}
-                      width={
-                        !isChatOpen
-                          ? kahootWidth
-                          : isFullScreen
-                          ? kahootWidth - 300
-                          : kahootWidth
-                      }
-                      height={sectionHeight}
-                    ></iframe>
-                    <KahootFullScreenBtn onClick={toggleFullScreen}>
-                      {isFullScreen ? (
-                        <KahootExitFullScreenIcon />
-                      ) : (
-                        <KahootFullScreenIcon />
-                      )}
-                    </KahootFullScreenBtn>
-                    <ClipBoardBtn onClick={handleUsernameBtn}>
-                      {username ? <ClipBoardCopy /> : <ClipBoardAdd />}
-                    </ClipBoardBtn>
-                  </KahootBackground>
-                )
-            )
-          ) : (
-            <KahootDisclaimerBackground
-              style={
-                !isChatOpen
-                  ? { width: `${kahootWidth}px` }
-                  : isFullScreen
-                  ? { width: `${kahootWidth - 300}px` }
-                  : { width: `${kahootWidth}px` }
-              }
-            >
-              <KahootDisclaimerBox>
-                <KahootDisclaimerHeader>
-                  Привіт! Це вікно Кахутів.
-                </KahootDisclaimerHeader>
-                <KahootDisclaimerText>
-                  Ми постійно працюємо над розширенням функціоналу нашого сайту,
-                  щоб ваші заняття залишалися для вас приємним досвідом, тому
-                  внесли декілька важливих змін:
-                </KahootDisclaimerText>
-                <KahootDisclaimerList>
-                  <KahootDisclaimerItem>
-                    <KahootDisclaimerText>
-                      Вводити код Кахуту тепер не потрібно, адже ми вже ввели
-                      його за вас. Просто тисніть кнопку{' '}
-                      <SupportKahootPickerIcon /> у правому верхньому кутку
-                      цього вікна і обирайте номер Кахуту. Почніть з першого. 😉
-                    </KahootDisclaimerText>
-                  </KahootDisclaimerItem>
-                  <KahootDisclaimerItem>
-                    <KahootDisclaimerText>
-                      Ім'я вводити кожного разу тепер теж не обов'язково.
-                      Тисніть кнопку <SupportClipBoardAdd /> та вводьте в
-                      невеличке віконце ваше ім'я (не забувайте про наші
-                      рекомендації). Ви можете вводити своє ім'я повністю
-                      (наприклад: Володимир Зеленський), Кахут обріже зайві
-                      літери автоматично (вийде: Володимир Зелен). Коли введете,
-                      клікніть кнопку "Зберегти" і ваше ім'я збережеться у буфер
-                      обміну, а кнопка буде виглядати так:{' '}
-                      <SupportClipBoardCopy />.
-                    </KahootDisclaimerText>
-                  </KahootDisclaimerItem>{' '}
-                  <KahootDisclaimerItem>
-                    <KahootDisclaimerText>
-                      Тепер при кліку на цю кнопку ви зможете швидко копіювати
-                      своє ім'я і просто вставляти його у поле Кахуту. Якщо ви
-                      припустилися помилки, вводячи своє ім'я, ви можете в
-                      будь-який момент натиснути кнопку <SupportClipBoardCopy />
-                      , а у віконці, що відкриється, кнопку "Виправити", після
-                      чого введіть ім'я заново.
-                    </KahootDisclaimerText>
-                  </KahootDisclaimerItem>
-                  <KahootDisclaimerItem>
-                    <KahootDisclaimerText>
-                      У разі, якщо вас за якоїсь причини викинуло з Кахуту і не
-                      пускає назад з тим же іменем, тисніть кнопку{' '}
-                      <SupportNameReverse />, вона збереже ваше ім'я та прізвище
-                      у зворотньому порядку, що дасть вам змогу швидко зайти до
-                      Кахуту під "новим" ім'ям.
-                    </KahootDisclaimerText>
-                  </KahootDisclaimerItem>
-                </KahootDisclaimerList>
-              </KahootDisclaimerBox>
-              <KahootFullScreenBtn onClick={toggleFullScreen} tabIndex={-1}>
-                {isFullScreen ? (
-                  <KahootExitFullScreenIcon />
-                ) : (
-                  <KahootFullScreenIcon />
-                )}
-              </KahootFullScreenBtn>
-              <ClipBoardBtn tabIndex={-1} onClick={e => handleUsernameBtn(e)}>
-                {username ? <ClipBoardCopy /> : <ClipBoardAdd />}
-              </ClipBoardBtn>
-            </KahootDisclaimerBackground>
+          {getLinksForLocation().map(
+            (link, i) =>
+              activeKahoot === i + 1 && (
+                <KahootBackground key={i}>
+                  <iframe
+                    id="kahoot-window"
+                    title="kahoot-pin"
+                    src={link}
+                    width={
+                      !isChatOpen
+                        ? kahootWidth
+                        : isFullScreen
+                        ? kahootWidth - 300
+                        : kahootWidth
+                    }
+                    height={sectionHeight}
+                  ></iframe>
+                  <KahootFullScreenBtn onClick={toggleFullScreen}>
+                    {isFullScreen ? (
+                      <KahootExitFullScreenIcon />
+                    ) : (
+                      <KahootFullScreenIcon />
+                    )}
+                  </KahootFullScreenBtn>
+                  <ClipBoardBtn onClick={handleUsernameBtn}>
+                    {username ? <ClipBoardCopy /> : <ClipBoardAdd />}
+                  </ClipBoardBtn>
+                </KahootBackground>
+              )
           )}
         </KahootBox>
       )}

@@ -19,13 +19,14 @@ export const KahootBox = styled.div`
   outline: transparent;
 
   transition: transform var(--animation-global);
+  transform-origin: right center;
 
   &.hidden {
-    transform: translateX(100%);
+    transform: scaleX(0.0001);
   }
 
   &.shown {
-    transform: translateX(0);
+    transform: scaleX(1);
   }
 
   &.fullscreen iframe {
@@ -51,13 +52,14 @@ export const KahootBackground = styled(StreamsBackgroundWrapper)`
   }
 
   transition: transform var(--animation-global);
+  transform-origin: right center;
 
   &.hidden {
-    transform: translateX(100%);
+    transform: scaleX(0.0001);
   }
 
   &.shown {
-    transform: translateX(0);
+    transform: scaleX(1);
   }
 `;
 
