@@ -572,36 +572,32 @@ const Stream = () => {
                   </JitsiContainer>
                 </>
               )}
-              {true && ( // TODO: add !isAdmin
-                <>
-                  <StudentInput
-                    isInputOpen={isQuizInputOpen}
-                    socket={socketRef.current}
-                    toggleQuiz={toggleQuizInput}
-                    page={room}
-                    currentUser={currentUser}
-                    questionID={questionID.current}
-                  />
+              <StudentInput
+                isInputOpen={isQuizInputOpen}
+                socket={socketRef.current}
+                toggleQuiz={toggleQuizInput}
+                page={room}
+                currentUser={currentUser}
+                questionID={questionID.current}
+              />
 
-                  <StudentOptions
-                    isInputOpen={isQuizOptionsOpen}
-                    socket={socketRef.current}
-                    toggleQuiz={toggleQuizOptions}
-                    page={room}
-                    currentUser={currentUser}
-                    questionID={questionID.current}
-                  />
+              <StudentOptions
+                isInputOpen={isQuizOptionsOpen}
+                socket={socketRef.current}
+                toggleQuiz={toggleQuizOptions}
+                page={room}
+                currentUser={currentUser}
+                questionID={questionID.current}
+              />
 
-                  <StudentTrueFalse
-                    isInputOpen={isQuizTrueFalseOpen}
-                    socket={socketRef.current}
-                    toggleQuiz={toggleQuizTrueFalse}
-                    page={room}
-                    currentUser={currentUser}
-                    questionID={questionID.current}
-                  />
-                </>
-              )}
+              <StudentTrueFalse
+                isInputOpen={isQuizTrueFalseOpen}
+                socket={socketRef.current}
+                toggleQuiz={toggleQuizTrueFalse}
+                page={room}
+                currentUser={currentUser}
+                questionID={questionID.current}
+              />
             </PlayerWrapper>
 
             <ButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
