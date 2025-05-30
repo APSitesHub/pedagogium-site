@@ -13,6 +13,8 @@ import {
   ChatBox,
   ChatBtn,
   ChatLogo,
+  KahootBtn,
+  KahootLogo,
   StreamPlaceHolder,
   StreamPlaceHolderText,
   StreamSection,
@@ -24,6 +26,10 @@ import {
   PlayerWrapper,
 } from './Stream.styled';
 import { ColorRing } from 'react-loader-spinner';
+import { StudentInput } from '../../../components/Stream/StudentInput/StudentInput';
+import { StudentOptions } from '../../../components/Stream/StudentInput/StudentOptions';
+import { StudentTrueFalse } from '../../../components/Stream/StudentInput/StudentTrueFalse';
+import { Kahoots } from 'components/Stream/Kahoots/Kahoots';
 
 const roomID = 'c57a82b4-188e-4ca3-bb83-8a97c1a6c310';
 const supportedLanguages = ['uk', 'en', 'pl', 'de'];
@@ -37,8 +43,15 @@ const Stream = () => {
   const [adminId, setAdminId] = useState(null);
   const [isJitsiLoading, setIsJitsiLoading] = useState(true);
   const [isIframeOpen, setIsIframeOpen] = useState(true);
+  const [isKahootOpen, setIsKahootOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isOpenedLast, setIsOpenedLast] = useState('');
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
+
+  const [isQuizInputOpen, setIsQuizInputOpen] = useState(false);
+  const [isQuizOptionsOpen, setIsQuizOptionsOpen] = useState(false);
+  const [isQuizTrueFalseOpen, setIsQuizTrueFalseOpen] = useState(false);
+
   const [links, isLoading, currentUser] = useOutletContext();
   const chatEl = useRef();
   // eslint-disable-next-line
@@ -50,26 +63,45 @@ const Stream = () => {
   const params = new URLSearchParams(loc.search);
   const isOffline = params.get('isOffline') === 'true';
 
+  const toggleKahoot = e => {
+    setIsKahootOpen(isKahootOpen => !isKahootOpen);
+    isChatOpen
+      ? setIsOpenedLast(isOpenedLast => 'kahoot')
+      : setIsOpenedLast(isOpenedLast => '');
+  };
+
   const toggleChat = () => {
     setIsChatOpen(isChatOpen => !isChatOpen);
+    isKahootOpen
+      ? setIsOpenedLast(isOpenedLast => 'chat')
+      : setIsOpenedLast(isOpenedLast => '');
   };
 
   const toggleButtonBox = () => {
     setIsButtonBoxOpen(isOpen => !isOpen);
   };
 
+  const toggleQuizInput = () => {
+    setIsQuizInputOpen(isQuizInputOpen => !isQuizInputOpen);
+  };
+  const toggleQuizOptions = () => {
+    setIsQuizOptionsOpen(isQuizOptionsOpen => !isQuizOptionsOpen);
+  };
+  const toggleQuizTrueFalse = () => {
+    setIsQuizTrueFalseOpen(isQuizTrueFalseOpen => !isQuizTrueFalseOpen);
+  };
+
   const videoBoxWidth =
     chatWidth === 0 && width > height ? width - 300 : width - chatWidth;
 
   const socketRef = useRef(null);
+  const questionID = useRef('');
 
   const room = `${document.title
     .split('|')[1]
     ?.trim()
     .trimEnd()
     .toLowerCase()}_${location.replace('/lesson/', '')}`;
-
-  console.log(room);
 
   useEffect(() => {
     document.title = `Lesson Online | Pedagogium | ${location
@@ -157,6 +189,37 @@ const Stream = () => {
         messages =>
           (messages = [...messages.filter(message => message.id !== id)])
       );
+    });
+
+    // open quizzes on event
+    socketRef.current.on('question:input', data => {
+      if (data.page === room) {
+        setIsQuizInputOpen(true);
+        questionID.current = data.question;
+      }
+    });
+    socketRef.current.on('question:options', data => {
+      if (data.page === room) {
+        setIsQuizOptionsOpen(true);
+        questionID.current = data.question;
+      }
+    });
+    socketRef.current.on('question:trueFalse', data => {
+      if (data.page === room) {
+        setIsQuizTrueFalseOpen(true);
+        questionID.current = data.question;
+      }
+    });
+
+    // close quizzes on event
+    socketRef.current.on('question:closeInput', data => {
+      data.page === room && setIsQuizInputOpen(false);
+    });
+    socketRef.current.on('question:closeOptions', data => {
+      data.page === room && setIsQuizOptionsOpen(false);
+    });
+    socketRef.current.on('question:closeTrueFalse', data => {
+      data.page === room && setIsQuizTrueFalseOpen(false);
     });
 
     return () => {
@@ -509,13 +572,53 @@ const Stream = () => {
                   </JitsiContainer>
                 </>
               )}
+              {true && ( // TODO: add !isAdmin
+                <>
+                  <StudentInput
+                    isInputOpen={isQuizInputOpen}
+                    socket={socketRef.current}
+                    toggleQuiz={toggleQuizInput}
+                    page={room}
+                    currentUser={currentUser}
+                    questionID={questionID.current}
+                  />
+
+                  <StudentOptions
+                    isInputOpen={isQuizOptionsOpen}
+                    socket={socketRef.current}
+                    toggleQuiz={toggleQuizOptions}
+                    page={room}
+                    currentUser={currentUser}
+                    questionID={questionID.current}
+                  />
+
+                  <StudentTrueFalse
+                    isInputOpen={isQuizTrueFalseOpen}
+                    socket={socketRef.current}
+                    toggleQuiz={toggleQuizTrueFalse}
+                    page={room}
+                    currentUser={currentUser}
+                    questionID={questionID.current}
+                  />
+                </>
+              )}
             </PlayerWrapper>
 
             <ButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <KahootBtn onClick={toggleKahoot}>
+                <KahootLogo />
+              </KahootBtn>
               <ChatBtn onClick={toggleChat}>
                 <ChatLogo />
               </ChatBtn>
             </ButtonBox>
+            <Kahoots
+              sectionWidth={width}
+              sectionHeight={height}
+              isKahootOpen={isKahootOpen}
+              isChatOpen={isChatOpen}
+              isOpenedLast={isOpenedLast}
+            />
 
             <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}

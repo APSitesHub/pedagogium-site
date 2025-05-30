@@ -93,7 +93,7 @@ export const Kahoots = ({
     }
   };
 
-  const page =
+  let page =
     location.pathname.includes('pilot') ||
     location.pathname.includes('beginner') ||
     location.pathname.includes('trendets') ||
@@ -114,6 +114,8 @@ export const Kahoots = ({
         location.pathname.includes('test1')
       ? trialsSwitch(location.pathname.match(/\/([^/]+)\/?$/)[1])
       : location.pathname.match(/\/([^/]+)\/?$/)[1];
+
+  page = 'pedagogium_' + page;
 
   console.log(111, page);
 
