@@ -279,7 +279,7 @@ const Stream = () => {
                           flexWrap: 'wrap',
                         }}
                       >
-                        <LargeText>Завантаження</LargeText>
+                        <LargeText>Loading</LargeText>
                         <ColorRing
                           visible={true}
                           height="120"
@@ -291,7 +291,7 @@ const Stream = () => {
                         />
                       </div>
                     ) : (
-                      <LargeText>Викладача поки немає!</LargeText>
+                      <LargeText>There is no teacher yet!</LargeText>
                     )}
                   </GradientBackground>
                   <JitsiContainer
