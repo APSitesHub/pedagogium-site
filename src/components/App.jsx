@@ -26,6 +26,12 @@ const UniUserAdminPanel = lazy(() =>
   )
 );
 
+const TimeTableAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "TimeTable Admin Panel page" */ '../pages/Streams/TimeTableAdminPanel/TimeTableAdminPanel'
+  )
+);
+
 const NotFound = lazy(() =>
   import(/* webpackChunkName: "Not Found" */ '../pages/NotFound/NotFound')
 );
@@ -49,6 +55,11 @@ export const App = () => {
           <Route
             path="admin"
             element={<UniUserAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
+            noindex={true}
+          />
+          <Route
+            path="admin-timetable"
+            element={<TimeTableAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
             noindex={true}
           />
           <Route path="*" element={<NotFound />} noindex={true} />
