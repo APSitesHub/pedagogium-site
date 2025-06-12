@@ -80,7 +80,7 @@ export const Label = styled.label`
 export const Input = styled(Field)`
   width: 100%;
   height: 58px;
-  padding: 22px 20px;
+  padding: 12px 10px;
   font-size: 14px;
   border: 2px solid var(--main-color);
   border-radius: 50px;
