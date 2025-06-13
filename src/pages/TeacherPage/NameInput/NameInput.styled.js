@@ -53,7 +53,7 @@ export const TeacherInfoInput = styled.input`
 export const LessonInfoBox = styled.div`
   position: absolute;
   top: 14px;
-  right: 108px;
+  right: 180px;
   z-index: 25;
   width: 280px;
   color: #000;
