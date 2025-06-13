@@ -24,8 +24,10 @@ const TeacherPage = lazy(() =>
   )
 );
 
-const TeacherAP = lazy(() =>
-  import(/* webpackChunkName: "Teacher page" */ '../pages/TeacherAP/TeacherAP')
+const TeacherMain = lazy(() =>
+  import(
+    /* webpackChunkName: "Teacher page" */ '../pages/TeacherMain/TeacherMain'
+  )
 );
 
 const TeacherAdminPanel = lazy(() =>
@@ -89,23 +91,22 @@ export const App = () => {
             noindex={true}
           />
           <Route
+            path="admin-teacher"
+            element={<TeacherAdminPanel />}
+            noindex={true}
+          />
+          <Route
             path="admin-timetable"
             element={<TimeTableAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
             noindex={true}
           />
           <Route path="*" element={<NotFound />} noindex={true} />
 
+          <Route path="teacher-main" element={<TeacherMain />} noindex={true} />
+
           <Route path="teacher" element={<Teacher />} noindex={true}>
             <Route path=":group" element={<TeacherPage />} noindex={true} />
           </Route>
-
-          <Route path="teacher-ap" element={<TeacherAP />} noindex={true} />
-
-          <Route
-            path="teacher-admin-panel"
-            element={<TeacherAdminPanel />}
-            noindex={true}
-          />
 
           <Route path="lesson" element={<Streams />} noindex={true}>
             {/* <Route

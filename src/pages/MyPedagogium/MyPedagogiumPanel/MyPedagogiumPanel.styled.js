@@ -63,6 +63,12 @@ export const APPanel = styled.div`
   }
 `;
 
+export const TeacherPanel = styled(APPanel)`
+  width: 360px;
+
+  font-size: 18px;
+`;
+
 export const LogoutPanel = styled(APPanel)`
   right: 56px;
   top: 9px;

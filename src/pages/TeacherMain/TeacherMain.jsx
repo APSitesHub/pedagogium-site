@@ -1,14 +1,5 @@
-import { useEffect, useState } from 'react';
-import TeacherAPPanel from './TeacherAPPanel/TeacherAPPanel';
 import axios from 'axios';
-import {
-  Label,
-  LeftFormBackgroundStar,
-  RightFormBackgroundStar,
-  LoginErrorNote,
-  LoginFormText,
-  StreamSection,
-} from './TeacherAP.styled';
+import { LoginLogo } from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
 import {
   AdminFormBtn,
@@ -16,7 +7,15 @@ import {
   AdminInputNote,
   LoginForm,
 } from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import { useEffect, useState } from 'react';
 import * as yup from 'yup';
+import {
+  Label,
+  LoginErrorNote,
+  LoginFormText,
+  StreamSection,
+} from './TeacherMain.styled';
+import TeacherAPPanel from './TeacherMainPanel/TeacherMainPanel';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -61,6 +60,14 @@ const TeacherAP = () => {
     }
   };
 
+  const handleLogout = async () => {
+    localStorage.removeItem('userName');
+    localStorage.removeItem('login');
+    localStorage.removeItem('token');
+    setAuthToken('');
+    setIsTeacherLogged(isLogged => (isLogged = false));
+  };
+
   const setPlatformLink = token => {
     setIframeLink(
       `https://online.ap.education/LoginByToken?token=${token}&redirectUrl=${encodeURIComponent(
@@ -98,14 +105,12 @@ const TeacherAP = () => {
           validationSchema={loginSchema}
         >
           <LoginForm>
-            <LeftFormBackgroundStar />
-            <RightFormBackgroundStar />
+            <LoginLogo />
             <LoginFormText>
-              Cześć!
+              Dzień dobry!
               <br />
-              Ta strona jest niedostępna dla nieautoryzowanych użytkowników. Ale
-              jeśli masz dostęp do naszej platformy, masz też dostęp do tej
-              strony. Wprowadź dane, których używasz do logowania na platformie.
+              Ta strona jest niedostępna dla nieautoryzowanych użytkowników.
+              Wprowadź swój login i hasło.
             </LoginFormText>
             <Label>
               <AdminInput
@@ -131,7 +136,7 @@ const TeacherAP = () => {
                 isTeacherInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
               }
             >
-              Login lub hasło zostały wprowadzone nieprawidłowo!
+              Podany login lub hasło są nieprawidłowe!
             </LoginErrorNote>
           </LoginForm>
         </Formik>
@@ -145,7 +150,7 @@ const TeacherAP = () => {
             height="100%"
             allow="microphone *"
           ></iframe>
-          <TeacherAPPanel />
+          <TeacherAPPanel handleLogout={handleLogout} />
         </>
       )}
     </StreamSection>
