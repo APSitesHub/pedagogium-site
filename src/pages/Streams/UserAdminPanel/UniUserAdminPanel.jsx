@@ -35,21 +35,8 @@ const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
-const Univesitets = {
+const University = {
   PEDAGOGIUM: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
-  WSTIJO: 'WSTIJO (Wyzsza Szkoła Turystyki i Jezykow Obcych w Warszawie)',
-  WSBMIR: 'WSBMIR (Wyższa Szkoła Biznesu, Mediów i Reklamy)',
-  EWSPA: 'EWSPA (Europejska Wyższa Szkoła Prawa i Administracji w Warszawie)',
-  MERITO: 'Merito (Uniwersytet WSB Merito Warszawa)',
-  WSTIH: 'WSTiH (Wyższa Szkoła Turystyki i Hotelarstwa w Gdańsku)',
-  WSKM: 'WSKM (Wyższa Szkoła Kadr Menedżerskich)',
-  WSSIP: 'WSSiP (Wyższa Szkoła Sztuki i Projektowania)',
-  WSPA: 'WSPA (Wyższa Szkoła Przedsiębiorczości i Administracji)',
-  WSE: 'WSE (Wyższa Szkoła Ekonomiczna w Stalowej Woli)',
-  ANSWP: 'ANSWP (Akademia Nauk Stosowanych Wincentego Pola w Lublinie)',
-  SSW: 'SSW (Świętokrzyska Szkoła Wyższa im. św. Jana Pawła II)',
-  MANS: 'MANS (Międzynarodowa Akademia Nauk Stosowanych w Łomży)',
-  AHNS: 'AHNS (Akademia Handlowa Nauk Stosowanych w Radomiu)',
 };
 
 const translations = {
@@ -77,9 +64,9 @@ const translations = {
     edit: 'Edytuj',
     delete: 'Usuń',
     deleteUserError:
-      'Wystąpił problem - naciśnij F12, zrób zrzut ekranu konsoli, wyślij do Kirila',
+      'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.',
     addUserError:
-      'Wystąpił problem - naciśnij F12, zrób zrzut ekranu konsoli, wyślij do Kirila',
+      'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.',
     userAdded: 'Użytkownik został dodany',
     userUpdated: 'Użytkownik został zaktualizowany',
     updateUserError: 'Błąd podczas aktualizacji użytkownika',
@@ -110,81 +97,21 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
   const [isVisitedEditFormOpen, setIsVisitedEditFormOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState({});
   const [courseValue, setCourseValue] = useState(null);
-  const [isCourseEmpty, setIsCourseEmpty] = useState(false);
-  const [uniValue, setUniValue] = useState(null);
-  const [isUniEmpty, setIsUniEmpty] = useState(false);
   const [groupValue, setGroupValue] = useState(null);
   const [isGroupEmpty, setIsGroupEmpty] = useState(false);
   const [daysAfterLastLogin] = useState(7);
   const selectInputRef = useRef();
 
-  const uniOptions = [
-    {
-      label: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
-      value: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
-    },
-    {
-      label: 'WSTIJO (Wyzsza Szkoła Turystyki i Jezykow Obcych w Warszawie)',
-      value: 'WSTIJO (Wyzsza Szkoła Turystyki i Jezykow Obcych w Warszawie)',
-    },
-    {
-      label: 'WSBMIR (Wyższa Szkoła Biznesu, Mediów i Reklamy)',
-      value: 'WSBMIR (Wyższa Szkoła Biznesu, Mediów i Reklamy)',
-    },
-    {
-      label: 'EWSPA (Europejska Wyższa Szkoła Prawa i Administracji w Warszawie)',
-      value: 'EWSPA (Europejska Wyższa Szkoła Prawa i Administracji w Warszawie)',
-    },
-    {
-      label: 'Merito (Uniwersytet WSB Merito Warszawa)',
-      value: 'Merito (Uniwersytet WSB Merito Warszawa)',
-    },
-    {
-      label: 'WSTiH (Wyższa Szkoła Turystyki i Hotelarstwa w Gdańsku)',
-      value: 'WSTiH (Wyższa Szkoła Turystyki i Hotelarstwa w Gdańsku)',
-    },
-    {
-      label: 'WSKM (Wyższa Szkoła Kadr Menedżerskich)',
-      value: 'WSKM (Wyższa Szkoła Kadr Menedżerskich)',
-    },
-    {
-      label: 'WSSiP (Wyższa Szkoła Sztuki i Projektowania)',
-      value: 'WSSiP (Wyższa Szkoła Sztuki i Projektowania)',
-    },
-    {
-      label: 'WSPA (Wyższa Szkoła Przedsiębiorczości i Administracji)',
-      value: 'WSPA (Wyższa Szkoła Przedsiębiorczości i Administracji)',
-    },
-    {
-      label: 'WSE (Wyższa Szkoła Ekonomiczna w Stalowej Woli)',
-      value: 'WSE (Wyższa Szkoła Ekonomiczna w Stalowej Woli)',
-    },
-    {
-      label: 'ANSWP (Akademia Nauk Stosowanych Wincentego Pola w Lublinie)',
-      value: 'ANSWP (Akademia Nauk Stosowanych Wincentego Pola w Lublinie)',
-    },
-    {
-      label: 'SSW (Świętokrzyska Szkoła Wyższa im. św. Jana Pawła II)',
-      value: 'SSW (Świętokrzyska Szkoła Wyższa im. św. Jana Pawła II)',
-    },
-    {
-      label: 'MANS (Międzynarodowa Akademia Nauk Stosowanych w Łomży)',
-      value: 'MANS (Międzynarodowa Akademia Nauk Stosowanych w Łomży)',
-    },
-    {
-      label: 'AHNS (Akademia Handlowa Nauk Stosowanych w Radomiu)',
-      value: 'AHNS (Akademia Handlowa Nauk Stosowanych w Radomiu)',
-    },
-  ];
-
   // Створюємо опції для курсів
-  const courseOptions = useMemo(() =>
-    courses.map(course => ({
-      label: course.courseName,
-      value: course.courseName,
-      groups: course.courseGroups
-    }))
-  , [courses]);
+  const courseOptions = useMemo(
+    () =>
+      courses.map(course => ({
+        label: course.courseName,
+        value: course.courseName,
+        groups: course.courseGroups,
+      })),
+    [courses]
+  );
 
   // Базові опції для груп
   const defaultGroupOptions = [
@@ -205,7 +132,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
     if (courseValue && courseValue.groups) {
       return courseValue.groups.map(group => ({
         label: group.toString(),
-        value: group.toString()
+        value: group.toString(),
       }));
     }
     return defaultGroupOptions;
@@ -213,7 +140,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
   useEffect(() => {
     document.title = uni
-      ? `${Univesitets[uni]} Admin Panel | AP Education`
+      ? `${University[uni]} Admin Panel | AP Education`
       : 'Polish University Users Admin Panel | AP Education';
 
     const refreshToken = async () => {
@@ -240,7 +167,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
           setUsers(
             users =>
               (users = [
-                ...response.data.reverse().sort((a, b) => a.name.localeCompare(b.name)),
+                ...response.data
+                  .reverse()
+                  .sort((a, b) => a.name.localeCompare(b.name)),
               ])
           );
         }
@@ -334,8 +263,12 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
     name: yup.string().required(translations[lang]?.userNameRequired),
     mail: yup.string().required(translations[lang]?.userEmailRequired),
     password: yup.string().required(translations[lang]?.userPasswordRequired),
-    crmId: yup.string().matches(/^[0-9]*$/, translations[lang]?.crmIdDigitsOnly),
-    contactId: yup.string().matches(/^[0-9]*$/, translations[lang]?.contactIdDigitsOnly),
+    crmId: yup
+      .string()
+      .matches(/^[0-9]*$/, translations[lang]?.crmIdDigitsOnly),
+    contactId: yup
+      .string()
+      .matches(/^[0-9]*$/, translations[lang]?.contactIdDigitsOnly),
     pupilId: yup
       .string()
       .min(6, translations[lang]?.pupilIdMinLength)
@@ -354,7 +287,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
       ? +values.contactId.trim().trimStart()
       : undefined;
     values.pupilId = values.pupilId.trim().trimStart();
-    values.university = uni ? Univesitets[uni] : uniValue.value;
+    values.university = uni
+      ? University[uni]
+      : 'Pedagogium (Wyższa Szkoła Nauk Społecznych)';
     values.group = groupValue ? groupValue.value : '1';
     values.courseName = courseValue ? courseValue.value : null;
 
@@ -383,12 +318,25 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
   const handleEdit = async id => {
     setIsEditFormOpen(true);
-    setUserToEdit(userToEdit => (userToEdit = users.find(user => user._id === id)));
+
+    setUserToEdit(
+      userToEdit =>
+        (userToEdit = {
+          ...users.find(user => user._id === id),
+          university: University[uni],
+        })
+    );
   };
 
   const handleVisitedEdit = async id => {
     setIsVisitedEditFormOpen(true);
-    setUserToEdit(userToEdit => (userToEdit = users.find(user => user._id === id)));
+    setUserToEdit(
+      userToEdit =>
+        (userToEdit = {
+          ...users.find(user => user._id === id),
+          university: University[uni],
+        })
+    );
   };
 
   const closeEditForm = e => {
@@ -500,7 +448,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <AdminFormBtn type="submit">{translations[lang]?.loginButton}</AdminFormBtn>
+              <AdminFormBtn type="submit">
+                {translations[lang]?.loginButton}
+              </AdminFormBtn>
             </LoginForm>
           </Formik>
         )}
@@ -544,49 +494,6 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                 />
                 <AdminInputNote component="p" name="pupilId" />
               </Label>
-              {!uni && (
-                <SpeakingLabel>
-                  {uniValue && uniValue.value && (
-                    <LabelText>{translations[lang]?.university}</LabelText>
-                  )}
-                  <TeacherLangSelect
-                    ref={selectInputRef}
-                    options={uniOptions}
-                    styles={{
-                      control: (baseStyles, state) => ({
-                        ...baseStyles,
-                        border: 'none',
-                        borderRadius: '50px',
-                        minHeight: '34px',
-                      }),
-                      menu: (baseStyles, state) => ({
-                        ...baseStyles,
-                        position: 'absolute',
-                        zIndex: '2',
-                        top: '36px',
-                      }),
-                      dropdownIndicator: (baseStyles, state) => ({
-                        ...baseStyles,
-                        padding: '7px',
-                      }),
-                    }}
-                    placeholder={translations[lang]?.university}
-                    name="uni"
-                    onBlur={() => {
-                      !uniValue
-                        ? setIsUniEmpty(empty => (empty = true))
-                        : setIsUniEmpty(empty => (empty = false));
-                    }}
-                    onChange={uni => {
-                      setUniValue(uni);
-                      uni?.value && setIsUniEmpty(empty => (empty = false));
-                    }}
-                  />
-                  {isUniEmpty && (
-                    <ErrorNote>{translations[lang]?.universityRequired}</ErrorNote>
-                  )}
-                </SpeakingLabel>
-              )}
               <SpeakingLabel>
                 {courseValue && courseValue.value && (
                   <LabelText>Kurs</LabelText>
@@ -677,12 +584,18 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
               <UserDBRow>
                 <UserHeadCell>№</UserHeadCell>
                 {!uni && (
-                  <UserHeadCell>{translations[lang]?.crmLeadContact}</UserHeadCell>
+                  <UserHeadCell>
+                    {translations[lang]?.crmLeadContact}
+                  </UserHeadCell>
                 )}
                 <UserHeadCell>{translations[lang]?.name}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.email}</UserHeadCell>
-                {!uni && <UserHeadCell>{translations[lang]?.password}</UserHeadCell>}
-                {!uni && <UserHeadCell>{translations[lang]?.university}</UserHeadCell>}
+                {!uni && (
+                  <UserHeadCell>{translations[lang]?.password}</UserHeadCell>
+                )}
+                {!uni && (
+                  <UserHeadCell>{translations[lang]?.university}</UserHeadCell>
+                )}
                 <UserHeadCell>Kurs</UserHeadCell>
                 <UserHeadCell style={{ whiteSpace: 'nowrap' }}>
                   {translations[lang]?.group}
@@ -703,7 +616,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                 <UserHeadCell>{translations[lang]?.platformId}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.attendance}</UserHeadCell>
                 {!uni && (
-                  <UserHeadCell>{translations[lang]?.visitsWithTime}</UserHeadCell>
+                  <UserHeadCell>
+                    {translations[lang]?.visitsWithTime}
+                  </UserHeadCell>
                 )}
                 <UserHeadCell>Edit</UserHeadCell>
                 <UserHeadCell>Delete</UserHeadCell>
@@ -734,7 +649,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                   <UserCell>{user.name}</UserCell>
                   <UserCell>{user.mail}</UserCell>
                   {!uni && <UserCell>{user.password}</UserCell>}
-                  {!uni && <UserCell className="last-name">{user.university}</UserCell>}
+                  {!uni && (
+                    <UserCell className="last-name">{user.university}</UserCell>
+                  )}
                   <UserCell>{user.courseName || '-'}</UserCell>
                   <UserCell>{user.group || '1'}</UserCell>
                   <UserCell>{user.points ? user.points : '0'}</UserCell>
@@ -745,7 +662,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                     className={
                       Math.floor(
                         (Date.now() -
-                          changeDateFormat(user.visited[user.visited.length - 1])) /
+                          changeDateFormat(
+                            user.visited[user.visited.length - 1]
+                          )) /
                           86400000
                       ) > daysAfterLastLogin
                         ? 'attention'
@@ -758,7 +677,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                     <UserCell>
                       {!user.visitedTime[user.visitedTime.length - 1]
                         ? ''
-                        : user.visitedTime[user.visitedTime.length - 1].match('^202')
+                        : user.visitedTime[user.visitedTime.length - 1].match(
+                            '^202'
+                          )
                         ? new Date(
                             user.visitedTime[user.visitedTime.length - 1]
                           ).toLocaleString('uk-UA')
@@ -795,7 +716,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
               userToEdit={userToEdit}
               updateUser={updateUser}
               closeEditForm={closeEditForm}
-              uniOptions={uniOptions}
+              University={University}
               courseOptions={courseOptions}
               groupOptions={currentGroupOptions}
             />

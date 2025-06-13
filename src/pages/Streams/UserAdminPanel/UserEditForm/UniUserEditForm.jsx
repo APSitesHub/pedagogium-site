@@ -32,8 +32,10 @@ const translations = {
     groupPlaceholder: 'Grupa',
     coursePlaceholder: 'Kurs',
     universityRequired: 'Uniwersytet - pole obowiązkowe!',
+    editUserError:
+      'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.',
     groupRequired: 'Grupa - pole obowiązkowe!',
-    userUpdated: "Użytkownik został zaktualizowany!",
+    userUpdated: 'Użytkownik został zaktualizowany!',
     submitButton: 'Zatwierdź zmiany',
   },
   ua: {
@@ -49,7 +51,7 @@ const translations = {
     coursePlaceholder: 'Курс',
     universityRequired: "Університет - обов'язкове поле!",
     groupRequired: "Група - обов'язкове поле!",
-    userUpdated: "Юзера відредаговано!",
+    userUpdated: 'Юзера відредаговано!',
     submitButton: 'Підтвердити зміни',
   },
 };
@@ -60,15 +62,11 @@ export const UniUserEditForm = ({
   userToEdit,
   updateUser,
   closeEditForm,
-  uniOptions,
   groupOptions,
-  courseOptions
+  courseOptions,
+  University,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [uniValue, setUniValue] = useState(
-    uniOptions.find(option => option.value === userToEdit.university)
-  );
-  const [isUniEmpty, setIsUniEmpty] = useState(false);
   const [groupValue, setGroupValue] = useState(
     userToEdit.group
       ? groupOptions.find(option => option.value === userToEdit.group)
@@ -76,13 +74,11 @@ export const UniUserEditForm = ({
   );
   const [isGroupEmpty, setIsGroupEmpty] = useState(false);
   const [courseValue, setCourseValue] = useState(
-    userToEdit.course
-      ? { label: userToEdit.course, value: userToEdit.course }
+    userToEdit.courseName
+      ? { label: userToEdit.courseName, value: userToEdit.courseName }
       : null
   );
   const selectInputRef = useRef();
-
-  console.log(userToEdit);
 
   const initialUserValues = {
     crmId: userToEdit.crmId || '',
@@ -92,24 +88,30 @@ export const UniUserEditForm = ({
     password: userToEdit.password,
     pupilId: userToEdit.pupilId,
     points: userToEdit.points || '0',
-    university: userToEdit.university,
     group: userToEdit.group ? userToEdit.group : '1',
-    course: userToEdit.course
+    courseName: userToEdit.courseName ? userToEdit.courseName : '',
+    university: userToEdit.university || University[uni],
   };
 
   const usersSchema = yup.object().shape({
     name: yup.string().required(translations[lang]?.namePlaceholder),
     mail: yup.string().required(translations[lang]?.emailPlaceholder),
     password: yup.string().required(translations[lang]?.passwordPlaceholder),
-    crmId: yup.string().matches(/^[0-9]*$/, translations[lang]?.crmIdPlaceholder),
-    contactId: yup.string().matches(/^[0-9]*$/, translations[lang]?.contactIdPlaceholder),
+    crmId: yup
+      .string()
+      .matches(/^[0-9]*$/, translations[lang]?.crmIdPlaceholder),
+    contactId: yup
+      .string()
+      .matches(/^[0-9]*$/, translations[lang]?.contactIdPlaceholder),
     pupilId: yup
       .string()
       .min(6, translations[lang]?.pupilIdPlaceholder)
       .max(7, translations[lang]?.pupilIdPlaceholder)
       .matches(/^\d{1,7}$/, translations[lang]?.pupilIdPlaceholder)
       .required(translations[lang]?.pupilIdPlaceholder),
-    points: yup.string().matches(/^[0-9]*$/, translations[lang]?.pointsPlaceholder),
+    points: yup
+      .string()
+      .matches(/^[0-9]*$/, translations[lang]?.pointsPlaceholder),
   });
 
   const handleUserSubmit = async (values, { resetForm }) => {
@@ -126,13 +128,18 @@ export const UniUserEditForm = ({
       values.contactId && typeof values.crmId === 'string'
         ? +values.contactId.trim().trimStart()
         : undefined;
-    values.university = uniValue?.value || userToEdit.university;
+    values.university = uni
+      ? University[uni]
+      : 'Pedagogium (Wyższa Szkoła Nauk Społecznych)';
     values.group = groupValue.value;
-    values.course = courseValue ? courseValue.value : null;
+    values.courseName = courseValue ? courseValue.value : null;
 
     try {
       setIsLoading(isLoading => (isLoading = true));
-      const response = await axios.put(`/pedagogium-users/${userToEdit._id}`, values);
+      const response = await axios.put(
+        `/pedagogium-users/${userToEdit._id}`,
+        values
+      );
       console.log(response);
       resetForm();
       alert(translations[lang]?.userUpdated);
@@ -140,7 +147,7 @@ export const UniUserEditForm = ({
       closeEditForm();
     } catch (error) {
       console.error(error);
-      alert(translations[lang]?.universityRequired);
+      alert(translations[lang]?.editUserError);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
     }
@@ -216,52 +223,45 @@ export const UniUserEditForm = ({
             />
             <AdminInputNote component="p" name="pupilId" />
           </Label>
-          {uniOptions.length > 0 && (
-            <SpeakingLabel>
-              {uniValue && uniValue.value && (
-                <LabelText>{translations[lang]?.universityPlaceholder}</LabelText>
-              )}
-              <TeacherLangSelect
-                ref={selectInputRef}
-                options={uniOptions}
-                defaultValue={uniOptions.find(
-                  option => option.value === userToEdit.university
-                )}
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '50px',
-                    minHeight: '34px',
-                  }),
-                  menu: (baseStyles, state) => ({
-                    ...baseStyles,
-                    position: 'absolute',
-                    zIndex: '2',
-                    top: '36px',
-                  }),
-                  dropdownIndicator: (baseStyles, state) => ({
-                    ...baseStyles,
-                    padding: '7px',
-                  }),
-                }}
-                placeholder={translations[lang]?.universityPlaceholder}
-                name="uni"
-                onBlur={() => {
-                  !uniValue
-                    ? setIsUniEmpty(empty => (empty = true))
-                    : setIsUniEmpty(empty => (empty = false));
-                }}
-                onChange={uni => {
-                  setUniValue(uni);
-                  uni?.value && setIsUniEmpty(empty => (empty = false));
-                }}
-              />
-              {isUniEmpty && (
-                <ErrorNote>{translations[lang]?.universityRequired}</ErrorNote>
-              )}
-            </SpeakingLabel>
-          )}
+          <SpeakingLabel>
+            {courseValue && courseValue.value && (
+              <LabelText>{translations[lang]?.coursePlaceholder}</LabelText>
+            )}
+            <TeacherLangSelect
+              ref={selectInputRef}
+              options={courseOptions}
+              defaultValue={
+                userToEdit.courseName
+                  ? courseOptions.find(
+                      option => option.value === userToEdit.courseName
+                    )
+                  : null
+              }
+              styles={{
+                control: (baseStyles, state) => ({
+                  ...baseStyles,
+                  border: 'none',
+                  borderRadius: '50px',
+                  minHeight: '34px',
+                }),
+                menu: (baseStyles, state) => ({
+                  ...baseStyles,
+                  position: 'absolute',
+                  zIndex: '2',
+                  top: '36px',
+                }),
+                dropdownIndicator: (baseStyles, state) => ({
+                  ...baseStyles,
+                  padding: '7px',
+                }),
+              }}
+              placeholder={translations[lang]?.coursePlaceholder}
+              name="course"
+              onChange={course => {
+                setCourseValue(course);
+              }}
+            />
+          </SpeakingLabel>
           <SpeakingLabel>
             {groupValue && groupValue.value && (
               <LabelText>{translations[lang]?.groupPlaceholder}</LabelText>
@@ -271,7 +271,9 @@ export const UniUserEditForm = ({
               options={groupOptions}
               defaultValue={
                 userToEdit.group
-                  ? groupOptions.find(option => option.value === userToEdit.group)
+                  ? groupOptions.find(
+                      option => option.value === userToEdit.group
+                    )
                   : groupOptions[0]
               }
               styles={{
@@ -304,46 +306,13 @@ export const UniUserEditForm = ({
                 group?.value && setIsGroupEmpty(empty => (empty = false));
               }}
             />
-            {isGroupEmpty && <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>}
-          </SpeakingLabel>
-          <SpeakingLabel>
-            {courseValue && courseValue.value && (
-              <LabelText>{translations[lang]?.coursePlaceholder}</LabelText>
+            {isGroupEmpty && (
+              <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>
             )}
-            <TeacherLangSelect
-              ref={selectInputRef}
-              options={courseOptions}
-              defaultValue={
-                userToEdit.course
-                  ? courseOptions.find(option => option.value === userToEdit.course)
-                  : null
-              }
-              styles={{
-                control: (baseStyles, state) => ({
-                  ...baseStyles,
-                  border: 'none',
-                  borderRadius: '50px',
-                  minHeight: '34px',
-                }),
-                menu: (baseStyles, state) => ({
-                  ...baseStyles,
-                  position: 'absolute',
-                  zIndex: '2',
-                  top: '36px',
-                }),
-                dropdownIndicator: (baseStyles, state) => ({
-                  ...baseStyles,
-                  padding: '7px',
-                }),
-              }}
-              placeholder={translations[lang]?.coursePlaceholder}
-              name="course"
-              onChange={course => {
-                setCourseValue(course);
-              }}
-            />
           </SpeakingLabel>
-          <AdminFormBtn type="submit">{translations[lang]?.submitButton}</AdminFormBtn>
+          <AdminFormBtn type="submit">
+            {translations[lang]?.submitButton}
+          </AdminFormBtn>
         </UsersEditForm>
       </Formik>
       {isLoading && <Loader />}
