@@ -65,14 +65,14 @@ export const APPanel = styled.div`
 
 export const LogoutPanel = styled(APPanel)`
   right: 56px;
-  top: 7px;
+  top: 9px;
   width: auto;
   padding: 0;
   overflow: hidden;
 
   @media screen and (min-width: 960px) {
     right: 108px;
-    top: 9px;
+    top: 7px;
   }
 `;
 
