@@ -85,7 +85,7 @@ export const App = () => {
             noindex={true}
           />
 
-          <Route path="lesson/:group" element={<Streams />} noindex={true}>
+          <Route path="lesson" element={<Streams />} noindex={true}>
             {/* <Route
               path="logistics"
               element={<StreamToZoomRedirecter />}
