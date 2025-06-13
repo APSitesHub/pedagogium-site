@@ -20,9 +20,21 @@ const MyPedagogium = lazy(() =>
   )
 );
 
+const CourseAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Pedagogium Courses Admin Panel page" */ '../pages/Streams/CourseAdminPanel/CourseAdminPanel'
+  )
+);
+
 const UniUserAdminPanel = lazy(() =>
   import(
-    /* webpackChunkName: "Polish University Users Admin Panel page" */ '../pages/Streams/UserAdminPanel/UniUserAdminPanel'
+    /* webpackChunkName: "Pedagogium Users Admin Panel page" */ '../pages/Streams/UserAdminPanel/UniUserAdminPanel'
+  )
+);
+
+const TimeTableAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "TimeTable Admin Panel page" */ '../pages/Streams/TimeTableAdminPanel/TimeTableAdminPanel'
   )
 );
 
@@ -48,7 +60,17 @@ export const App = () => {
           ></Route>
           <Route
             path="admin"
+            element={<CourseAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
+            noindex={true}
+          />
+          <Route
+            path="admin-users"
             element={<UniUserAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
+            noindex={true}
+          />
+          <Route
+            path="admin-timetable"
+            element={<TimeTableAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
             noindex={true}
           />
           <Route path="*" element={<NotFound />} noindex={true} />
