@@ -1,15 +1,16 @@
 import axios from 'axios';
+import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
+import { LoginLogo } from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
-import { useEffect, useState } from 'react';
-import * as yup from 'yup';
+import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
   AdminFormBtn,
-  AdminInput,
-  AdminInputNote,
   LoginForm,
 } from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import { useEffect, useState } from 'react';
+import * as yup from 'yup';
 import {
   AdminPanelSection,
   UserCell,
@@ -21,11 +22,12 @@ import {
   UserHeadCell,
   UsersForm,
 } from '../UserAdminPanel/UserAdminPanel.styled';
-import { LoginLogo } from 'components/Stream/Stream.styled';
-import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
-import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
-import { UserVisitedEditForm } from '../UserAdminPanel/UserVisitedHistory';
-import { FormSelect } from '../TimeTableAdminPanel/TimeTableAdminPanel.styled';
+import {
+  AdminInput,
+  AdminInputHint,
+  AdminInputNote,
+} from './CourseAdminPanel.styled';
+import { CourseEditForm } from './CourseEditForm/CourseEditForm';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -45,18 +47,23 @@ const translations = {
     passwordRequired: 'Podaj hasło!',
     loginButton: 'Zaloguj się',
     addCourseButton: 'Dodaj kurs',
+    editCourseButton: 'Edytuj kurs',
     courseListCaption: 'Kursy dostępne dla studentów',
     courseName: 'Nazwa kursu',
+    courseNameLabel: 'Proszę wprowadzić pełną nazwę kursu bez skrótów',
     courseGroups: 'Maksymalna liczba grup na kursie',
+    courseGroupsLabel: 'Podaj liczbę grup – lista wygeneruje się automatycznie',
+    courseGroupsTableHead: 'Lista dostępnych grup kursu',
     edit: 'Edytuj',
     delete: 'Usuń',
     deleteCourseConfirmation: 'Czy na pewno usunąć?',
-    courseDeleted: 'Kurs został usunięty',
+    courseEdited: 'Kurs pomyślnie edytowany',
+    courseDeleted: 'Kurs pomyślnie usunięty',
     deleteCourseError:
       'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.',
     addCourseError:
       'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.',
-    courseAdded: 'Kurs został dodany',
+    courseAdded: 'Kurs pomyślnie dodany',
     courseNameRequired: 'Nazwa kursu - obowiązkowe pole!',
     courseGroupsRequired: 'Grupa - obowiązkowe pole!',
   },
@@ -67,16 +74,22 @@ const translations = {
     passwordRequired: 'Введіть пароль!',
     loginButton: 'Залогінитись',
     addCourseButton: 'Додати курс',
+    editCourseButton: 'Відредагувати курс',
     courseListCaption: 'Список юзерів з доступом до уроків',
     courseName: 'Назва курсу',
+    courseNameLabel: 'Внесіть повну назву курсу без скорочень',
     courseGroups: 'Дозволена кількість груп на курсі',
+    courseGroupsLabel:
+      'Введіть кількість груп – список буде згенеровано автоматично',
+    courseGroupsTableHead: 'Список доступних груп курсу',
     deleteCourseConfirmation: 'Точно видалити?',
-    courseDeleted: 'Курс видалено',
+    courseEdited: 'Курс успішно відредаговано',
+    courseDeleted: 'Курс успішно видалено',
     deleteCourseError:
       'Помилка! Імовірно, сталася непередбачена помилка на сервері - спробуйте оновити сторінку та спробувати знову або зверніться до техпідтримки!',
     addCourseError:
       'Помилка! Імовірно, сталася непередбачена помилка на сервері - спробуйте оновити сторінку та спробувати знову або зверніться до техпідтримки!',
-    courseAdded: 'Курс додано',
+    courseAdded: 'Курс успішно додано',
     courseNameRequired: "Назва курсу - обов'язкове поле!",
     courseGroupsRequired: "Дозволені групи - обов'язкове поле!",
   },
@@ -128,7 +141,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
       }
     };
     getCourses();
-  }, [isUserAdmin, uni]);
+  }, [isUserAdmin, isEditFormOpen, isLoading, uni]);
 
   const initialLoginValues = {
     login: '',
@@ -157,7 +170,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
   const initialCourseValues = {
     courseName: '',
-    courseGroups: [],
+    courseGroups: '',
     university: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
   };
 
@@ -170,9 +183,10 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
   });
 
   const handleCourseSubmit = async (values, { resetForm }) => {
-    console.log(values);
-    values.courseGroups = [...values.courseGroups];
-    console.log(values);
+    values.courseGroups = [...Array(Math.ceil(values.courseGroups)).keys()].map(
+      i => i + 1
+    );
+
     setIsLoading(isLoading => (isLoading = true));
     try {
       const response = await axios.post('/pedagogium-courses/', values);
@@ -200,7 +214,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
     try {
       const response = await axios.delete(`/pedagogium-courses/${id}`);
       console.log(response);
-      alert(translations[lang]?.delete);
+      alert(translations[lang]?.courseDeleted);
     } catch (error) {
       console.error(error);
       alert(translations[lang]?.deleteCourseError);
@@ -271,6 +285,9 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
             >
               <UsersForm>
                 <Label>
+                  <AdminInputHint>
+                    {translations[lang]?.courseNameLabel}
+                  </AdminInputHint>
                   <AdminInput
                     type="text"
                     name="courseName"
@@ -279,6 +296,9 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   <AdminInputNote component="p" name="courseName" />
                 </Label>
                 <Label>
+                  <AdminInputHint>
+                    {translations[lang]?.courseGroupsLabel}
+                  </AdminInputHint>
                   <AdminInput
                     type="text"
                     name="courseGroups"
@@ -287,7 +307,9 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   <AdminInputNote component="p" name="courseGroups" />
                 </Label>
                 <AdminFormBtn type="submit">
-                  {translations[lang]?.addCourseButton}
+                  <FormBtnText>
+                    {translations[lang]?.addCourseButton}
+                  </FormBtnText>
                 </AdminFormBtn>
               </UsersForm>
             </Formik>
@@ -332,7 +354,9 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
         )}
         {isEditFormOpen && (
           <Backdrop onMouseDown={closeEditFormOnClick} id="close-on-click">
-            <UserVisitedEditForm
+            <CourseEditForm
+              translations={translations}
+              lang={lang}
               courseToEdit={courseToEdit}
               closeEditForm={closeEditForm}
             />
