@@ -50,7 +50,7 @@ const Streams = () => {
     try {
       const id = localStorage.getItem('userID');
       const user = await axios.get(
-        `https://ap-chat-server.onrender.com/uniusers/${id}`
+        `https://ap-chat-server.onrender.com/pedagogium-users/${id}`
       );
       console.log(user.data, 'detect');
       setCurrentUser(
@@ -80,7 +80,7 @@ const Streams = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/uniusers/login/lesson', values);
+      const response = await axios.post('/pedagogium-users/login/lesson', values);
       console.log(values);
       console.log(response);
       setAuthToken(response.data.token);
@@ -115,7 +115,7 @@ const Streams = () => {
     const refreshToken = async () => {
       console.log('token refresher');
       try {
-        const res = await axios.post('/uniusers/refresh/lesson', {
+        const res = await axios.post('/pedagogium-users/refresh/lesson', {
           mail: localStorage.getItem('mail'),
         });
         setCurrentUser(currentUser => (currentUser = res.data.user));

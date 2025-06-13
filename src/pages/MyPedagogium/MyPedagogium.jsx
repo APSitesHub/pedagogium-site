@@ -41,7 +41,7 @@ const MyPedagogium = () => {
           console.log('token refresher interrupted - no info about user');
           return;
         }
-        const res = await axios.post('/uniusers/refresh', {
+        const res = await axios.post('/pedagogium-users/refresh', {
           mail,
         });
         setIsUserLogged(isLogged => (isLogged = true));
@@ -103,7 +103,7 @@ const MyPedagogium = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/uniusers/login', values);
+      const response = await axios.post('/pedagogium-users/login', values);
       console.log(response);
 
       setAuthToken(response.data.token);
