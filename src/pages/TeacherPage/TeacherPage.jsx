@@ -51,7 +51,7 @@ const TeacherPage = () => {
   const [isInputButtonBoxOpen, setIsInputButtonBoxOpen] = useState(false);
   // eslint-disable-next-line
   const [width, height] = useSize(document.body);
-  const [isNameInputOpen, setIsNameInputOpen] = useState(false);
+  const [isNameInputOpen, setIsNameInputOpen] = useState(true);
   const [teacherInfo, setTeacherInfo] = useState({});
   const questionID = useRef(nanoid(5));
 
@@ -75,6 +75,7 @@ const TeacherPage = () => {
           ...{ name: nameValue, lesson: lessonValue, level: levelValue },
         })
     );
+    setIsNameInputOpen(isOpen => (isOpen = false));
   };
 
   useEffect(() => {
@@ -205,12 +206,14 @@ const TeacherPage = () => {
   return (
     <>
       <NameInputBtn onClick={toggleNameInput}>
-        {isNameInputOpen ? <BoxHideDownSwitch /> : <BoxHideUpSwitch />}
+        {isNameInputOpen ? <BoxHideUpSwitch /> : <BoxHideDownSwitch />}
       </NameInputBtn>
-      <LessonInfoBox>
-        {teacherInfo.name} <br />
-        {teacherInfo.level} {teacherInfo.lesson}
-      </LessonInfoBox>
+      {teacherInfo.name && teacherInfo.level && teacherInfo.lesson && (
+        <LessonInfoBox>
+          {teacherInfo.name} <br />
+          {teacherInfo.level} {teacherInfo.lesson}
+        </LessonInfoBox>
+      )}
       <TeacherButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
         {/* <ViewerBtn onClick={toggleViewer}>
           <ViewerLogo />
