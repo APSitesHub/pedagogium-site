@@ -6,6 +6,9 @@ import {
   APPanelBtn,
   CalendarBtnIcon,
   InfoBtnIcon,
+  LogoutBtn,
+  LogoutBtnIcon,
+  LogoutPanel,
   PanelBackdrop,
   PanelHideLeftSwitch,
   PanelHideRightSwitch,
@@ -19,7 +22,7 @@ export const MyPedagogiumPanel = ({
   user,
   language,
   timetable,
-  isMultipleCourses,
+  handleLogout,
 }) => {
   const [isBackdropShown, setIsBackdropShown] = useState(false);
   const [isTimetableShown, setIsTimetableShown] = useState(false);
@@ -98,6 +101,12 @@ export const MyPedagogiumPanel = ({
         onClick={hideBackdrop}
         className={isBackdropShown ? '' : 'hidden'}
       />
+      <LogoutPanel>
+        <LogoutBtn onClick={handleLogout}>
+          <LogoutBtnIcon />
+          Log Out
+        </LogoutBtn>
+      </LogoutPanel>
 
       <PanelHideSwitch id="no-transform" onClick={toggleButtonBox}>
         {isButtonBoxShown ? <PanelHideRightSwitch /> : <PanelHideLeftSwitch />}

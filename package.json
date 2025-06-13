@@ -1,6 +1,6 @@
 {
   "name": "pedagogium",
-  "version": "1.0.4.4",
+  "version": "1.0.4.52",
   "private": true,
   "homepage": "https://pedagogium.ap.education/",
   "dependencies": {
@@ -8,6 +8,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@jitsi/react-sdk": "^1.4.4",
     "@mui/base": "^5.0.0-beta.66",
+    "@nivo/bar": "^0.99.0",
     "@react-google-maps/api": "^2.19.2",
     "@react-hook/size": "^2.1.2",
     "@testing-library/jest-dom": "^5.16.3",

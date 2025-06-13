@@ -35,9 +35,14 @@ const MyPedagogium = () => {
 
     const refreshToken = async () => {
       console.log('token refresher');
+      const mail = localStorage.getItem('mail');
       try {
+        if (!mail) {
+          console.log('token refresher interrupted - no info about user');
+          return;
+        }
         const res = await axios.post('/pedagogium-users/refresh', {
-          mail: localStorage.getItem('mail'),
+          mail,
         });
         setIsUserLogged(isLogged => (isLogged = true));
         setUser(user => (user = { ...res.data.user }));
@@ -46,6 +51,10 @@ const MyPedagogium = () => {
       }
     };
     refreshToken();
+
+    if (!user?.mail) {
+      return;
+    }
 
     const getTimetable = async () => {
       console.log('timetable getter');
@@ -109,6 +118,13 @@ const MyPedagogium = () => {
     }
   };
 
+  const handleLogout = async () => {
+    localStorage.removeItem('mail');
+    setAuthToken('');
+    setUser(user => (user = {}));
+    setIsUserLogged(isLogged => (isLogged = false));
+  };
+
   return (
     <StreamSection>
       {!isUserLogged ? (
@@ -165,6 +181,7 @@ const MyPedagogium = () => {
             }}
             link={platformLink}
             timetable={timetable}
+            handleLogout={handleLogout}
           />
           <MyPlatform platformLink={platformLink} />
         </>
