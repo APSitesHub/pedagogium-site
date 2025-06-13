@@ -7,6 +7,7 @@ import { ReactComponent as GuideIcon } from '../../../img/svg/myap/guide.svg';
 import { ReactComponent as AdminIcon } from '../../../img/svg/myap/crown.svg';
 import { ReactComponent as PointerIcon } from '../../../img/svg/myap/pointer.svg';
 import { ReactComponent as ResetIcon } from '../../../img/svg/myap/reset.svg';
+import { ReactComponent as LogoutIcon } from '../../../img/svg/myap/logout.svg';
 
 export const PanelBackdrop = styled.div`
   width: 100%;
@@ -59,6 +60,38 @@ export const APPanel = styled.div`
 
   &.hidden {
     transform: translateX(200%);
+  }
+`;
+
+export const LogoutPanel = styled(APPanel)`
+  right: 56px;
+  top: 10px;
+  width: auto;
+  padding: 0;
+  overflow: hidden;
+
+  @media screen and (min-width: 768px) {
+    right: 142px;
+  }
+`;
+
+export const LogoutBtn = styled.button`
+  background: none;
+  border: none;
+
+  padding: 10px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  font-size: 16px;
+  font-weight: 500;
+
+  &:hover svg {
+    color: #000;
   }
 `;
 
@@ -394,6 +427,22 @@ export const APPanelInstructionsPanel = styled(IframeResetLinkButton)`
 `;
 
 export const IframeSetLinkIcon = styled(ResetIcon)`
+  height: 25px;
+  width: 25px;
+
+  @media screen and (min-width: 768px) {
+    height: 30px;
+    width: 30px;
+  }
+
+  color: #bebecc;
+  position: relative;
+  pointer-events: none;
+
+  transition: color var(--animation-global);
+`;
+
+export const LogoutBtnIcon = styled(LogoutIcon)`
   height: 25px;
   width: 25px;
 
