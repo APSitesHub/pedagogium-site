@@ -140,7 +140,7 @@ const TeacherAdminPanel = () => {
     } catch (error) {
       console.error(error);
       alert(
-        'Wystąpił jakiś problem - naciśnij F12, zrób zrzut ekranu konsoli i wyślij do Kyryła'
+        'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.'
       );
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -186,7 +186,7 @@ const TeacherAdminPanel = () => {
       } catch (error) {
         console.error(error);
         alert(
-          'Wystąpił jakiś problem - naciśnij F12, zrób zrzut ekranu konsoli i wyślij do Kyryła'
+          'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.'
         );
       } finally {
         setIsLoading(isLoading => (isLoading = false));
@@ -258,9 +258,7 @@ const TeacherAdminPanel = () => {
         )}
         {isUserAdmin && (
           <UserDBTable>
-            <UserDBCaption>
-              Lista kont nauczycieli z dostępem do tabeli opinii
-            </UserDBCaption>
+            <UserDBCaption>Lista kont nauczycieli</UserDBCaption>
             <thead>
               <UserDBRow>
                 <UserHeadCell>Imię i nazwisko</UserHeadCell>
