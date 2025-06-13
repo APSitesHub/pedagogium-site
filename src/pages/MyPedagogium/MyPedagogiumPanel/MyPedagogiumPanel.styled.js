@@ -65,13 +65,13 @@ export const APPanel = styled.div`
 
 export const LogoutPanel = styled(APPanel)`
   right: 56px;
-  top: 10px;
+  top: 7px;
   width: auto;
   padding: 0;
   overflow: hidden;
 
   @media screen and (min-width: 768px) {
-    right: 142px;
+    right: 105px;
   }
 `;
 
@@ -87,9 +87,13 @@ export const LogoutBtn = styled.button`
   justify-content: center;
   gap: 6px;
 
+  color: #898995;
+  transition: color var(--animation-global);
+
   font-size: 16px;
   font-weight: 500;
 
+  &:hover,
   &:hover svg {
     color: #000;
   }
