@@ -1,28 +1,33 @@
 import axios from 'axios';
-import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
+import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
+import { Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import * as yup from 'yup';
 import {
   AdminFormBtn,
   AdminInput,
   AdminInputNote,
-  LoginForm,
-} from 'pages/Streams/AdminPanel/AdminPanel.styled';
-import {
   AdminPanelSection,
   ArrowDownIcon,
+  LoginForm,
   UserCell,
   UserDBCaption,
   UserDBRow,
   UserDBTable,
+  UserDeleteButton,
+  UserEditButton,
   UserHeadCell,
+  UsersForm,
+  LabelText,
+  SpeakingLabel,
+  ErrorNote,
+  TeacherLangSelect,
+  FormBtnText,
 } from './UserAdminPanel.styled';
-import { LoginLogo } from 'components/Stream/Stream.styled';
-import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
-import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
-import { UserVisitedEditForm } from './UserVisitedHistory';
+import { UniUserEditForm } from './UserEditForm/UniUserEditForm';
+import { UserVisitedEditForm } from './UserEditForm/UserVisitedEditForm';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -30,56 +35,27 @@ const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
 
-const Universities = {
-  PEDAGOGIUM: 'Pedagogium',
-};
-
-const getAttendancePercentage = (attendance, group) => {
-  const startDate = !group || group === '1' ? '2025-01-06' : '2025-04-01';
-
-  const endDate = !group || group === '1' ? new Date('2025-05-23') : new Date();
-
-  const excludedDates = ['2025-04-21'];
-
-  const validLessonDates = [];
-
-  const current = new Date(startDate);
-
-  while (current <= endDate) {
-    const day = current.getDay();
-
-    const isoDate = current.toISOString().split('T')[0];
-
-    // Weekdays only (Mon-Fri), exclude holiday
-    if (day >= 1 && day <= 5 && !excludedDates.includes(isoDate)) {
-      validLessonDates.push(isoDate);
-    }
-
-    current.setDate(current.getDate() + 1);
-  }
-
-  // Normalize student's dates (in case formats vary slightly)
-  const normalizedAttended = attendance.map(date => {
-    const parts = date.split('.');
-    return `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
-  });
-
-  const attendedCount = validLessonDates.filter(date =>
-    normalizedAttended.includes(date)
-  ).length;
-
-  // Calculate percentage
-  const percentage = (attendedCount / validLessonDates.length) * 100;
-
-  return `${attendedCount} z ${validLessonDates.length} = ${percentage.toFixed(
-    2
-  )}%`;
+const Univesitets = {
+  PEDAGOGIUM: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
+  WSTIJO: 'WSTIJO (Wyzsza Szkoła Turystyki i Jezykow Obcych w Warszawie)',
+  WSBMIR: 'WSBMIR (Wyższa Szkoła Biznesu, Mediów i Reklamy)',
+  EWSPA: 'EWSPA (Europejska Wyższa Szkoła Prawa i Administracji w Warszawie)',
+  MERITO: 'Merito (Uniwersytet WSB Merito Warszawa)',
+  WSTIH: 'WSTiH (Wyższa Szkoła Turystyki i Hotelarstwa w Gdańsku)',
+  WSKM: 'WSKM (Wyższa Szkoła Kadr Menedżerskich)',
+  WSSIP: 'WSSiP (Wyższa Szkoła Sztuki i Projektowania)',
+  WSPA: 'WSPA (Wyższa Szkoła Przedsiębiorczości i Administracji)',
+  WSE: 'WSE (Wyższa Szkoła Ekonomiczna w Stalowej Woli)',
+  ANSWP: 'ANSWP (Akademia Nauk Stosowanych Wincentego Pola w Lublinie)',
+  SSW: 'SSW (Świętokrzyska Szkoła Wyższa im. św. Jana Pawła II)',
+  MANS: 'MANS (Międzynarodowa Akademia Nauk Stosowanych w Łomży)',
+  AHNS: 'AHNS (Akademia Handlowa Nauk Stosowanych w Radomiu)',
 };
 
 const translations = {
   pl: {
     loginPlaceholder: 'Login',
-    passwordPlaceholder: 'Password',
+    passwordPlaceholder: 'Hasło',
     loginRequired: 'Podaj login!',
     passwordRequired: 'Podaj hasło!',
     loginButton: 'Zaloguj się',
@@ -98,16 +74,20 @@ const translations = {
     visitsWithTime: 'Odwiedziny z czasem',
     deleteUserConfirmation: 'Czy na pewno usunąć',
     userDeleted: 'Użytkownik został usunięty',
+    edit: 'Edytuj',
+    delete: 'Usuń',
     deleteUserError:
       'Wystąpił problem - naciśnij F12, zrób zrzut ekranu konsoli, wyślij do Kirila',
     addUserError:
       'Wystąpił problem - naciśnij F12, zrób zrzut ekranu konsoli, wyślij do Kirila',
     userAdded: 'Użytkownik został dodany',
+    userUpdated: 'Użytkownik został zaktualizowany',
+    updateUserError: 'Błąd podczas aktualizacji użytkownika',
     universityRequired: 'Uniwersytet - obowiązkowe pole!',
     groupRequired: 'Grupa - obowiązkowe pole!',
     userNameRequired:
       'Imię - obowiązkowe pole, jeśli imienia z jakiegoś powodu nie znamy, wpisz N/A',
-    userEmailRequired: 'Login - obowiązkowe pole!',
+    userEmailRequired: 'Poczta - obowiązkowe pole!',
     userPasswordRequired: 'Hasło - obowiązkowe pole!',
     crmIdDigitsOnly: 'Tylko cyfry',
     contactIdDigitsOnly: 'Tylko cyfry',
@@ -115,67 +95,132 @@ const translations = {
     pupilIdMinLength: 'Nie mniej niż 6 cyfr',
     pupilIdMaxLength: 'Nie więcej niż 7 cyfr',
     pupilIdRequired: 'Obowiązkowe pole, sprawdź na platformie',
-  },
-  ua: {
-    loginPlaceholder: 'Логін',
-    passwordPlaceholder: 'Пароль',
-    loginRequired: 'Введіть логін!',
-    passwordRequired: 'Введіть пароль!',
-    loginButton: 'Залогінитись',
-    addUserButton: 'Додати юзера',
-    userListCaption: 'Список юзерів з доступом до уроків',
-    crmLeadContact: 'CRM Лід Контакт',
-    name: "Прізвище та ім'я",
-    email: 'Пошта (логін)',
-    password: 'Пароль',
-    university: 'Університет',
-    group: 'Група',
-    points: 'Бали',
-    platformId: 'ID на платформі',
-    attendance: 'Відвідини',
-    visitsWithTime: 'Відвідини з часом',
-    deleteUserConfirmation: 'Точно видалити?',
-    userDeleted: 'Юзера видалено',
-    deleteUserError:
-      'Десь якась проблема - клацай F12, роби скрін консолі, відправляй Кирилу',
-    addUserError:
-      'Десь якась проблема - клацай F12, роби скрін консолі, відправляй Кирилу',
-    userAdded: 'Юзера додано',
-    universityRequired: "Університет - обов'язкове поле!",
-    groupRequired: "Група - обов'язкове поле!",
-    userNameRequired:
-      "Ім'я - обов'язкове поле, якщо імені з якоїсь причини ми не знаємо, введіть N/A",
-    userEmailRequired: "Пошта - обов'язкове поле!",
-    userPasswordRequired: "Пароль - обов'язкове поле!",
-    crmIdDigitsOnly: 'Тільки цифри',
-    contactIdDigitsOnly: 'Тільки цифри',
-    pupilIdDigitsOnly: 'Тільки цифри',
-    pupilIdMinLength: 'Не менше 6 цифр',
-    pupilIdMaxLength: 'Не більше 7 цифр',
-    pupilIdRequired: "Обов'язкове поле, дивитись на платформі",
+    course: 'Kurs',
+    coursePlaceholder: 'Wybierz kurs',
+    courseRequired: 'Kurs jest wymagany!',
   },
 };
 
-const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
+const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
   const [users, setUsers] = useState([]);
-  const [userToView, setUserToView] = useState({});
-  // eslint-disable-next-line
-  const [daysAfterLastLogin, setDaysAfterLastLogin] = useState(7);
-  const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
-  const [isVisitedHistoryOpen, setIsVisitedHistoryOpen] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [isVisitedEditFormOpen, setIsVisitedEditFormOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState({});
+  const [courseValue, setCourseValue] = useState(null);
+  const [isCourseEmpty, setIsCourseEmpty] = useState(false);
+  const [uniValue, setUniValue] = useState(null);
+  const [isUniEmpty, setIsUniEmpty] = useState(false);
+  const [groupValue, setGroupValue] = useState(null);
+  const [isGroupEmpty, setIsGroupEmpty] = useState(false);
+  const [daysAfterLastLogin] = useState(7);
+  const selectInputRef = useRef();
+
+  const uniOptions = [
+    {
+      label: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
+      value: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
+    },
+    {
+      label: 'WSTIJO (Wyzsza Szkoła Turystyki i Jezykow Obcych w Warszawie)',
+      value: 'WSTIJO (Wyzsza Szkoła Turystyki i Jezykow Obcych w Warszawie)',
+    },
+    {
+      label: 'WSBMIR (Wyższa Szkoła Biznesu, Mediów i Reklamy)',
+      value: 'WSBMIR (Wyższa Szkoła Biznesu, Mediów i Reklamy)',
+    },
+    {
+      label: 'EWSPA (Europejska Wyższa Szkoła Prawa i Administracji w Warszawie)',
+      value: 'EWSPA (Europejska Wyższa Szkoła Prawa i Administracji w Warszawie)',
+    },
+    {
+      label: 'Merito (Uniwersytet WSB Merito Warszawa)',
+      value: 'Merito (Uniwersytet WSB Merito Warszawa)',
+    },
+    {
+      label: 'WSTiH (Wyższa Szkoła Turystyki i Hotelarstwa w Gdańsku)',
+      value: 'WSTiH (Wyższa Szkoła Turystyki i Hotelarstwa w Gdańsku)',
+    },
+    {
+      label: 'WSKM (Wyższa Szkoła Kadr Menedżerskich)',
+      value: 'WSKM (Wyższa Szkoła Kadr Menedżerskich)',
+    },
+    {
+      label: 'WSSiP (Wyższa Szkoła Sztuki i Projektowania)',
+      value: 'WSSiP (Wyższa Szkoła Sztuki i Projektowania)',
+    },
+    {
+      label: 'WSPA (Wyższa Szkoła Przedsiębiorczości i Administracji)',
+      value: 'WSPA (Wyższa Szkoła Przedsiębiorczości i Administracji)',
+    },
+    {
+      label: 'WSE (Wyższa Szkoła Ekonomiczna w Stalowej Woli)',
+      value: 'WSE (Wyższa Szkoła Ekonomiczna w Stalowej Woli)',
+    },
+    {
+      label: 'ANSWP (Akademia Nauk Stosowanych Wincentego Pola w Lublinie)',
+      value: 'ANSWP (Akademia Nauk Stosowanych Wincentego Pola w Lublinie)',
+    },
+    {
+      label: 'SSW (Świętokrzyska Szkoła Wyższa im. św. Jana Pawła II)',
+      value: 'SSW (Świętokrzyska Szkoła Wyższa im. św. Jana Pawła II)',
+    },
+    {
+      label: 'MANS (Międzynarodowa Akademia Nauk Stosowanych w Łomży)',
+      value: 'MANS (Międzynarodowa Akademia Nauk Stosowanych w Łomży)',
+    },
+    {
+      label: 'AHNS (Akademia Handlowa Nauk Stosowanych w Radomiu)',
+      value: 'AHNS (Akademia Handlowa Nauk Stosowanych w Radomiu)',
+    },
+  ];
+
+  // Створюємо опції для курсів
+  const courseOptions = useMemo(() =>
+    courses.map(course => ({
+      label: course.courseName,
+      value: course.courseName,
+      groups: course.courseGroups
+    }))
+  , [courses]);
+
+  // Базові опції для груп
+  const defaultGroupOptions = [
+    { label: '1', value: '1' },
+    { label: '2', value: '2' },
+    { label: '3', value: '3' },
+    { label: '4', value: '4' },
+    { label: '5', value: '5' },
+    { label: '6', value: '6' },
+    { label: '7', value: '7' },
+    { label: '8', value: '8' },
+    { label: '9', value: '9' },
+    { label: '10', value: '10' },
+  ];
+
+  // Створюємо опції для груп базуюcь на вибраному курсі
+  const currentGroupOptions = useMemo(() => {
+    if (courseValue && courseValue.groups) {
+      return courseValue.groups.map(group => ({
+        label: group.toString(),
+        value: group.toString()
+      }));
+    }
+    return defaultGroupOptions;
+  }, [courseValue]);
 
   useEffect(() => {
     document.title = uni
-      ? `${Universities[uni]} | Admin Panel`
-      : 'Polish University Users Admin Panel';
+      ? `${Univesitets[uni]} Admin Panel | AP Education`
+      : 'Polish University Users Admin Panel | AP Education';
 
     const refreshToken = async () => {
       console.log('token refresher');
       try {
         if (localStorage.getItem('isAdmin')) {
-          const res = await axios.post('admins/refresh/pedagogium/', {});
+          const res = await axios.post('admins/refresh/users/', {});
           setAuthToken(res.data.newToken);
           setIsUserAdmin(isAdmin => (isAdmin = true));
         }
@@ -195,9 +240,7 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
           setUsers(
             users =>
               (users = [
-                ...response.data
-                  .reverse()
-                  .sort((a, b) => a.name.localeCompare(b.name)),
+                ...response.data.reverse().sort((a, b) => a.name.localeCompare(b.name)),
               ])
           );
         }
@@ -206,6 +249,35 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
       }
     };
     getUsers();
+
+    const getCourses = async () => {
+      try {
+        if (isUserAdmin) {
+          const response = await axios.get('/pedagogium-courses/admin/');
+          setCourses(
+            response.data.sort((a, b) =>
+              a.courseName.localeCompare(b.courseName)
+            )
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getCourses();
+
+    const onEscapeClose = event => {
+      if (event.code === 'Escape') {
+        closeEditForm();
+      }
+    };
+
+    window.addEventListener('keydown', onEscapeClose);
+
+    return () => {
+      window.removeEventListener('keydown', onEscapeClose);
+    };
   }, [isUserAdmin, uni]);
 
   const initialLoginValues = {
@@ -217,6 +289,10 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
     login: yup.string().required(translations[lang]?.loginRequired),
     password: yup.string().required(translations[lang]?.passwordRequired),
   });
+
+  const onClear = () => {
+    selectInputRef.current.clearValue();
+  };
 
   const changeDateFormat = dateString => {
     if (dateString) {
@@ -231,7 +307,7 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
   const handleLoginSubmit = async (values, { resetForm }) => {
     setIsLoading(isLoading => (isLoading = true));
     try {
-      const response = await axios.post('/admins/login/pedagogium', values);
+      const response = await axios.post('/admins/login/users', values);
       setAuthToken(response.data.token);
       setIsUserAdmin(isAdmin => (isAdmin = true));
       localStorage.setItem('isAdmin', true);
@@ -243,20 +319,148 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
     }
   };
 
-  const handleVisitedView = async id => {
-    setIsVisitedHistoryOpen(true);
-    setUserToView(
-      userToView => (userToView = users.find(user => user._id === id))
+  const initialUserValues = {
+    name: '',
+    mail: '',
+    password: '',
+    crmId: '',
+    contactId: '',
+    pupilId: '',
+    university: '',
+    group: '',
+  };
+
+  const usersSchema = yup.object().shape({
+    name: yup.string().required(translations[lang]?.userNameRequired),
+    mail: yup.string().required(translations[lang]?.userEmailRequired),
+    password: yup.string().required(translations[lang]?.userPasswordRequired),
+    crmId: yup.string().matches(/^[0-9]*$/, translations[lang]?.crmIdDigitsOnly),
+    contactId: yup.string().matches(/^[0-9]*$/, translations[lang]?.contactIdDigitsOnly),
+    pupilId: yup
+      .string()
+      .min(6, translations[lang]?.pupilIdMinLength)
+      .max(7, translations[lang]?.pupilIdMaxLength)
+      .matches(/^\d{1,7}$/, translations[lang]?.pupilIdDigitsOnly)
+      .required(translations[lang]?.pupilIdRequired),
+  });
+
+  const handleUserSubmit = async (values, { resetForm }) => {
+    setIsLoading(isLoading => (isLoading = true));
+    values.name = values.name.trim().trimStart();
+    values.mail = values.mail.toLowerCase().trim().trimStart();
+    values.password = values.password.trim().trimStart();
+    values.crmId = values.crmId ? +values.crmId.trim().trimStart() : undefined;
+    values.contactId = values.contactId
+      ? +values.contactId.trim().trimStart()
+      : undefined;
+    values.pupilId = values.pupilId.trim().trimStart();
+    values.university = uni ? Univesitets[uni] : uniValue.value;
+    values.group = groupValue ? groupValue.value : '1';
+    values.courseName = courseValue ? courseValue.value : null;
+
+    if (!courseValue) {
+      alert('Wybierz kurs!');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post('/pedagogium-users/new', values);
+      console.log(response.data);
+      setUsers(users => [response.data, ...users]);
+      resetForm();
+      setCourseValue(null);
+      setGroupValue(null);
+      onClear();
+      alert(translations[lang]?.userAdded);
+    } catch (error) {
+      console.error(error);
+      alert(translations[lang]?.addUserError);
+    } finally {
+      setIsLoading(isLoading => (isLoading = false));
+    }
+  };
+
+  const handleEdit = async id => {
+    setIsEditFormOpen(true);
+    setUserToEdit(userToEdit => (userToEdit = users.find(user => user._id === id)));
+  };
+
+  const handleVisitedEdit = async id => {
+    setIsVisitedEditFormOpen(true);
+    setUserToEdit(userToEdit => (userToEdit = users.find(user => user._id === id)));
+  };
+
+  const closeEditForm = e => {
+    setIsEditFormOpen(false);
+    setIsVisitedEditFormOpen(false);
+  };
+
+  const closeEditFormOnClick = e => {
+    if (e.target.id === 'close-on-click') {
+      setIsEditFormOpen(false);
+      setIsVisitedEditFormOpen(false);
+    }
+  };
+
+  const updateUserVisits = (id, visits) => {
+    setUsers(
+      users =>
+        (users = users.map((user, i) =>
+          i === users.findIndex(user => user._id === id)
+            ? { ...user, visited: visits }
+            : user
+        ))
     );
   };
 
-  const closeHistory = e => {
-    setIsVisitedHistoryOpen(false);
+  const updateUser = (id, values) => {
+    const userToUpdate = users.find(user => user._id === id);
+    userToUpdate.name = values.name;
+    userToUpdate.mail = values.mail;
+    userToUpdate.password = values.password;
+    userToUpdate.pupilId = values.pupilId;
+    userToUpdate.points = values.points;
+    userToUpdate.contactId = values.contactId;
+    if (uni) {
+      userToUpdate.university = values.university;
+    }
+    userToUpdate.courseName = values.courseName;
+    userToUpdate.group = values.group;
+
+    console.log(userToUpdate);
+
+    setUsers(
+      users =>
+        (users = users.map((user, i) =>
+          i === users.findIndex(user => user._id === id) ? userToUpdate : user
+        ))
+    );
   };
 
-  const closeHistoryOnClick = e => {
-    if (e.target.id === 'close-on-click') {
-      setIsVisitedHistoryOpen(false);
+  const handleDelete = async id => {
+    setIsLoading(isLoading => (isLoading = true));
+    const areYouSure = window.confirm(
+      `${translations[lang]?.deleteUserConfirmation} ${
+        users.find(user => user._id === id).name
+      }?`
+    );
+
+    if (!areYouSure) {
+      setIsLoading(isLoading => (isLoading = false));
+      return;
+    } else {
+      try {
+        const response = await axios.delete(`/pedagogium-users/${id}`);
+        console.log(response);
+        alert(translations[lang]?.userDeleted);
+        setUsers(users => (users = [...users.filter(user => user._id !== id)]));
+      } catch (error) {
+        console.error(error);
+        alert(translations[lang]?.deleteUserError);
+      } finally {
+        setIsLoading(isLoading => (isLoading = false));
+      }
     }
   };
 
@@ -280,13 +484,11 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
             validationSchema={loginSchema}
           >
             <LoginForm>
-              <LoginLogo />
               <Label>
                 <AdminInput
                   type="text"
                   name="login"
                   placeholder={translations[lang]?.loginPlaceholder}
-                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
                 <AdminInputNote component="p" name="login" />
               </Label>
@@ -295,21 +497,176 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                   type="password"
                   name="password"
                   placeholder={translations[lang]?.passwordPlaceholder}
-                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <AdminFormBtn type="submit">
-                <FormBtnText>{translations[lang]?.loginButton}</FormBtnText>
-              </AdminFormBtn>
-              <LoginErrorNote
-                style={
-                  isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
-                }
-              >
-                Password or email is incorrect!
-              </LoginErrorNote>
+              <AdminFormBtn type="submit">{translations[lang]?.loginButton}</AdminFormBtn>
             </LoginForm>
+          </Formik>
+        )}
+
+        {isUserAdmin && (
+          <Formik
+            initialValues={initialUserValues}
+            onSubmit={handleUserSubmit}
+            validationSchema={usersSchema}
+          >
+            <UsersForm>
+              <Label>
+                <AdminInput
+                  type="text"
+                  name="name"
+                  placeholder={translations[lang]?.name}
+                />
+                <AdminInputNote component="p" name="name" />
+              </Label>
+              <Label>
+                <AdminInput
+                  type="email"
+                  name="mail"
+                  placeholder={translations[lang]?.email}
+                />
+                <AdminInputNote component="p" name="mail" />
+              </Label>
+              <Label>
+                <AdminInput
+                  type="text"
+                  name="password"
+                  placeholder={translations[lang]?.password}
+                />
+                <AdminInputNote component="p" name="password" />
+              </Label>
+              <Label>
+                <AdminInput
+                  type="text"
+                  name="pupilId"
+                  placeholder={translations[lang]?.platformId}
+                />
+                <AdminInputNote component="p" name="pupilId" />
+              </Label>
+              {!uni && (
+                <SpeakingLabel>
+                  {uniValue && uniValue.value && (
+                    <LabelText>{translations[lang]?.university}</LabelText>
+                  )}
+                  <TeacherLangSelect
+                    ref={selectInputRef}
+                    options={uniOptions}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '34px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
+                    }}
+                    placeholder={translations[lang]?.university}
+                    name="uni"
+                    onBlur={() => {
+                      !uniValue
+                        ? setIsUniEmpty(empty => (empty = true))
+                        : setIsUniEmpty(empty => (empty = false));
+                    }}
+                    onChange={uni => {
+                      setUniValue(uni);
+                      uni?.value && setIsUniEmpty(empty => (empty = false));
+                    }}
+                  />
+                  {isUniEmpty && (
+                    <ErrorNote>{translations[lang]?.universityRequired}</ErrorNote>
+                  )}
+                </SpeakingLabel>
+              )}
+              <SpeakingLabel>
+                {courseValue && courseValue.value && (
+                  <LabelText>Kurs</LabelText>
+                )}
+                <TeacherLangSelect
+                  ref={selectInputRef}
+                  options={courseOptions}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '34px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                    }),
+                  }}
+                  placeholder="Wybierz kurs"
+                  name="course"
+                  onChange={course => {
+                    setCourseValue(course);
+                    // Скидаємо значення групи при зміні курсу
+                    setGroupValue(null);
+                  }}
+                />
+              </SpeakingLabel>
+              <SpeakingLabel>
+                {groupValue && groupValue.value && (
+                  <LabelText>{translations[lang]?.group}</LabelText>
+                )}
+                <TeacherLangSelect
+                  ref={selectInputRef}
+                  options={currentGroupOptions}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '34px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                    }),
+                  }}
+                  placeholder={translations[lang]?.group}
+                  name="group"
+                  isDisabled={!courseValue}
+                  onBlur={() => {
+                    !groupValue
+                      ? setIsGroupEmpty(empty => (empty = true))
+                      : setIsGroupEmpty(empty => (empty = false));
+                  }}
+                  onChange={group => {
+                    setGroupValue(group);
+                    group?.value && setIsGroupEmpty(empty => (empty = false));
+                  }}
+                />
+                {isGroupEmpty && (
+                  <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>
+                )}
+              </SpeakingLabel>
+              <AdminFormBtn type="submit">
+                <FormBtnText>{translations[lang]?.addUserButton}</FormBtnText>
+              </AdminFormBtn>
+            </UsersForm>
           </Formik>
         )}
 
@@ -320,18 +677,13 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
               <UserDBRow>
                 <UserHeadCell>№</UserHeadCell>
                 {!uni && (
-                  <UserHeadCell>
-                    {translations[lang]?.crmLeadContact}
-                  </UserHeadCell>
+                  <UserHeadCell>{translations[lang]?.crmLeadContact}</UserHeadCell>
                 )}
                 <UserHeadCell>{translations[lang]?.name}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.email}</UserHeadCell>
-                {!uni && (
-                  <UserHeadCell>{translations[lang]?.password}</UserHeadCell>
-                )}
-                {!uni && (
-                  <UserHeadCell>{translations[lang]?.university}</UserHeadCell>
-                )}
+                {!uni && <UserHeadCell>{translations[lang]?.password}</UserHeadCell>}
+                {!uni && <UserHeadCell>{translations[lang]?.university}</UserHeadCell>}
+                <UserHeadCell>Kurs</UserHeadCell>
                 <UserHeadCell style={{ whiteSpace: 'nowrap' }}>
                   {translations[lang]?.group}
                   <button
@@ -350,12 +702,11 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                 <UserHeadCell>{translations[lang]?.points}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.platformId}</UserHeadCell>
                 <UserHeadCell>{translations[lang]?.attendance}</UserHeadCell>
-                <UserHeadCell>{translations[lang]?.percentage}</UserHeadCell>
                 {!uni && (
-                  <UserHeadCell>
-                    {translations[lang]?.visitsWithTime}
-                  </UserHeadCell>
+                  <UserHeadCell>{translations[lang]?.visitsWithTime}</UserHeadCell>
                 )}
+                <UserHeadCell>Edit</UserHeadCell>
+                <UserHeadCell>Delete</UserHeadCell>
               </UserDBRow>
             </thead>
             <tbody>
@@ -383,71 +734,31 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                   <UserCell>{user.name}</UserCell>
                   <UserCell>{user.mail}</UserCell>
                   {!uni && <UserCell>{user.password}</UserCell>}
-                  {!uni && (
-                    <UserCell className="last-name">{user.university}</UserCell>
-                  )}
-                  <UserCell>{user.group ? user.group : '1'}</UserCell>
+                  {!uni && <UserCell className="last-name">{user.university}</UserCell>}
+                  <UserCell>{user.courseName || '-'}</UserCell>
+                  <UserCell>{user.group || '1'}</UserCell>
                   <UserCell>{user.points ? user.points : '0'}</UserCell>
                   <UserCell>{user.pupilId}</UserCell>
                   <UserCell
                     style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                    onClick={() => handleVisitedView(user._id)}
+                    onClick={() => handleVisitedEdit(user._id)}
                     className={
                       Math.floor(
                         (Date.now() -
-                          changeDateFormat(
-                            user.visited[user.visited.length - 1]?.replace(
-                              ' lesson',
-                              ''
-                            )
-                          )) /
+                          changeDateFormat(user.visited[user.visited.length - 1])) /
                           86400000
                       ) > daysAfterLastLogin
                         ? 'attention'
                         : ''
                     }
                   >
-                    {user.visited[user.visited.length - 1]?.replace(
-                      ' lesson',
-                      ''
-                    )}
-                  </UserCell>
-                  <UserCell
-                    className={
-                      getAttendancePercentage(
-                        [
-                          ...new Set(
-                            user.visited.map(visit =>
-                              visit.replace(' lesson', '')
-                            )
-                          ),
-                        ],
-                        user.group
-                      )
-                        .replace('%', '')
-                        .split(' = ')[1] < 50
-                        ? 'attention'
-                        : ''
-                    }
-                  >
-                    {getAttendancePercentage(
-                      [
-                        ...new Set(
-                          user.visited.map(visit =>
-                            visit.replace(' lesson', '')
-                          )
-                        ),
-                      ],
-                      user.group
-                    )}
+                    {user.visited[user.visited.length - 1]}
                   </UserCell>
                   {!uni && (
                     <UserCell>
                       {!user.visitedTime[user.visitedTime.length - 1]
                         ? ''
-                        : user.visitedTime[user.visitedTime.length - 1].match(
-                            '^202'
-                          )
+                        : user.visitedTime[user.visitedTime.length - 1].match('^202')
                         ? new Date(
                             user.visitedTime[user.visitedTime.length - 1]
                           ).toLocaleString('uk-UA')
@@ -458,16 +769,45 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
                           ).toLocaleString('uk-UA', { timeZone: '+06:00' })}
                     </UserCell>
                   )}
+
+                  <UserCell>
+                    <UserEditButton onClick={() => handleEdit(user._id)}>
+                      Edit
+                    </UserEditButton>
+                  </UserCell>
+                  <UserCell>
+                    {user.name === 'Dev Acc' ? null : (
+                      <UserDeleteButton onClick={() => handleDelete(user._id)}>
+                        Del
+                      </UserDeleteButton>
+                    )}
+                  </UserCell>
                 </UserDBRow>
               ))}
             </tbody>
           </UserDBTable>
         )}
-        {isVisitedHistoryOpen && (
-          <Backdrop onMouseDown={closeHistoryOnClick} id="close-on-click">
+        {isEditFormOpen && (
+          <Backdrop onMouseDown={closeEditFormOnClick} id="close-on-click">
+            <UniUserEditForm
+              uni={uni}
+              lang={lang}
+              userToEdit={userToEdit}
+              updateUser={updateUser}
+              closeEditForm={closeEditForm}
+              uniOptions={uniOptions}
+              courseOptions={courseOptions}
+              groupOptions={currentGroupOptions}
+            />
+          </Backdrop>
+        )}
+        {isVisitedEditFormOpen && (
+          <Backdrop onMouseDown={closeEditFormOnClick} id="close-on-click">
             <UserVisitedEditForm
-              userToView={userToView}
-              closeHistory={closeHistory}
+              lang={lang}
+              userToEdit={userToEdit}
+              updateUserVisits={updateUserVisits}
+              closeEditForm={closeEditForm}
             />
           </Backdrop>
         )}
