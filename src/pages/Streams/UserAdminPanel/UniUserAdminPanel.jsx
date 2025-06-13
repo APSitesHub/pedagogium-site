@@ -189,7 +189,7 @@ const UniUserAdminPanel = ({ uni, lang = 'ua' }) => {
       try {
         if (isUserAdmin) {
           const response = await axios.get(
-            `/uniusers/admin/${uni ? uni.toLowerCase() : ''}`
+            `/pedagogium-users/admin/${uni ? uni.toLowerCase() : ''}`
           );
 
           setUsers(

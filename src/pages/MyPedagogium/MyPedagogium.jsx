@@ -36,7 +36,7 @@ const MyPedagogium = () => {
     const refreshToken = async () => {
       console.log('token refresher');
       try {
-        const res = await axios.post('/uniusers/refresh', {
+        const res = await axios.post('/pedagogium-users/refresh', {
           mail: localStorage.getItem('mail'),
         });
         setIsUserLogged(isLogged => (isLogged = true));
@@ -94,7 +94,7 @@ const MyPedagogium = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/uniusers/login', values);
+      const response = await axios.post('/pedagogium-users/login', values);
       console.log(response);
 
       setAuthToken(response.data.token);
