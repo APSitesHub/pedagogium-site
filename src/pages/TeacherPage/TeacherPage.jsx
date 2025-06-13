@@ -208,12 +208,16 @@ const TeacherPage = () => {
       <NameInputBtn onClick={toggleNameInput}>
         {isNameInputOpen ? <BoxHideUpSwitch /> : <BoxHideDownSwitch />}
       </NameInputBtn>
-      {teacherInfo.name && teacherInfo.level && teacherInfo.lesson && (
-        <LessonInfoBox>
-          {teacherInfo.name} <br />
-          {teacherInfo.level} {teacherInfo.lesson}
-        </LessonInfoBox>
-      )}
+      <LessonInfoBox
+        className={
+          !teacherInfo.name + teacherInfo.level + teacherInfo.lesson
+            ? ''
+            : 'no-info'
+        }
+      >
+        {teacherInfo.name} <br />
+        {teacherInfo.level} {teacherInfo.lesson}
+      </LessonInfoBox>
       <TeacherButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
         {/* <ViewerBtn onClick={toggleViewer}>
           <ViewerLogo />

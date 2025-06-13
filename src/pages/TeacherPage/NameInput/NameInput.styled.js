@@ -52,10 +52,10 @@ export const TeacherInfoInput = styled.input`
 
 export const LessonInfoBox = styled.div`
   position: absolute;
-  top: 11px;
-  right: 65px;
+  top: 14px;
+  right: 108px;
   z-index: 25;
-  max-width: 280px;
+  width: 280px;
   color: #000;
   font-size: 28px;
   font-weight: 500;
@@ -68,4 +68,10 @@ export const LessonInfoBox = styled.div`
   display: flex;
   gap: 25px;
   pointer-events: none;
+
+  &.no-info {
+    z-index: 4;
+    height: 64px;
+    box-shadow: none;
+  }
 `;
