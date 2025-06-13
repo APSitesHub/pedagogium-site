@@ -14,6 +14,26 @@ const Stream = lazy(() =>
   import(/* webpackChunkName: "Stream page" */ '../pages/Streams/Stream/Stream')
 );
 
+const Teacher = lazy(() =>
+  import(/* webpackChunkName: "Teacher page" */ '../pages/TeacherPage/Teacher')
+);
+
+const TeacherPage = lazy(() =>
+  import(
+    /* webpackChunkName: "Teacher page" */ '../pages/TeacherPage/TeacherPage'
+  )
+);
+
+const TeacherAP = lazy(() =>
+  import(/* webpackChunkName: "Teacher page" */ '../pages/TeacherAP/TeacherAP')
+);
+
+const TeacherAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Teacher page" */ '../pages/AdminPanel/TeacherAdminPanel'
+  )
+);
+
 const MyPedagogium = lazy(() =>
   import(
     /* webpackChunkName: "My Pedagogium Page" */ '../pages/MyPedagogium/MyPedagogium'
@@ -53,7 +73,19 @@ export const App = () => {
           />
           <Route path="*" element={<NotFound />} noindex={true} />
 
-          <Route path="lesson" element={<Streams />} noindex={true}>
+          <Route path="teacher" element={<Teacher />} noindex={true}>
+            <Route path=":group" element={<TeacherPage />} noindex={true} />
+          </Route>
+
+          <Route path="teacher-ap" element={<TeacherAP />} noindex={true} />
+
+          <Route
+            path="teacher-admin-panel"
+            element={<TeacherAdminPanel />}
+            noindex={true}
+          />
+
+          <Route path="lesson/:group" element={<Streams />} noindex={true}>
             {/* <Route
               path="logistics"
               element={<StreamToZoomRedirecter />}
