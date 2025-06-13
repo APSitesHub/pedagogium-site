@@ -26,6 +26,7 @@ import {
   AdminInput,
   AdminInputHint,
   AdminInputNote,
+  LinkToUsersAdminPanel,
 } from './CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
 
@@ -278,6 +279,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
         {isUserAdmin && courses && (
           <>
+            <LinkToUsersAdminPanel to={'/admin-users'} />
             <Formik
               initialValues={initialCourseValues}
               onSubmit={handleCourseSubmit}
