@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import { WindowedChat } from 'utils/Chat/ChatWindowed/WindowedChat';
 import { Loader } from './SharedLayout/Loaders/Loader';
 // import StreamToZoomRedirecter from './StreamToZoomRedirecter/StreamToZoomRedirecter';
+import TestChatBot from 'pages/Streams/TestChatBot/TestChatBot';
 
 const Streams = lazy(() =>
   import(/* webpackChunkName: "Streams page" */ '../pages/Streams/Streams')
@@ -102,6 +103,7 @@ export const App = () => {
             <Route path="prep" element={<Stream />} noindex={true} />
             <Route path="prep-chat" element={<WindowedChat />} noindex={true} />
           </Route>
+          <Route path="chatbot" element={<TestChatBot />} noindex={true} />
         </Routes>
       </Suspense>
     </>
