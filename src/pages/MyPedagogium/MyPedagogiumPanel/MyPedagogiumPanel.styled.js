@@ -70,8 +70,9 @@ export const LogoutPanel = styled(APPanel)`
   padding: 0;
   overflow: hidden;
 
-  @media screen and (min-width: 768px) {
-    right: 105px;
+  @media screen and (min-width: 960px) {
+    right: 108px;
+    top: 9px;
   }
 `;
 
@@ -450,7 +451,7 @@ export const LogoutBtnIcon = styled(LogoutIcon)`
   height: 25px;
   width: 25px;
 
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 960px) {
     height: 30px;
     width: 30px;
   }
