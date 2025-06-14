@@ -66,35 +66,28 @@ export const AdminFormBtn = styled(FormBtn)`
   padding: 0;
 `;
 
+export const AdminInputHint = styled.p`
+  color: var(--main-color);
+  text-align: left;
+  font-size: 12px;
+  padding: 0 20px;
+`;
+
 export const AdminInput = styled(Input)`
-  width: 240px;
-  padding: 8px 10px;
+  font-family: var(--new-font-family);
   font-size: 16px;
-  height: 40px;
-  -webkit-text-stroke: 0px;
-
+  padding: 20px;
   border: 2px solid var(--main-color);
-
-  &.error {
-    border-color: red;
-  }
-
-  @media screen and (min-width: 768px) {
-    width: 360px;
-  }
+  max-width: 600px;
 `;
 
 export const AdminInputNote = styled(InputNote)`
-  color: var(--main-color);
-  font-size: 12px;
-  font-weight: 500;
   position: static;
-  max-width: 240px;
-
-  @media screen and (min-width: 768px) {
-    max-width: 360px;
-  }
+  color: #bb0000;
+  font-size: 14px;
+  bottom: -1.1em;
 `;
+
 
 export const UsersForm = styled(Form)`
   margin: 0 auto;

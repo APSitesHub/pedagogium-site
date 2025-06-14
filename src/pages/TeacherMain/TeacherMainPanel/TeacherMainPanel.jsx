@@ -19,7 +19,7 @@ import {
 } from '../TeacherMain.styled';
 
 const TeacherAPPanel = ({ handleLogout }) => {
-  const [isButtonBoxShown, setIsButtonBoxShown] = useState(true);
+  const [isButtonBoxShown, setIsButtonBoxShown] = useState(false);
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {

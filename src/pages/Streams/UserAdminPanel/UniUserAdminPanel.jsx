@@ -5,13 +5,17 @@ import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import * as yup from 'yup';
+import { LoginLogo } from 'components/Stream/Stream.styled';
+import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
   AdminFormBtn,
+  LoginForm,
+} from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import {
   AdminInput,
   AdminInputNote,
   AdminPanelSection,
   ArrowDownIcon,
-  LoginForm,
   UserCell,
   UserDBCaption,
   UserDBRow,
@@ -99,6 +103,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
   const [courseValue, setCourseValue] = useState(null);
   const [groupValue, setGroupValue] = useState(null);
   const [isGroupEmpty, setIsGroupEmpty] = useState(false);
+  const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
   const [daysAfterLastLogin] = useState(7);
   const selectInputRef = useRef();
 
@@ -147,7 +152,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
       console.log('token refresher');
       try {
         if (localStorage.getItem('isAdmin')) {
-          const res = await axios.post('admins/refresh/users/', {});
+          const res = await axios.post('admins/refresh/pedagogium/', {});
           setAuthToken(res.data.newToken);
           setIsUserAdmin(isAdmin => (isAdmin = true));
         }
@@ -207,7 +212,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
     return () => {
       window.removeEventListener('keydown', onEscapeClose);
     };
-  }, [isUserAdmin, uni]);
+  }, [isUserAdmin, isEditFormOpen, isLoading, uni]);
 
   const initialLoginValues = {
     login: '',
@@ -236,7 +241,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
   const handleLoginSubmit = async (values, { resetForm }) => {
     setIsLoading(isLoading => (isLoading = true));
     try {
-      const response = await axios.post('/admins/login/users', values);
+      const response = await axios.post('/admins/login/pedagogium', values);
       setAuthToken(response.data.token);
       setIsUserAdmin(isAdmin => (isAdmin = true));
       localStorage.setItem('isAdmin', true);
@@ -427,32 +432,42 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
       <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
-            initialValues={initialLoginValues}
-            onSubmit={handleLoginSubmit}
-            validationSchema={loginSchema}
-          >
-            <LoginForm>
-              <Label>
-                <AdminInput
-                  type="text"
-                  name="login"
-                  placeholder={translations[lang]?.loginPlaceholder}
-                />
-                <AdminInputNote component="p" name="login" />
-              </Label>
-              <Label>
-                <AdminInput
-                  type="password"
-                  name="password"
-                  placeholder={translations[lang]?.passwordPlaceholder}
-                />
-                <AdminInputNote component="p" name="password" />
-              </Label>
-              <AdminFormBtn type="submit">
-                {translations[lang]?.loginButton}
-              </AdminFormBtn>
-            </LoginForm>
-          </Formik>
+                      initialValues={initialLoginValues}
+                      onSubmit={handleLoginSubmit}
+                      validationSchema={loginSchema}
+                    >
+                      <LoginForm>
+                        <LoginLogo />
+                        <Label>
+                          <AdminInput
+                            type="text"
+                            name="login"
+                            placeholder={translations[lang]?.loginPlaceholder}
+                            onBlur={() => setIsUserInfoIncorrect(false)}
+                          />
+                          <AdminInputNote component="p" name="login" />
+                        </Label>
+                        <Label>
+                          <AdminInput
+                            type="password"
+                            name="password"
+                            placeholder={translations[lang]?.passwordPlaceholder}
+                            onBlur={() => setIsUserInfoIncorrect(false)}
+                          />
+                          <AdminInputNote component="p" name="password" />
+                        </Label>
+                        <AdminFormBtn type="submit">
+                          <FormBtnText>{translations[lang]?.loginButton}</FormBtnText>
+                        </AdminFormBtn>
+                        <LoginErrorNote
+                          style={
+                            isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
+                          }
+                        >
+                          Password or email is incorrect!
+                        </LoginErrorNote>
+                      </LoginForm>
+                    </Formik>
         )}
 
         {isUserAdmin && (
