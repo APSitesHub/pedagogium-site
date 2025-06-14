@@ -71,7 +71,7 @@ const TeacherAP = () => {
   const setPlatformLink = token => {
     setIframeLink(
       `https://online.ap.education/LoginByToken?token=${token}&redirectUrl=${encodeURIComponent(
-        `https://https://online.ap.education/cabinet/school/marathons/list`
+        `https://online.ap.education/cabinet/school/users/students`
       )}`
     );
   };
