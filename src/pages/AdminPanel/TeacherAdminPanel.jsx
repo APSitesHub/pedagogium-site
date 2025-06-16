@@ -23,6 +23,7 @@ import {
 import { TeacherEditForm } from './TeacherEditForm/TeacherEditForm';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
+// axios.defaults.baseURL = 'http://localhost:3001';
 const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };

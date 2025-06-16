@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { StreamsBackgroundWrapper } from 'components/BackgroundWrapper/BackgroundWrappers';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
-import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import { LoaderWrapper } from 'components/SharedLayout/Loaders/Loader.styled';
 import { Formik } from 'formik';
 import { nanoid } from 'nanoid';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
@@ -28,14 +26,10 @@ const setAuthToken = token => {
 };
 
 const Streams = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [links, setLinks] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [isUserLogged, setIsUserLogged] = useState(false);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
   const location = useLocation();
-
-  console.log(location);
 
   const wakeupRequest = async () => {
     try {
@@ -80,7 +74,10 @@ const Streams = () => {
     values.mail = values.mail.toLowerCase().trim().trimStart();
     values.password = values.password.trim().trimStart();
     try {
-      const response = await axios.post('/pedagogium-users/login/lesson', values);
+      const response = await axios.post(
+        '/pedagogium-users/login/lesson',
+        values
+      );
       console.log(values);
       console.log(response);
       setAuthToken(response.data.token);
@@ -99,18 +96,6 @@ const Streams = () => {
 
   useLayoutEffect(() => {
     wakeupRequest();
-
-    const getLinksRequest = async () => {
-      try {
-        setIsLoading(isLoading => (isLoading = true));
-        setLinks((await axios.get('/unilinks')).data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(isLoading => (isLoading = false));
-      }
-    };
-    getLinksRequest();
 
     const refreshToken = async () => {
       console.log('token refresher');
@@ -135,7 +120,7 @@ const Streams = () => {
 
   useEffect(() => {
     detectUser();
-  }, [isLoading]);
+  }, []);
 
   return (
     <>
@@ -184,13 +169,7 @@ const Streams = () => {
             </LoginForm>
           </Formik>
         ) : (
-          <Outlet context={[links, isLoading, currentUser]} />
-        )}
-
-        {isLoading && (
-          <LoaderWrapper>
-            <Loader />
-          </LoaderWrapper>
+          <Outlet context={[currentUser]} />
         )}
       </StreamsBackgroundWrapper>
     </>

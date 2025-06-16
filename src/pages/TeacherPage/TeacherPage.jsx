@@ -2,7 +2,7 @@ import useSize from '@react-hook/size';
 import { nanoid } from 'nanoid';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-// import { HostKahoots } from './HostKahoots/HostKahoots';
+import { HostKahoots } from './HostKahoots/HostKahoots';
 import { NameInput } from './NameInput/NameInput';
 import { LessonInfoBox, NameInputBtn } from './NameInput/NameInput.styled';
 import { Platform } from './Platform/Platform';
@@ -22,8 +22,8 @@ import {
   // WhiteBoardBtn,
   // WhiteBoardLogo,
   InputBtn,
-  // KahootBtn,
-  // KahootLogo,
+  KahootBtn,
+  KahootLogo,
 } from './TeacherPage.styled';
 import { TeacherQuizInput } from './TeacherQuiz/TeacherQuizInput';
 import { TeacherQuizOptions } from './TeacherQuiz/TeacherQuizOptions';
@@ -31,6 +31,7 @@ import { TeacherQuizTrueFalse } from './TeacherQuiz/TeacherQuizTrueFalse';
 // import { Viewer } from './Viewer/Viewer';
 // import { WhiteBoard } from './WhiteBoard/WhiteBoard';
 import { TeacherQuizFeedback } from './TeacherQuiz/TeacherQuizFeedback';
+import { QRCodeModal } from './TeacherQuiz/TeacherQR';
 
 const TeacherPage = () => {
   const { group } = useParams();
@@ -42,6 +43,7 @@ const TeacherPage = () => {
   const [isPlatformOpen, setIsPlatformOpen] = useState(false);
   // eslint-disable-next-line
   const [isKahootOpen, setIsKahootOpen] = useState(false);
+  const [isQROpen, setIsQROpen] = useState(false);
   const [isQuizInputOpen, setIsQuizInputOpen] = useState(false);
   const [isQuizOptionsOpen, setIsQuizOptionsOpen] = useState(false);
   const [isQuizTrueFalseOpen, setIsQuizTrueFalseOpen] = useState(false);
@@ -127,21 +129,21 @@ const TeacherPage = () => {
   //     ? setIsOpenedLast(isOpenedLast => 'platform')
   //     : setIsOpenedLast(isOpenedLast => '');
   // };
-  // const toggleKahoot = () => {
-  //   !isOpenedLast
-  //     ? setIsKahootOpen(isKahootOpen => !isKahootOpen)
-  //     : isOpenedLast === 'kahoot' &&
-  //       setIsKahootOpen(isKahootOpen => !isKahootOpen);
-  //   isPlatformOpen ||
-  //   isWhiteBoardOpen ||
-  //   isViewerOpen ||
-  //   isQuizInputOpen ||
-  //   isQuizOptionsOpen ||
-  //   isQuizTrueFalseOpen ||
-  //   isQuizFeedbackOpen
-  //     ? setIsOpenedLast(isOpenedLast => 'kahoot')
-  //     : setIsOpenedLast(isOpenedLast => '');
-  // };
+  const toggleKahoot = () => {
+    !isOpenedLast
+      ? setIsKahootOpen(isKahootOpen => !isKahootOpen)
+      : isOpenedLast === 'kahoot' &&
+        setIsKahootOpen(isKahootOpen => !isKahootOpen);
+    isPlatformOpen ||
+    isWhiteBoardOpen ||
+    isViewerOpen ||
+    isQuizInputOpen ||
+    isQuizOptionsOpen ||
+    isQuizTrueFalseOpen ||
+    isQuizFeedbackOpen
+      ? setIsOpenedLast(isOpenedLast => 'kahoot')
+      : setIsOpenedLast(isOpenedLast => '');
+  };
   // eslint-disable-next-line
   const toggleQuizInput = () => {
     !isOpenedLast
@@ -191,6 +193,11 @@ const TeacherPage = () => {
     setIsQuizOptionsOpen(false);
     setIsQuizTrueFalseOpen(false);
   };
+
+  const toggleQROPen = () => {
+    setIsQROpen(isQROpen => !isQROpen);
+  };
+
   const toggleButtonBox = () => {
     setIsButtonBoxOpen(isOpen => !isOpen);
   };
@@ -228,9 +235,9 @@ const TeacherPage = () => {
         {/* <PlatformBtn onClick={togglePlatform}>
           <PlatformLogo />
         </PlatformBtn> */}
-        {/* <KahootBtn onClick={toggleKahoot}>
+        <KahootBtn onClick={toggleKahoot}>
           <KahootLogo />
-        </KahootBtn> */}
+        </KahootBtn>
         <InputBtn onClick={toggleInputButtonBox}>QUIZ</InputBtn>
         <InputButtonBox className={isInputButtonBoxOpen ? '' : 'hidden'}>
           <InputBtn onClick={toggleQuizInput}>TEXT</InputBtn>
@@ -238,6 +245,8 @@ const TeacherPage = () => {
           <InputBtn onClick={toggleQuizOptions}>A-B-C</InputBtn>
 
           <InputBtn onClick={toggleQuizTrueFalse}>TRUE FALSE</InputBtn>
+
+          <InputBtn onClick={toggleQROPen}>QR</InputBtn>
 
           {/* TODO: delete conditional randering ↓ */}
           {['a0', 'a0_2', 'a1', 'a2'].includes(group) && (
@@ -262,13 +271,13 @@ const TeacherPage = () => {
         isPlatformOpen={true}
         isOpenedLast={isOpenedLast}
       />
-      {/* <HostKahoots
-        page={page}
+      <HostKahoots
+        page={group}
         sectionWidth={width}
         sectionHeight={height}
         isKahootOpen={isKahootOpen}
         isOpenedLast={isOpenedLast}
-      /> */}
+      />
       <TeacherChat page={group} />
       <TeacherQuizInput
         page={group}
@@ -315,6 +324,7 @@ const TeacherPage = () => {
         changeQuestionID={changeQuestionID}
         teacherName={teacherInfo.name}
       />
+      <QRCodeModal onClose={toggleQROPen} isOpen={isQROpen} />
       <NameInput
         isNameInputOpen={isNameInputOpen}
         changeTeacherInfo={changeTeacherInfo}

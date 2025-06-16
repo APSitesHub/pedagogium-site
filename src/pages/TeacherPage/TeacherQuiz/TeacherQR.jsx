@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { QRPedagogiumLogistics2 } from './TeacherQuiz.styled';
 import { TeacherChartBtn } from '../StudentChart/StudentChart.styled';
+import { QRCodeSVG } from 'qrcode.react';
+import { useParams } from 'react-router-dom';
 
 // Стилі для модального вікна
 const ModalOverlay = styled.div`
@@ -19,6 +20,7 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background: white;
   padding: 24px;
+  padding-bottom: 72px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -35,15 +37,29 @@ const CloseButtonWrapper = styled.div`
   justify-content: center;
 `;
 
+export const QRContainer = styled.div`
+  flex: 1;
+  max-width: 100%;
+  max-height: 100%;
+`;
+
 export const QRCodeModal = ({ onClose, isOpen }) => {
+  const { group } = useParams();
+
   return (
     isOpen && (
       <ModalOverlay>
         <ModalContent>
-          <QRPedagogiumLogistics2 />
-          <CloseButtonWrapper>
-            <TeacherChartBtn onClick={onClose}>Close</TeacherChartBtn>
-          </CloseButtonWrapper>
+          <QRContainer>
+            <QRCodeSVG
+              value={`${window.location.origin}/lesson/${group}?isOffline=true`}
+              size={1024}
+              style={{ width: '100%', height: '100%' }}
+            />
+            <CloseButtonWrapper>
+              <TeacherChartBtn onClick={onClose}>Close</TeacherChartBtn>
+            </CloseButtonWrapper>
+          </QRContainer>
         </ModalContent>
       </ModalOverlay>
     )

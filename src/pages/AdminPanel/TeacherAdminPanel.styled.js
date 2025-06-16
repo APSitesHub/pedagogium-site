@@ -266,3 +266,58 @@ export const DateInputSelect = styled(SpeakingSelect)`
   width: 280px;
   border-radius: 50px;
 `;
+
+export const KahootsAdminContainer = styled.div`
+  display: flex;
+  flex-basis: 30%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 100%;
+`;
+
+export const LinksContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  max-height: 90%;
+  overflow: auto;
+`;
+
+export const DefaultInput = styled.input`
+  flex: 1;
+  padding: 4px 8px;
+  border-radius: 50px;
+  border: 1px solid #242329;
+`;
+
+export const AddButton = styled.button`
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50px;
+  border: 1px solid transparent;
+  background: none;
+  color: green;
+  font-size: 2rem;
+  transition: 0.5s ease;
+
+  &:hover {
+    border-color: var(--main-color);
+  }
+`;
+
+export const DeleteButton = styled.button`
+  cursor: pointer;
+  padding: 0;
+  border: none;
+  background: none;
+  color: red;
+  font-size: 1.5rem;
+  transition: 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+`;
