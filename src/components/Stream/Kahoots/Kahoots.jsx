@@ -75,7 +75,7 @@ export const Kahoots = ({
     };
 
     getLinksRequest();
-  }, []);
+  }, [room]);
 
   const toggleFullScreen = () => {
     setIsFullScreen(isFullScreen => (isFullScreen = !isFullScreen));
