@@ -2,7 +2,13 @@ import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import { LoginLogo } from 'components/Stream/Stream.styled';
+import {
+  BoxHideLeftSwitch,
+  BoxHideRightSwitch,
+  BoxHideSwitch,
+  ButtonBox,
+  LoginLogo,
+} from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
@@ -26,10 +32,10 @@ import {
   AdminInput,
   AdminInputHint,
   AdminInputNote,
-  LinkToUsersAdminPanel,
-  LinkToTeacherAdminPanel,
+  LinkTo,
 } from './CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
+import { slugify, transliterate } from 'transliteration';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -104,6 +110,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
   const [courseToEdit, setCourseToEdit] = useState({});
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
 
   useEffect(() => {
     document.title = uni
@@ -155,6 +162,10 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
     password: yup.string().required(translations[lang]?.passwordRequired),
   });
 
+  const toggleButtonBox = () => {
+    setIsButtonBoxOpen(isOpen => !isOpen);
+  };
+
   const handleLoginSubmit = async (values, { resetForm }) => {
     setIsLoading(isLoading => (isLoading = true));
     try {
@@ -188,6 +199,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
     values.courseGroups = [...Array(Math.ceil(values.courseGroups)).keys()].map(
       i => i + 1
     );
+    values.slug = slugify(transliterate(values.courseName));
 
     setIsLoading(isLoading => (isLoading = true));
     try {
@@ -280,8 +292,29 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
         {isUserAdmin && courses && (
           <>
-            <LinkToTeacherAdminPanel to={'/admin-teacher'} />
-            <LinkToUsersAdminPanel to={'/admin-users'} />
+            <ButtonBox
+              className={!isButtonBoxOpen ? 'hidden' : ''}
+              style={{
+                backgroundColor: '#fff',
+                padding: '8px',
+                border: '1px solid gray',
+                borderRadius: '24px',
+                top: '100px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              }}
+            >
+              <LinkTo $isDisabled to={'/admin'}>
+                Panel kursów
+              </LinkTo>
+              <LinkTo to={'/admin-teacher'}>Panel kuratora</LinkTo>
+              <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Panel host-kahutów</LinkTo>
+            </ButtonBox>
+
+            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+              {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
+            </BoxHideSwitch>
             <Formik
               initialValues={initialCourseValues}
               onSubmit={handleCourseSubmit}

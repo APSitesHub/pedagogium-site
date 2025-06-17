@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { StreamsBackgroundWrapper } from 'components/BackgroundWrapper/BackgroundWrappers';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
-import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import { LoaderWrapper } from 'components/SharedLayout/Loaders/Loader.styled';
 import { Formik } from 'formik';
 import { nanoid } from 'nanoid';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
@@ -28,15 +26,11 @@ const setAuthToken = token => {
 };
 
 const Streams = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [links, setLinks] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [isUserLogged, setIsUserLogged] = useState(false);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
   const [isTeacher, setIsTeacher] = useState(false);
   const location = useLocation();
-
-  console.log(location);
 
   const wakeupRequest = async () => {
     try {
@@ -133,18 +127,6 @@ const Streams = () => {
   useLayoutEffect(() => {
     wakeupRequest();
 
-    const getLinksRequest = async () => {
-      try {
-        setIsLoading(isLoading => (isLoading = true));
-        setLinks((await axios.get('/unilinks')).data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(isLoading => (isLoading = false));
-      }
-    };
-    getLinksRequest();
-
     const refreshToken = async () => {
       console.log('token refresher');
       try {
@@ -178,7 +160,7 @@ const Streams = () => {
 
   useEffect(() => {
     detectUser();
-  }, [isLoading]);
+  }, []);
 
   return (
     <>
@@ -227,7 +209,7 @@ const Streams = () => {
             </LoginForm>
           </Formik>
         ) : (
-          <Outlet context={[links, isLoading, currentUser, isTeacher]} />
+          <Outlet context={[currentUser, isTeacher]} />
         )}
 
         {isLoading && (
