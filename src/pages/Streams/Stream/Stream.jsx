@@ -52,7 +52,7 @@ const Stream = () => {
   const [isQuizOptionsOpen, setIsQuizOptionsOpen] = useState(false);
   const [isQuizTrueFalseOpen, setIsQuizTrueFalseOpen] = useState(false);
 
-  const [links, isLoading, currentUser] = useOutletContext();
+  const [links, isLoading, currentUser, isTeacher] = useOutletContext();
   const chatEl = useRef();
   // eslint-disable-next-line
   const [chatWidth, chatHeight] = useSize(chatEl);
@@ -326,7 +326,7 @@ const Stream = () => {
               style={{
                 width:
                   isChatOpen && width > height ? `${videoBoxWidth}px` : '100%',
-                height: isIframeOpen ? windowHeight : '100%',
+                height: isIframeOpen || isTeacher ? windowHeight : '100%',
                 backgroundColor: '#1a1a1b',
               }}
             >
@@ -359,11 +359,11 @@ const Stream = () => {
                   </GradientBackground>
                   <JitsiContainer
                     style={{
-                      height: isIframeOpen ? windowHeight : '0',
+                      height: isIframeOpen || isTeacher ? windowHeight : '0',
                     }}
                   >
                     <JitsiMeeting
-                      domain="videohost.ap.education"
+                      domain="dev2.ap.education"
                       roomName={roomID}
                       configOverwrite={{
                         disableTileEnlargement: true,

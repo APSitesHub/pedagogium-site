@@ -33,6 +33,7 @@ const Streams = () => {
   const [currentUser, setCurrentUser] = useState({});
   const [isUserLogged, setIsUserLogged] = useState(false);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
+  const [isTeacher, setIsTeacher] = useState(false);
   const location = useLocation();
 
   console.log(location);
@@ -76,24 +77,56 @@ const Streams = () => {
     password: yup.string().required('Enter your password!'),
   });
 
+  const finalizeLogin = (data, userKey) => {
+    setAuthToken(data.token);
+    setIsUserLogged(true);
+    setCurrentUser(data[userKey]);
+
+    localStorage.setItem('userID', localStorage.getItem('userID') || nanoid(8));
+    localStorage.setItem(
+      'userName',
+      `${data[userKey]?.name} ${userKey === 'teacher' ? ' (teacher)' : ''}` ||
+        ''
+    );
+    setIsUserInfoIncorrect(false);
+  };
+
   const handleLoginSubmit = async (values, { resetForm }) => {
-    values.mail = values.mail.toLowerCase().trim().trimStart();
-    values.password = values.password.trim().trimStart();
+    const mail = values.mail.toLowerCase().trim();
+    const password = values.password.trim();
+
     try {
-      const response = await axios.post('/pedagogium-users/login/lesson', values);
-      console.log(values);
-      console.log(response);
-      setAuthToken(response.data.token);
-      setIsUserLogged(isLogged => (isLogged = true));
-      setCurrentUser(currentUser => (currentUser = response.data.user));
-      localStorage.setItem('userID', nanoid(8));
-      localStorage.setItem('mail', values.mail);
-      localStorage.setItem('userName', response.data.user.name);
-      setIsUserInfoIncorrect(false);
+      const teacherLogin = await axios.post('/pedagogium-teachers/login', {
+        login: mail,
+        password,
+      });
+      setIsTeacher(true);
+      localStorage.setItem('mail', mail);
+      finalizeLogin(teacherLogin.data, 'teacher');
+      resetForm();
+
+      return;
+    } catch (error) {
+      if (error?.response?.status !== 401) {
+        console.error('Teacher login failed:', error);
+        return;
+      }
+    }
+
+    try {
+      const userLogin = await axios.post('/pedagogium-users/login/lesson', {
+        mail,
+        password,
+      });
+      setIsTeacher(false);
+      localStorage.setItem('mail', mail);
+      finalizeLogin(userLogin.data, 'user');
       resetForm();
     } catch (error) {
-      error.response.status === 401 && setIsUserInfoIncorrect(true);
-      console.error(error);
+      if (error?.response?.status === 401) {
+        setIsUserInfoIncorrect(true);
+      }
+      console.error('User login failed:', error);
     }
   };
 
@@ -115,17 +148,27 @@ const Streams = () => {
     const refreshToken = async () => {
       console.log('token refresher');
       try {
-        const res = await axios.post('/pedagogium-users/refresh/lesson', {
+        const teacherLogin = await axios.post('/pedagogium-teachers/refresh', {
+          login: localStorage.getItem('mail'),
+        });
+
+        setIsTeacher(true);
+        finalizeLogin(teacherLogin.data, 'teacher');
+        return;
+      } catch (error) {
+        if (error?.response?.status !== 401) {
+          console.error('Teacher refresh failed:', error);
+          return;
+        }
+      }
+
+      try {
+        const userLogin = await axios.post('/pedagogium-users/refresh/lesson', {
           mail: localStorage.getItem('mail'),
         });
-        setCurrentUser(currentUser => (currentUser = res.data.user));
-        setIsUserLogged(isLogged => (isLogged = true));
-        const id = nanoid(8);
-        if (!localStorage.getItem('userID')) {
-          localStorage.setItem('userID', id);
-        }
-        localStorage.setItem('userName', res.data.user.name);
-        console.log(res);
+
+        setIsTeacher(false);
+        finalizeLogin(userLogin.data, 'user');
       } catch (error) {
         console.log(error);
       }
@@ -184,7 +227,7 @@ const Streams = () => {
             </LoginForm>
           </Formik>
         ) : (
-          <Outlet context={[links, isLoading, currentUser]} />
+          <Outlet context={[links, isLoading, currentUser, isTeacher]} />
         )}
 
         {isLoading && (
