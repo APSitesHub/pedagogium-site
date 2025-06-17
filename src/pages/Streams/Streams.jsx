@@ -211,12 +211,6 @@ const Streams = () => {
         ) : (
           <Outlet context={[currentUser, isTeacher]} />
         )}
-
-        {isLoading && (
-          <LoaderWrapper>
-            <Loader />
-          </LoaderWrapper>
-        )}
       </StreamsBackgroundWrapper>
     </>
   );
