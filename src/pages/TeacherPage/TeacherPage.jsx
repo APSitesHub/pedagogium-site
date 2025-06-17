@@ -32,9 +32,12 @@ import { TeacherQuizTrueFalse } from './TeacherQuiz/TeacherQuizTrueFalse';
 // import { WhiteBoard } from './WhiteBoard/WhiteBoard';
 import { TeacherQuizFeedback } from './TeacherQuiz/TeacherQuizFeedback';
 import { QRCodeModal } from './TeacherQuiz/TeacherQR';
+import axios from 'axios';
+import NotFound from 'pages/NotFound/NotFound';
 
 const TeacherPage = () => {
   const { group } = useParams();
+  const [isGroupExist, setIsGroupExist] = useState(false);
   // eslint-disable-next-line
   const [isWhiteBoardOpen, setIsWhiteBoardOpen] = useState(false);
   // eslint-disable-next-line
@@ -82,6 +85,20 @@ const TeacherPage = () => {
 
   useEffect(() => {
     document.title = `Teacher ${group.toLocaleUpperCase()} | AP Education`;
+
+    const checkGroup = async () => {
+      const [course, groupNumber] = group.split('_');
+      const courses = await axios.get('/pedagogium-courses/admin');
+
+      setIsGroupExist(
+        courses.data.some(
+          group =>
+            group.slug === course && group.courseGroups.includes(+groupNumber)
+        )
+      );
+    };
+
+    checkGroup();
   }, [group]);
 
   // const toggleViewer = () => {
@@ -212,123 +229,132 @@ const TeacherPage = () => {
 
   return (
     <>
-      <NameInputBtn onClick={toggleNameInput}>
-        {isNameInputOpen ? <BoxHideUpSwitch /> : <BoxHideDownSwitch />}
-      </NameInputBtn>
-      <LessonInfoBox
-        className={
-          !teacherInfo.name + teacherInfo.level + teacherInfo.lesson
-            ? ''
-            : 'no-info'
-        }
-      >
-        {teacherInfo.name} <br />
-        {teacherInfo.level} {teacherInfo.lesson}
-      </LessonInfoBox>
-      <TeacherButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
-        {/* <ViewerBtn onClick={toggleViewer}>
+      {isGroupExist ? (
+        <>
+          <NameInputBtn onClick={toggleNameInput}>
+            {isNameInputOpen ? <BoxHideUpSwitch /> : <BoxHideDownSwitch />}
+          </NameInputBtn>
+          <LessonInfoBox
+            className={
+              !teacherInfo.name + teacherInfo.level + teacherInfo.lesson
+                ? ''
+                : 'no-info'
+            }
+          >
+            {teacherInfo.name} <br />
+            {teacherInfo.level} {teacherInfo.lesson}
+          </LessonInfoBox>
+          <TeacherButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+            {/* <ViewerBtn onClick={toggleViewer}>
           <ViewerLogo />
         </ViewerBtn> */}
-        {/* <WhiteBoardBtn onClick={toggleWhiteBoard}>
+            {/* <WhiteBoardBtn onClick={toggleWhiteBoard}>
           <WhiteBoardLogo />
         </WhiteBoardBtn> */}
-        {/* <PlatformBtn onClick={togglePlatform}>
+            {/* <PlatformBtn onClick={togglePlatform}>
           <PlatformLogo />
         </PlatformBtn> */}
-        <KahootBtn onClick={toggleKahoot}>
-          <KahootLogo />
-        </KahootBtn>
-        <InputBtn onClick={toggleInputButtonBox}>QUIZ</InputBtn>
-        <InputButtonBox className={isInputButtonBoxOpen ? '' : 'hidden'}>
-          <InputBtn onClick={toggleQuizInput}>TEXT</InputBtn>
+            <KahootBtn onClick={toggleKahoot}>
+              <KahootLogo />
+            </KahootBtn>
+            <InputBtn onClick={toggleInputButtonBox}>QUIZ</InputBtn>
+            <InputButtonBox className={isInputButtonBoxOpen ? '' : 'hidden'}>
+              <InputBtn onClick={toggleQuizInput}>TEXT</InputBtn>
 
-          <InputBtn onClick={toggleQuizOptions}>A-B-C</InputBtn>
+              <InputBtn onClick={toggleQuizOptions}>A-B-C</InputBtn>
 
-          <InputBtn onClick={toggleQuizTrueFalse}>TRUE FALSE</InputBtn>
+              <InputBtn onClick={toggleQuizTrueFalse}>TRUE FALSE</InputBtn>
 
-          <InputBtn onClick={toggleQROPen}>QR</InputBtn>
+              <InputBtn onClick={toggleQROPen}>QR</InputBtn>
 
-          {/* TODO: delete conditional randering ↓ */}
-          {['a0', 'a0_2', 'a1', 'a2'].includes(group) && (
-            <InputBtn onClick={toggleQuizFeedback}>FEED BACK</InputBtn>
-          )}
-        </InputButtonBox>
-      </TeacherButtonBox>
-      <TeacherButtonBoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
-        {isButtonBoxOpen ? <BoxHideRightSwitch /> : <BoxHideLeftSwitch />}
-      </TeacherButtonBoxHideSwitch>
+              {/* TODO: delete conditional randering ↓ */}
+              {['a0', 'a0_2', 'a1', 'a2'].includes(group) && (
+                <InputBtn onClick={toggleQuizFeedback}>FEED BACK</InputBtn>
+              )}
+            </InputButtonBox>
+          </TeacherButtonBox>
+          <TeacherButtonBoxHideSwitch
+            id="no-transform"
+            onClick={toggleButtonBox}
+          >
+            {isButtonBoxOpen ? <BoxHideRightSwitch /> : <BoxHideLeftSwitch />}
+          </TeacherButtonBoxHideSwitch>
 
-      {/* <Viewer
+          {/* <Viewer
         page={group}
         sectionWidth={width}
         isViewerOpen={isViewerOpen}
         isOpenedLast={isOpenedLast}
       /> */}
 
-      <Platform
-        page={group}
-        sectionWidth={width}
-        isPlatformOpen={true}
-        isOpenedLast={isOpenedLast}
-      />
-      <HostKahoots
-        page={group}
-        sectionWidth={width}
-        sectionHeight={height}
-        isKahootOpen={isKahootOpen}
-        isOpenedLast={isOpenedLast}
-      />
-      <TeacherChat page={group} />
-      <TeacherQuizInput
-        page={group}
-        isQuizInputOpen={isQuizInputOpen}
-        isQuizOptionsOpen={isQuizOptionsOpen}
-        isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-        isQuizFeedbackOpen={isQuizFeedbackOpen}
-        closeInputs={closeInputs}
-        isOpenedLast={isOpenedLast}
-        questionID={questionID.current}
-        changeQuestionID={changeQuestionID}
-      />
-      <TeacherQuizOptions
-        page={group}
-        isQuizInputOpen={isQuizInputOpen}
-        isQuizOptionsOpen={isQuizOptionsOpen}
-        isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-        isQuizFeedbackOpen={isQuizFeedbackOpen}
-        closeInputs={closeInputs}
-        isOpenedLast={isOpenedLast}
-        questionID={questionID.current}
-        changeQuestionID={changeQuestionID}
-      />
-      <TeacherQuizTrueFalse
-        page={group}
-        isQuizInputOpen={isQuizInputOpen}
-        isQuizOptionsOpen={isQuizOptionsOpen}
-        isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-        isQuizFeedbackOpen={isQuizFeedbackOpen}
-        closeInputs={closeInputs}
-        isOpenedLast={isOpenedLast}
-        questionID={questionID.current}
-        changeQuestionID={changeQuestionID}
-      />
-      <TeacherQuizFeedback
-        page={group}
-        isQuizInputOpen={isQuizInputOpen}
-        isQuizOptionsOpen={isQuizOptionsOpen}
-        isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-        isQuizFeedbackOpen={isQuizFeedbackOpen}
-        closeInputs={closeInputs}
-        isOpenedLast={isOpenedLast}
-        questionID={questionID.current}
-        changeQuestionID={changeQuestionID}
-        teacherName={teacherInfo.name}
-      />
-      <QRCodeModal onClose={toggleQROPen} isOpen={isQROpen} />
-      <NameInput
-        isNameInputOpen={isNameInputOpen}
-        changeTeacherInfo={changeTeacherInfo}
-      />
+          <Platform
+            page={group}
+            sectionWidth={width}
+            isPlatformOpen={true}
+            isOpenedLast={isOpenedLast}
+          />
+          <HostKahoots
+            page={group}
+            sectionWidth={width}
+            sectionHeight={height}
+            isKahootOpen={isKahootOpen}
+            isOpenedLast={isOpenedLast}
+          />
+          <TeacherChat page={group} />
+          <TeacherQuizInput
+            page={group}
+            isQuizInputOpen={isQuizInputOpen}
+            isQuizOptionsOpen={isQuizOptionsOpen}
+            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+            isQuizFeedbackOpen={isQuizFeedbackOpen}
+            closeInputs={closeInputs}
+            isOpenedLast={isOpenedLast}
+            questionID={questionID.current}
+            changeQuestionID={changeQuestionID}
+          />
+          <TeacherQuizOptions
+            page={group}
+            isQuizInputOpen={isQuizInputOpen}
+            isQuizOptionsOpen={isQuizOptionsOpen}
+            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+            isQuizFeedbackOpen={isQuizFeedbackOpen}
+            closeInputs={closeInputs}
+            isOpenedLast={isOpenedLast}
+            questionID={questionID.current}
+            changeQuestionID={changeQuestionID}
+          />
+          <TeacherQuizTrueFalse
+            page={group}
+            isQuizInputOpen={isQuizInputOpen}
+            isQuizOptionsOpen={isQuizOptionsOpen}
+            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+            isQuizFeedbackOpen={isQuizFeedbackOpen}
+            closeInputs={closeInputs}
+            isOpenedLast={isOpenedLast}
+            questionID={questionID.current}
+            changeQuestionID={changeQuestionID}
+          />
+          <TeacherQuizFeedback
+            page={group}
+            isQuizInputOpen={isQuizInputOpen}
+            isQuizOptionsOpen={isQuizOptionsOpen}
+            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+            isQuizFeedbackOpen={isQuizFeedbackOpen}
+            closeInputs={closeInputs}
+            isOpenedLast={isOpenedLast}
+            questionID={questionID.current}
+            changeQuestionID={changeQuestionID}
+            teacherName={teacherInfo.name}
+          />
+          <QRCodeModal onClose={toggleQROPen} isOpen={isQROpen} />
+          <NameInput
+            isNameInputOpen={isNameInputOpen}
+            changeTeacherInfo={changeTeacherInfo}
+          />
+        </>
+      ) : (
+        <NotFound />
+      )}
     </>
   );
 };

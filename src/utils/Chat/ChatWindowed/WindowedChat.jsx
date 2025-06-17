@@ -1,31 +1,18 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { ChatWindowed } from 'utils/Chat/ChatWindowed/ChatWindowed';
 import { ChatWindowedBox } from '../../../components/Stream/Stream.styled';
 
 export const WindowedChat = () => {
+  const { group } = useParams();
   const [messages, setMessages] = useState([]);
   const location = useLocation().pathname;
-
-  const room = `${document.title
-    .split(' ')[0]
-    .trim()
-    .trimEnd()
-    .toLowerCase()}_${location.replace('/lesson/', '').split('-chat')[0]}`;
-
-  console.log(room);
-
   const socketRef = useRef(null);
 
   useEffect(() => {
-    document.title = `Pedagogium ${location
-      .replace('/lesson/', '')[0]
-      .toUpperCase()}${location
-      .replace('/lesson/', '')
-      .slice(1)
-      .replace('-chat', '')} Chat Window`;
+    document.title = `Pedagogium ${group} Chat Window`;
 
     socketRef.current = io('https://ap-chat-server.onrender.com/');
 
@@ -41,38 +28,11 @@ export const WindowedChat = () => {
           `https://ap-chat-server.onrender.com/messages/room`,
           {
             params: {
-              room,
+              group,
             },
           }
         );
-        let b1BeginnerMessages = {};
-        let b2BeginnerMessages = {};
-        if (room === '/streams-kids/a2') {
-          b1BeginnerMessages = await axios.get(
-            `https://ap-chat-server.onrender.com/messages/room`,
-            {
-              params: {
-                room: '/streams-kids/b1beginner',
-              },
-            }
-          );
-          b2BeginnerMessages = await axios.get(
-            `https://ap-chat-server.onrender.com/messages/room`,
-            {
-              params: {
-                room: '/streams-kids/b2beginner',
-              },
-            }
-          );
-        }
-        const addedMessages =
-          b1BeginnerMessages?.data?.length && b2BeginnerMessages?.data?.length
-            ? [...b1BeginnerMessages.data, ...b2BeginnerMessages.data]
-            : [];
-        const allMessages = addedMessages.length
-          ? [...dbMessages.data, ...addedMessages]
-          : [...dbMessages.data];
-        const todayMessages = allMessages.filter(
+        const todayMessages = dbMessages.filter(
           message =>
             new Date(message.createdAt).getDate() === new Date().getDate()
         );
@@ -174,7 +134,7 @@ export const WindowedChat = () => {
       socketRef.current.off('message');
       socketRef.current.disconnect();
     };
-  }, [room, location]);
+  }, [group, location]);
 
   return (
     <>
@@ -182,7 +142,7 @@ export const WindowedChat = () => {
         <ChatWindowed
           socket={socketRef.current}
           messages={messages}
-          room={room}
+          room={group}
         />
       </ChatWindowedBox>
     </>

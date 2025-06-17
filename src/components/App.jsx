@@ -136,6 +136,11 @@ export const App = () => {
           <Route path="lesson" element={<Streams />} noindex={true}>
             <Route path=":group" element={<Stream />} noindex={true} />
           </Route>
+
+          <Route path="chat" element={<Streams />} noindex={true}>
+            <Route path=":group" element={<WindowedChat />} noindex={true} />
+          </Route>
+
           <Route path="chatbot" element={<TestChatBot />} noindex={true} />
         </Routes>
       </Suspense>

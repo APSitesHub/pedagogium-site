@@ -21,6 +21,13 @@ import {
   UsersForm,
 } from './TeacherAdminPanel.styled';
 import { TeacherEditForm } from './TeacherEditForm/TeacherEditForm';
+import {
+  BoxHideLeftSwitch,
+  BoxHideRightSwitch,
+  BoxHideSwitch,
+  ButtonBox,
+} from 'components/Stream/Stream.styled';
+import { LinkTo } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 // axios.defaults.baseURL = 'http://localhost:3001';
@@ -35,6 +42,7 @@ const TeacherAdminPanel = () => {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const [teacherToEdit, setTeacherToEdit] = useState({});
   const [isTimeToUpdate, setIsTimeToUpdate] = useState(false);
+  const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
 
   useEffect(() => {
     document.title = 'Teacher Admin Panel | Pedagogium';
@@ -88,6 +96,10 @@ const TeacherAdminPanel = () => {
     login: yup.string().required('Podaj login!'),
     password: yup.string().required('Wprowadź hasło!'),
   });
+
+  const toggleButtonBox = () => {
+    setIsButtonBoxOpen(isOpen => !isOpen);
+  };
 
   const changeDateFormat = dateString => {
     if (dateString) {
@@ -223,39 +235,64 @@ const TeacherAdminPanel = () => {
         )}
 
         {isUserAdmin && (
-          <Formik
-            initialValues={initialTeacherValues}
-            onSubmit={handleTeacherSubmit}
-            validationSchema={teachersSchema}
-          >
-            <UsersForm>
-              <Label>
-                <AdminInput
-                  type="text"
-                  name="name"
-                  placeholder="Nazwisko i imię"
-                />
-                <AdminInputNote component="p" name="name" />
-              </Label>
-              <Label>
-                <AdminInput type="text" name="login" placeholder="Login" />
-                <AdminInputNote component="p" name="login" />
-              </Label>
-              <Label>
-                <AdminInput type="text" name="password" placeholder="Hasło" />
-                <AdminInputNote component="p" name="password" />
-              </Label>
-              <Label>
-                <AdminInput
-                  type="text"
-                  name="platformId"
-                  placeholder="ID platformy"
-                />
-                <AdminInputNote component="p" name="platformId" />
-              </Label>
-              <AdminFormBtn type="submit">Dodaj nauczyciela</AdminFormBtn>
-            </UsersForm>
-          </Formik>
+          <>
+            <ButtonBox
+              className={!isButtonBoxOpen ? 'hidden' : ''}
+              style={{
+                backgroundColor: '#fff',
+                padding: '8px',
+                border: '1px solid gray',
+                borderRadius: '24px',
+                top: '100px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              }}
+            >
+              <LinkTo to={'/admin'}>Panel kursów</LinkTo>
+              <LinkTo $isDisabled to={'/admin-teacher'}>
+                Panel kuratora
+              </LinkTo>
+              <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Panel host-kahutów</LinkTo>
+            </ButtonBox>
+
+            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+              {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
+            </BoxHideSwitch>
+            <Formik
+              initialValues={initialTeacherValues}
+              onSubmit={handleTeacherSubmit}
+              validationSchema={teachersSchema}
+            >
+              <UsersForm>
+                <Label>
+                  <AdminInput
+                    type="text"
+                    name="name"
+                    placeholder="Nazwisko i imię"
+                  />
+                  <AdminInputNote component="p" name="name" />
+                </Label>
+                <Label>
+                  <AdminInput type="text" name="login" placeholder="Login" />
+                  <AdminInputNote component="p" name="login" />
+                </Label>
+                <Label>
+                  <AdminInput type="text" name="password" placeholder="Hasło" />
+                  <AdminInputNote component="p" name="password" />
+                </Label>
+                <Label>
+                  <AdminInput
+                    type="text"
+                    name="platformId"
+                    placeholder="ID platformy"
+                  />
+                  <AdminInputNote component="p" name="platformId" />
+                </Label>
+                <AdminFormBtn type="submit">Dodaj nauczyciela</AdminFormBtn>
+              </UsersForm>
+            </Formik>
+          </>
         )}
         {isUserAdmin && (
           <UserDBTable>

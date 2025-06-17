@@ -28,9 +28,11 @@ export const SpeakingSelect = styled(FormSelect)`
 
 export const AdminPanelSection = styled.section`
   height: 100vh;
+  max-width: 1024px;
   padding: 30px 20px;
   display: flex;
   align-items: flex-start;
+  margin: 0 auto;
 
   gap: 30px;
 `;
