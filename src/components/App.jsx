@@ -31,6 +31,12 @@ const TeacherMain = lazy(() =>
   )
 );
 
+const TeacherPageFeedback = lazy(() =>
+  import(
+    /* webpackChunkName: "Teacher page" */ '../pages/TeacherPage/TeacherPageFeedback'
+  )
+);
+
 const TeacherAdminPanel = lazy(() =>
   import(
     /* webpackChunkName: "Teacher page" */ '../pages/AdminPanel/TeacherAdminPanel'
@@ -104,6 +110,12 @@ export const App = () => {
           <Route path="*" element={<NotFound />} noindex={true} />
 
           <Route path="teacher-main" element={<TeacherMain />} noindex={true} />
+
+          <Route
+            path="teacher-feedback"
+            element={<TeacherPageFeedback />}
+            noindex={true}
+          />
 
           <Route path="teacher" element={<Teacher />} noindex={true}>
             <Route path=":group" element={<TeacherPage />} noindex={true} />
