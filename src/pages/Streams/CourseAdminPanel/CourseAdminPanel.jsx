@@ -30,6 +30,7 @@ import {
   LinkToTeacherAdminPanel,
 } from './CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
+import { slugify, transliterate } from 'transliteration';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -188,6 +189,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
     values.courseGroups = [...Array(Math.ceil(values.courseGroups)).keys()].map(
       i => i + 1
     );
+    values.slug = slugify(transliterate(values.courseName));
 
     setIsLoading(isLoading => (isLoading = true));
     try {

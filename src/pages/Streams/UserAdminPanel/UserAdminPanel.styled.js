@@ -4,7 +4,7 @@ import { Field, Form } from 'formik';
 import { InputNote } from 'components/LeadForm/LeadForm.styled';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { FormBtn, } from 'components/LeadForm/LeadForm.styled';
+import { FormBtn } from 'components/LeadForm/LeadForm.styled';
 
 export const AdminPanelSection = styled.section`
   height: max-content;
@@ -41,7 +41,8 @@ export const Input = styled(Field)`
     &,
     &:hover,
     &:focus {
-      -webkit-box-shadow: 0 0 0px 1000px var(--accent-semi-transparent-color) inset;
+      -webkit-box-shadow: 0 0 0px 1000px var(--accent-semi-transparent-color)
+        inset;
     }
   }
 
@@ -88,12 +89,13 @@ export const AdminInputNote = styled(InputNote)`
   bottom: -1.1em;
 `;
 
-
 export const UsersForm = styled(Form)`
   margin: 0 auto;
 
   position: sticky;
   top: 50%;
+
+  width: 400px;
 
   transform: translateY(-50%);
 
@@ -125,7 +127,6 @@ export const UserEditButton = styled.button`
   border: 1px solid var(--accent-color);
   border-radius: 5px;
 `;
-
 
 export const UserDBTable = styled.table`
   max-width: 50vw;

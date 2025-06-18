@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
@@ -11,23 +11,22 @@ import {
   AdminInputNote,
   AdminPanelSection,
   LoginForm,
-  UserDeleteButton,
   UserEditButton,
   UsersForm,
 } from '../UserAdminPanel/UserAdminPanel.styled';
 import {
+  FormField,
   FormSelect,
   ScheduleData,
   ScheduleDataDayText,
   ScheduleDataTimeText,
-  ScheduleDataTypeText,
   ScheduleHeading,
   ScheduleInfo,
   ScheduleItem,
   ScheduleList,
+  TimetableDeleteButton,
 } from './TimeTableAdminPanel.styled';
 import { TimeTableEditForm } from './TimeTableEditForm/TimeTableEditForm';
-import { TimeTableCourseLevelEditForm } from './TimeTableCourseLevelEditForm/TimeTableCourseLevelEditForm';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 const setAuthToken = token => {
@@ -37,17 +36,14 @@ const setAuthToken = token => {
 const TimeTableAdminPanel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
+  const [courses, setCourses] = useState([]);
   const [lessons, setLessons] = useState([]);
   const [lessonToEdit, setLessonToEdit] = useState({});
   const [scheduleToEdit, setScheduleToEdit] = useState('');
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-  const [isEditCourseLevelFormOpen, setIsEditCourseLevelFormOpen] = useState(false);
-  const [langValue, setLangValue] = useState('');
-  const [levelValue, setLevelValue] = useState('');
-  const [courseValue, setCourseValue] = useState('');
-  const [dayValue, setDayValue] = useState('');
-  const [typeValue, setTypeValue] = useState('');
-  const [packageValue, setPackageValue] = useState('');
+  const [courseValue, setCourseValue] = useState(null);
+  const [groupValue, setGroupValue] = useState(null);
+  const [dayValue, setDayValue] = useState(null);
 
   useEffect(() => {
     document.title = 'Timetable Admin Panel | AP Education';
@@ -66,10 +62,23 @@ const TimeTableAdminPanel = () => {
     };
     refreshToken();
 
+    const getCourses = async () => {
+      try {
+        if (isUserAdmin) {
+          const response = await axios.get('/pedagogium-courses/admin');
+          console.log(response);
+          setCourses(courses => (courses = [...response.data]));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getCourses();
+
     const getLessons = async () => {
       try {
         if (isUserAdmin) {
-          const response = await axios.get('/timetable/');
+          const response = await axios.get('/pedagogium-timetable/');
           console.log(response);
           setLessons(lessons => (lessons = [...response.data]));
         }
@@ -90,9 +99,9 @@ const TimeTableAdminPanel = () => {
     return () => {
       window.removeEventListener('keydown', onEscapeClose);
     };
-  }, [isUserAdmin, isLoading, isEditFormOpen, isEditCourseLevelFormOpen]);
+  }, [isUserAdmin, isLoading, isEditFormOpen]);
 
-  const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+  const DAYS = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'];
 
   const initialLoginValues = {
     login: '',
@@ -100,8 +109,8 @@ const TimeTableAdminPanel = () => {
   };
 
   const loginSchema = yup.object().shape({
-    login: yup.string().required('Вкажіть логін!'),
-    password: yup.string().required('Введіть пароль!'),
+    login: yup.string().required('Podaj login!'),
+    password: yup.string().required('Podaj hasło!'),
   });
 
   const handleLoginSubmit = async (values, { resetForm }) => {
@@ -120,56 +129,48 @@ const TimeTableAdminPanel = () => {
   };
 
   const initialTimetableValues = {
-    lang: '',
-    level: '',
-    course: '',
+    group: '',
     day: '',
-    type: '',
-    package: '',
     time: '',
     lessonNumber: '',
-    teacher: '',
+    topic: '',
   };
 
   const timetableSchema = yup.object().shape({
-    lang: yup.string(),
-    level: yup.string(),
-    course: yup.string(),
+    group: yup.string(),
     day: yup.string(),
-    type: yup.string(),
-    package: yup.string(),
     time: yup.string(),
     lessonNumber: yup.string(),
-    teacher: yup.string(),
+    topic: yup.string(),
   });
 
   const handleTimetableSubmit = async (values, { resetForm }) => {
     values = {
-      lang: langValue,
-      level: levelValue,
-      course: courseValue,
+      group: groupValue,
       schedule: [
         {
           day: dayValue,
-          type: typeValue,
-          package: packageValue,
           time: values.time,
           lessonNumber: values.lessonNumber,
-          teacher: values.teacher,
+          topic: values.topic,
         },
       ],
     };
+    setCourseValue(course => (course = null));
+    setGroupValue(group => (group = null));
+    setDayValue(day => (day = null));
 
-    console.log(values);
     setIsLoading(isLoading => (isLoading = true));
     try {
-      const response = await axios.post('/timetable', values);
+      const response = await axios.post('/pedagogium-timetable', values);
       console.log(response);
       resetForm();
-      alert('Урок додано');
+      alert('Lekcja pomyślnie dodana');
     } catch (error) {
       console.error(error);
-      alert('Десь якась проблема - клацай F12, роби скрін консолі, відправляй Кирилу');
+      alert(
+        'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.'
+      );
     } finally {
       setIsLoading(isLoading => (isLoading = false));
     }
@@ -179,515 +180,59 @@ const TimeTableAdminPanel = () => {
     setIsEditFormOpen(false);
   };
 
-  const closeCourseLevelEditForm = e => {
-    setIsEditCourseLevelFormOpen(false);
-  };
+  const courseOptions = courses.map(
+    course =>
+      (course = {
+        label: `${course.courseName} `,
+        value: `${course.slug}`,
+      })
+  );
 
-  const languageOptions = [
-    {
-      label: 'Англійська',
-      value: 'en',
-    },
-    {
-      label: 'Англійська, діти',
-      value: 'enkids',
-    },
-    {
-      label: 'Німецька',
-      value: 'de',
-    },
-    {
-      label: 'Німецька, діти',
-      value: 'dekids',
-    },
-    {
-      label: 'Польська',
-      value: 'pl',
-    },
-    {
-      label: 'Польська, діти',
-      value: 'plkids',
-    },
-  ];
-
-  const levelOptions = [
-    {
-      label: 'A0',
-      value: 'a0',
-    },
-    {
-      label: 'A1',
-      value: 'a1',
-    },
-    {
-      label: 'A2',
-      value: 'a2',
-    },
-    {
-      label: 'B1',
-      value: 'b1',
-    },
-    {
-      label: 'B2',
-      value: 'b2',
-    },
-    {
-      label: 'C1',
-      value: 'c1',
-    },
-  ];
-
-  const courseEnglishOptions = [
-    {
-      label: '10 (Спікінги)',
-      value: '10',
-    },
-    {
-      label: '11',
-      value: '11',
-    },
-    {
-      label: '11(Спікінги)',
-      value: '11',
-    },
-    {
-      label: '11 PRE',
-      value: '11pre',
-    },
-    {
-      label: '11 BEG',
-      value: '11beg',
-    },
-    {
-      label: '11 MID',
-      value: '11mid',
-    },
-    {
-      label: '11 HIGH',
-      value: '11high',
-    },
-    {
-      label: '12',
-      value: '12',
-    },
-    {
-      label: '12 PRE',
-      value: '12pre',
-    },
-    {
-      label: '12 BEG',
-      value: '12beg',
-    },
-    {
-      label: '12 MID',
-      value: '12mid',
-    },
-    {
-      label: '12 HIGH',
-      value: '12high',
-    },
-    {
-      label: '13',
-      value: '13',
-    },
-    {
-      label: '23',
-      value: '23',
-    },
-    {
-      label: '23 PRE',
-      value: '23pre',
-    },
-    {
-      label: '23 BEG',
-      value: '23beg',
-    },
-    {
-      label: '23 MID',
-      value: '23mid',
-    },
-    {
-      label: '23 HIGH',
-      value: '23high',
-    },
-    {
-      label: '24',
-      value: '24',
-    },
-    {
-      label: '24 PRE',
-      value: '24pre',
-    },
-    {
-      label: '24 BEG',
-      value: '24beg',
-    },
-    {
-      label: '24 MID',
-      value: '24mid',
-    },
-    {
-      label: '24 HIGH',
-      value: '24high',
-    },
-    {
-      label: '25',
-      value: '25',
-    },
-    {
-      label: '31',
-      value: '31',
-    },
-    {
-      label: '32',
-      value: '32',
-    },
-    {
-      label: '43',
-      value: '43',
-    },
-    {
-      label: '44',
-      value: '44',
-    },
-    {
-      label: '51',
-      value: '51',
-    },
-    {
-      label: '52',
-      value: '52',
-    },
-  ];
-
-  const courseDeutschOptions = [
-    {
-      label: '10 (Спікінги)',
-      value: '10',
-    },
-    {
-      label: '11',
-      value: '11',
-    },
-    {
-      label: '11(Спікінги)',
-      value: '11',
-    },
-    {
-      label: '12',
-      value: '12',
-    },
-    {
-      label: '12_1',
-      value: '12_1',
-    },
-    {
-      label: '12_2',
-      value: '12_2',
-    },
-    {
-      label: '12_3',
-      value: '12_3',
-    },
-    {
-      label: '23',
-      value: '23',
-    },
-    {
-      label: '24',
-      value: '24',
-    },
-    {
-      label: '24_1',
-      value: '24_1',
-    },
-    {
-      label: '24_2',
-      value: '24_2',
-    },
-    {
-      label: '31',
-      value: '31',
-    },
-    {
-      label: '32',
-      value: '32',
-    },
-    {
-      label: '43',
-      value: '43',
-    },
-    {
-      label: '44',
-      value: '44',
-    },
-    {
-      label: '51',
-      value: '51',
-    },
-    {
-      label: '52',
-      value: '52',
-    },
-  ];
-
-  const courseOptions = [
-    {
-      label: '10 (Спікінги)',
-      value: '10',
-    },
-    {
-      label: '11',
-      value: '11',
-    },
-    {
-      label: '11(Спікінги)',
-      value: '11',
-    },
-    {
-      label: '12',
-      value: '12',
-    },
-    {
-      label: '23',
-      value: '23',
-    },
-    {
-      label: '24',
-      value: '24',
-    },
-    {
-      label: '31',
-      value: '31',
-    },
-    {
-      label: '32',
-      value: '32',
-    },
-    {
-      label: '43',
-      value: '43',
-    },
-    {
-      label: '44',
-      value: '44',
-    },
-    {
-      label: '51',
-      value: '51',
-    },
-    {
-      label: '52',
-      value: '52',
-    },
-  ];
-
-  const levelOptionsWithBeginners = [
-    {
-      label: 'A0',
-      value: 'a0',
-    },
-    {
-      label: 'A1',
-      value: 'a1',
-    },
-    {
-      label: 'A2',
-      value: 'a2',
-    },
-    {
-      label: 'B1',
-      value: 'b1',
-    },
-    {
-      label: 'B1 Beginner',
-      value: 'b1beginner',
-    },
-    {
-      label: 'B2',
-      value: 'b2',
-    },
-    {
-      label: 'B2 Beginner',
-      value: 'b2beginner',
-    },
-    {
-      label: 'C1',
-      value: 'c1',
-    },
-  ];
-
-  const levelOptionsForDe = [
-    {
-      label: 'A0',
-      value: 'a0',
-    },
-    {
-      label: 'A1',
-      value: 'a1',
-    },
-    {
-      label: 'A2',
-      value: 'a2',
-    },
-    {
-      label: 'B1',
-      value: 'b1',
-    },
-    {
-      label: 'B1_1',
-      value: 'b1_1',
-    },
-    {
-      label: 'B1_2',
-      value: 'b1_2',
-    },
-    {
-      label: 'B2',
-      value: 'b2',
-    },
-    {
-      label: 'B2_1',
-      value: 'b2_1',
-    },
-    {
-      label: 'B2_2',
-      value: 'b2_2',
-    },
-    {
-      label: 'B2_3',
-      value: 'b2_3',
-    },
-    {
-      label: 'C1',
-      value: 'c1',
-    },
-  ];
-
-  const levelOptionsForDeKids = [
-    {
-      label: 'A0',
-      value: 'a0',
-    },
-    {
-      label: 'A1',
-      value: 'a1',
-    },
-    {
-      label: 'A2',
-      value: 'a2',
-    },
-    {
-      label: 'B1',
-      value: 'b1',
-    },
-  ];
-
-  const levelOptionsForPlKids = [
-    {
-      label: 'A0',
-      value: 'a0',
-    },
-    {
-      label: 'A1',
-      value: 'a1',
-    },
-    {
-      label: 'A2',
-      value: 'a2',
-    },
-    {
-      label: 'B1',
-      value: 'b1',
-    },
-  ];
+  const groupsOptions = courses.flatMap(
+    course =>
+      (course = course.courseGroups.map(
+        group =>
+          (group = {
+            label: group,
+            value: `${course.slug}_${group}`,
+          })
+      ))
+  );
 
   const daysOptions = [
     {
-      label: 'Понеділок',
+      label: 'Poniedziałek',
       value: '1',
     },
     {
-      label: 'Вівторок',
+      label: 'Wtorek',
       value: '2',
     },
     {
-      label: 'Середа',
+      label: 'Środa',
       value: '3',
     },
     {
-      label: 'Четвер',
+      label: 'Czwartek',
       value: '4',
     },
     {
-      label: "П'ятниця",
+      label: 'Piątek',
       value: '5',
     },
     {
-      label: 'Субота',
+      label: 'Sobota',
       value: '6',
     },
     {
-      label: 'Неділя',
+      label: 'Niedziela',
       value: '0',
-    },
-  ];
-
-  const typeOptions = [
-    {
-      label: 'Вебінар',
-      value: 'webinar',
-    },
-    {
-      label: 'Вебінар, повторення',
-      value: 'webinar, repeat',
-    },
-    {
-      label: 'Мовна практика',
-      value: 'speaking',
-    },
-  ];
-
-  const packageOptions = [
-    {
-      label: 'Easy',
-      value: 'easy',
-    },
-    {
-      label: 'Easy+',
-      value: 'easy+',
-    },
-    {
-      label: 'Basic',
-      value: 'basic',
-    },
-    {
-      label: 'Standart',
-      value: 'standart',
-    },
-    {
-      label: 'Pro',
-      value: 'pro',
-    },
-    {
-      label: 'Online Курс',
-      value: 'online',
-    },
-    {
-      label: 'Додаткові мовні практики',
-      value: 'sc',
     },
   ];
 
   const closeEditFormOnClick = e => {
     if (e.target.id === 'close-on-click') {
       setIsEditFormOpen(false);
-    }
-  };
-
-  const closeEditCourseLevelFormOnClick = e => {
-    if (e.target.id === 'close-on-click') {
-      setIsEditCourseLevelFormOpen(false);
     }
   };
 
@@ -703,29 +248,75 @@ const TimeTableAdminPanel = () => {
     );
   };
 
-  const handleCourseLevelEdit = async id => {
-    setIsEditCourseLevelFormOpen(true);
-    setLessonToEdit(
-      lessonToEdit => (lessonToEdit = lessons.find(lesson => lesson._id === id))
-    );
-  };
-
   const handleDelete = async (parentId, scheduleId) => {
     setIsLoading(isLoading => (isLoading = true));
-    console.log(parentId);
+    const timetableToDelete = lessons.find(
+      timetable => timetable._id === parentId
+    );
+    const scheduleToDelete = timetableToDelete.schedule.find(
+      schedule => schedule._id === scheduleId
+    );
 
-    try {
-      const response = await axios.patch(`/timetable/schedule/${parentId}`, {
-        _id: parentId,
-        scheduleId,
-      });
-      console.log(response);
-      alert('Урок видалено');
-    } catch (error) {
-      console.error(error);
-      alert('Десь якась проблема - роби скрін консолі, відправляй Кирилу');
-    } finally {
+    const areYouSure = window.confirm(
+      `Czy na pewno chcesz usunąć lekcję grupy ${timetableToDelete.group.replace(
+        /(-)|(_)/g,
+        ' '
+      )} z przedmiotu  ${scheduleToDelete.topic} w ${
+        DAYS[scheduleToDelete.day]
+      } o ${scheduleToDelete.time}?`
+    );
+
+    if (!areYouSure) {
       setIsLoading(isLoading => (isLoading = false));
+      return;
+    } else {
+      try {
+        const response = await axios.patch(
+          `/pedagogium-timetable/schedule/${parentId}`,
+          {
+            _id: parentId,
+            scheduleId,
+          }
+        );
+        console.log(response);
+        alert('Lekcja pomyślnie usunięta');
+      } catch (error) {
+        console.error(error);
+        alert(
+          'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.'
+        );
+      } finally {
+        setIsLoading(isLoading => (isLoading = false));
+      }
+    }
+  };
+
+  const handleTimetableDelete = async id => {
+    setIsLoading(isLoading => (isLoading = true));
+    const timetableToDelete = lessons.find(timetable => timetable._id === id);
+    const areYouSure = window.confirm(
+      `Czy na pewno chcesz usunąć harmonogram grupy ${timetableToDelete.group.replace(
+        /(-)|(_)/g,
+        ' '
+      )}?`
+    );
+
+    if (!areYouSure) {
+      setIsLoading(isLoading => (isLoading = false));
+      return;
+    } else {
+      try {
+        const response = await axios.delete(`/pedagogium-timetable/${id}`);
+        console.log(312, response);
+        alert('Harmonogram pomyślnie usunięty');
+      } catch (error) {
+        console.error(error);
+        alert(
+          'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.'
+        );
+      } finally {
+        setIsLoading(isLoading => (isLoading = false));
+      }
     }
   };
 
@@ -744,10 +335,14 @@ const TimeTableAdminPanel = () => {
                 <AdminInputNote component="p" name="login" />
               </Label>
               <Label>
-                <AdminInput type="password" name="password" placeholder="Password" />
+                <AdminInput
+                  type="password"
+                  name="password"
+                  placeholder="Hasło"
+                />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <AdminFormBtn type="submit">Залогінитись</AdminFormBtn>
+              <AdminFormBtn type="submit">Zaloguj się</AdminFormBtn>
             </LoginForm>
           </Formik>
         )}
@@ -760,7 +355,8 @@ const TimeTableAdminPanel = () => {
           >
             <UsersForm>
               <FormSelect
-                options={languageOptions}
+                value={courseValue ? courseValue.value : null}
+                options={courseOptions}
                 styles={{
                   control: (baseStyles, state) => ({
                     ...baseStyles,
@@ -768,59 +364,33 @@ const TimeTableAdminPanel = () => {
                     borderRadius: '0px',
                   }),
                 }}
-                placeholder="Мова"
-                name="lang"
-                onChange={lang => {
-                  setLangValue(lang.value);
-                }}
-              />
-              <FormSelect
-                options={
-                  langValue === 'enkids'
-                    ? levelOptionsWithBeginners
-                    : langValue === 'dekids'
-                    ? levelOptionsForDeKids
-                    : langValue === 'plkids'
-                    ? levelOptionsForPlKids
-                    : langValue === 'de'
-                    ? levelOptionsForDe
-                    : levelOptions
-                }
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Рівень"
-                name="level"
-                onChange={level => {
-                  setLevelValue(level.value);
-                }}
-              />
-              <FormSelect
-                options={
-                  langValue === 'en' || langValue === 'enkids'
-                    ? courseEnglishOptions
-                    : langValue === 'de'
-                    ? courseDeutschOptions
-                    : courseOptions
-                }
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Потік"
+                placeholder="Kurs"
                 name="course"
                 onChange={course => {
                   setCourseValue(course.value);
                 }}
               />
               <FormSelect
+                value={groupValue ? groupValue.value : null}
+                options={groupsOptions.filter(option =>
+                  option.value.includes(courseValue)
+                )}
+                isDisabled={!courseValue ? true : false}
+                styles={{
+                  control: (baseStyles, state) => ({
+                    ...baseStyles,
+                    border: 'none',
+                    borderRadius: '0px',
+                  }),
+                }}
+                placeholder="Grupa"
+                name="group"
+                onChange={group => {
+                  setGroupValue(group.value);
+                }}
+              />
+              <FormSelect
+                value={dayValue ? dayValue.value : null}
                 options={daysOptions}
                 styles={{
                   control: (baseStyles, state) => ({
@@ -829,71 +399,47 @@ const TimeTableAdminPanel = () => {
                     borderRadius: '0px',
                   }),
                 }}
-                placeholder="День"
+                placeholder="Dzień tygodnia"
                 name="day"
                 onChange={day => {
                   setDayValue(day.value);
                 }}
               />
-              <FormSelect
-                options={typeOptions}
-                styles={{
-                  control: baseStyles => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Тип заняття"
-                name="type"
-                onChange={type => {
-                  setTypeValue(type.value);
-                }}
-              />
-              <FormSelect
-                options={packageOptions}
-                styles={{
-                  control: baseStyles => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Найнижчий доступний пакет"
-                name="package"
-                onChange={pack => {
-                  setPackageValue(pack.value);
-                }}
-              />
               <Label>
-                <AdminInput type="text" name="time" placeholder="Час" />
+                <FormField type="text" name="time" placeholder="Czas" />
                 <AdminInputNote component="p" name="time" />
               </Label>
               <Label>
-                <AdminInput type="text" name="lessonNumber" placeholder="Номер уроку" />
+                <FormField
+                  type="text"
+                  name="lessonNumber"
+                  placeholder="Numer lekcji"
+                />
                 <AdminInputNote component="p" name="lessonNumber" />
               </Label>
               <Label>
-                <AdminInput type="text" name="teacher" placeholder="Викладач" />
-                <AdminInputNote component="p" name="teacher" />
+                <FormField type="text" name="topic" placeholder="Przedmiot" />
+                <AdminInputNote component="p" name="topic" />
               </Label>
-              <AdminFormBtn type="submit">Додати до розкладу</AdminFormBtn>
+              <AdminFormBtn type="submit">
+                <FormBtnText>Dodaj</FormBtnText>
+              </AdminFormBtn>
             </UsersForm>
           </Formik>
         )}
         <ScheduleList>
           {lessons &&
             lessons
-              .sort(
-                (a, b) => a.lang.localeCompare(b.lang) || a.level.localeCompare(b.level)
-              )
+              .sort((a, b) => a.group.localeCompare(b.group))
               .map(timetable => (
                 <ScheduleItem key={timetable._id}>
                   <ScheduleHeading>
-                    {timetable.lang} {timetable.level} {timetable.course}
-                    <UserEditButton onClick={() => handleCourseLevelEdit(timetable._id)}>
-                      Edit
-                    </UserEditButton>
+                    {timetable.group.replace(/(-)|(_)/g, ' ')}
+                    <TimetableDeleteButton
+                      onClick={() => handleTimetableDelete(timetable._id)}
+                    >
+                      Usuń
+                    </TimetableDeleteButton>
                   </ScheduleHeading>
 
                   <ScheduleInfo>
@@ -904,24 +450,30 @@ const TimeTableAdminPanel = () => {
                           <ScheduleDataDayText>
                             {DAYS[schedule.day - 1] || DAYS[DAYS.length - 1]}
                           </ScheduleDataDayText>
-                          <ScheduleDataTypeText>{schedule.type}</ScheduleDataTypeText>
-                          <ScheduleDataTimeText>{schedule.time}</ScheduleDataTimeText>
+                          <ScheduleDataTimeText>
+                            {schedule.time}
+                          </ScheduleDataTimeText>
                           <ScheduleDataTimeText>
                             {schedule.lessonNumber}
                           </ScheduleDataTimeText>
-                          <ScheduleDataTimeText>{schedule.teacher}</ScheduleDataTimeText>
-                          <ScheduleDataTimeText>{schedule.package}</ScheduleDataTimeText>
+                          <ScheduleDataTimeText>
+                            {schedule.topic}
+                          </ScheduleDataTimeText>
                           <UserEditButton
-                            onClick={() => handleEdit(timetable._id, schedule._id)}
+                            onClick={() =>
+                              handleEdit(timetable._id, schedule._id)
+                            }
                           >
-                            Edit
+                            Zmień
                           </UserEditButton>
 
-                          <UserDeleteButton
-                            onClick={() => handleDelete(timetable._id, schedule._id)}
+                          <TimetableDeleteButton
+                            onClick={() =>
+                              handleDelete(timetable._id, schedule._id)
+                            }
                           >
-                            Del
-                          </UserDeleteButton>
+                            Usuń
+                          </TimetableDeleteButton>
                         </ScheduleData>
                       ))}
                   </ScheduleInfo>
@@ -933,32 +485,10 @@ const TimeTableAdminPanel = () => {
             <TimeTableEditForm
               lessonToEdit={lessonToEdit}
               scheduleToEdit={scheduleToEdit}
-              languageOptions={languageOptions}
               courseOptions={courseOptions}
-              courseEnglishOptions={courseEnglishOptions}
-              courseDeutschOptions={courseDeutschOptions}
-              levelOptions={levelOptions}
-              levelOptionsWithBeginners={levelOptionsWithBeginners}
-              levelOptionsForDe={levelOptionsForDe}
+              groupsOptions={groupsOptions}
               daysOptions={daysOptions}
-              typeOptions={typeOptions}
-              packageOptions={packageOptions}
               closeEditForm={closeEditForm}
-            />
-          </Backdrop>
-        )}
-        {isEditCourseLevelFormOpen && (
-          <Backdrop onClick={closeEditCourseLevelFormOnClick} id="close-on-click">
-            <TimeTableCourseLevelEditForm
-              lessonToEdit={lessonToEdit}
-              languageOptions={languageOptions}
-              courseOptions={courseOptions}
-              courseEnglishOptions={courseEnglishOptions}
-              courseDeutschOptions={courseDeutschOptions}
-              levelOptions={levelOptions}
-              levelOptionsWithBeginners={levelOptionsWithBeginners}
-              levelOptionsForDe={levelOptionsForDe}
-              closeCourseLevelEditForm={closeCourseLevelEditForm}
             />
           </Backdrop>
         )}
