@@ -120,7 +120,7 @@ export const MyPedagogiumPanel = ({
     return () => {
       window.removeEventListener('keydown', onEscapeClose);
     };
-  }, []);
+  }, [isBackdropShown]);
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
