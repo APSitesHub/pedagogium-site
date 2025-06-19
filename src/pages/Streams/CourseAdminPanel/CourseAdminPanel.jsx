@@ -2,16 +2,29 @@ import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import { LoginLogo } from 'components/Stream/Stream.styled';
+import {
+  BoxHideLeftSwitch,
+  BoxHideRightSwitch,
+  LoginLogo,
+} from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
+import {
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  FormField,
+  UsersForm,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
   AdminFormBtn,
   LoginForm,
 } from 'pages/Streams/AdminPanel/AdminPanel.styled';
 import { useEffect, useState } from 'react';
+import { slugify, transliterate } from 'transliteration';
 import * as yup from 'yup';
 import {
+  AdminInput,
+  AdminInputNote,
   AdminPanelSection,
   UserCell,
   UserDBCaption,
@@ -20,15 +33,13 @@ import {
   UserDeleteButton,
   UserEditButton,
   UserHeadCell,
-  UsersForm,
-} from '../UserAdminPanel/UserAdminPanel.styled';
+} from '../../Streams/UserAdminPanel/UserAdminPanel.styled';
 import {
-  AdminInput,
   AdminInputHint,
-  AdminInputNote,
-  LinkToUsersAdminPanel,
-  LinkToTeacherAdminPanel,
-} from './CourseAdminPanel.styled';
+  LinkTo,
+  PanelHeader,
+  SubmitFormBtn,
+} from '../CourseAdminPanel/CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
 import { slugify, transliterate } from 'transliteration';
 
@@ -45,7 +56,7 @@ const Universities = {
 const translations = {
   pl: {
     loginPlaceholder: 'Login',
-    passwordPlaceholder: 'Password',
+    passwordPlaceholder: 'Hasło',
     loginRequired: 'Podaj login!',
     passwordRequired: 'Podaj hasło!',
     loginButton: 'Zaloguj się',
@@ -105,6 +116,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
   const [courseToEdit, setCourseToEdit] = useState({});
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
 
   useEffect(() => {
     document.title = uni
@@ -156,6 +168,10 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
     password: yup.string().required(translations[lang]?.passwordRequired),
   });
 
+  const toggleButtonBox = () => {
+    setIsButtonBoxOpen(isOpen => !isOpen);
+  };
+
   const handleLoginSubmit = async (values, { resetForm }) => {
     setIsLoading(isLoading => (isLoading = true));
     try {
@@ -165,6 +181,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
       localStorage.setItem('isAdmin', true);
       resetForm();
     } catch (error) {
+      error.response.status === 401 && setIsUserInfoIncorrect(true);
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -239,6 +256,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
   return (
     <>
+      <PanelHeader>Panel kursów</PanelHeader>
       <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
@@ -274,7 +292,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
                 }
               >
-                Password or email is incorrect!
+                Błędne hasło lub e-mail.
               </LoginErrorNote>
             </LoginForm>
           </Formik>
@@ -282,8 +300,19 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
         {isUserAdmin && courses && (
           <>
-            <LinkToTeacherAdminPanel to={'/admin-teacher'} />
-            <LinkToUsersAdminPanel to={'/admin-users'} />
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <LinkTo $isDisabled to={'/admin'}>
+                Kursy
+              </LinkTo>
+              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
+
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
+              {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
+            </AdminButtonBoxSwitch>
             <Formik
               initialValues={initialCourseValues}
               onSubmit={handleCourseSubmit}
@@ -294,7 +323,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   <AdminInputHint>
                     {translations[lang]?.courseNameLabel}
                   </AdminInputHint>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="courseName"
                     placeholder={`${translations[lang]?.courseName}`}
@@ -305,18 +334,18 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   <AdminInputHint>
                     {translations[lang]?.courseGroupsLabel}
                   </AdminInputHint>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="courseGroups"
                     placeholder={`${translations[lang]?.courseGroups}`}
                   />
                   <AdminInputNote component="p" name="courseGroups" />
                 </Label>
-                <AdminFormBtn type="submit">
+                <SubmitFormBtn type="submit">
                   <FormBtnText>
                     {translations[lang]?.addCourseButton}
                   </FormBtnText>
-                </AdminFormBtn>
+                </SubmitFormBtn>
               </UsersForm>
             </Formik>
             <UserDBTable>

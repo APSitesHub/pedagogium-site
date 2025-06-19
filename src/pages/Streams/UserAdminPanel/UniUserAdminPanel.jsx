@@ -1,21 +1,39 @@
 import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
+import {
+  BoxHideLeftSwitch,
+  BoxHideRightSwitch,
+  LoginLogo,
+} from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
-import { useEffect, useRef, useState, useMemo } from 'react';
-import * as yup from 'yup';
-import { LoginLogo } from 'components/Stream/Stream.styled';
+import {
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  FormField,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
   AdminFormBtn,
   LoginForm,
 } from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import * as yup from 'yup';
+import {
+  LinkTo,
+  PanelHeader,
+  SubmitFormBtn,
+} from '../CourseAdminPanel/CourseAdminPanel.styled';
 import {
   AdminInput,
   AdminInputNote,
   AdminPanelSection,
   ArrowDownIcon,
+  ErrorNote,
+  FormSelect,
+  LabelText,
+  SpeakingLabel,
   UserCell,
   UserDBCaption,
   UserDBRow,
@@ -24,11 +42,6 @@ import {
   UserEditButton,
   UserHeadCell,
   UsersForm,
-  LabelText,
-  SpeakingLabel,
-  ErrorNote,
-  TeacherLangSelect,
-  FormBtnText,
 } from './UserAdminPanel.styled';
 import { UniUserEditForm } from './UserEditForm/UniUserEditForm';
 import { UserVisitedEditForm } from './UserEditForm/UserVisitedEditForm';
@@ -51,7 +64,7 @@ const translations = {
     passwordRequired: 'Podaj hasło!',
     loginButton: 'Zaloguj się',
     addUserButton: 'Dodaj użytkownika',
-    userListCaption: 'Lista użytkowników z dostępem do lekcji',
+    userListCaption: 'Lista studentów z dostępem do lekcji',
     crmLeadContact: 'CRM&nbsp;Lider Kontakt',
     name: 'Nazwisko i imię',
     email: 'Poczta (login)',
@@ -104,6 +117,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
   const [groupValue, setGroupValue] = useState(null);
   const [isGroupEmpty, setIsGroupEmpty] = useState(false);
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
+  const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
   const [daysAfterLastLogin] = useState(7);
   const selectInputRef = useRef();
 
@@ -224,6 +238,10 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
     password: yup.string().required(translations[lang]?.passwordRequired),
   });
 
+  const toggleButtonBox = () => {
+    setIsButtonBoxOpen(isOpen => !isOpen);
+  };
+
   const onClear = () => {
     selectInputRef.current.clearValue();
   };
@@ -247,6 +265,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
       localStorage.setItem('isAdmin', true);
       resetForm();
     } catch (error) {
+      error.response.status === 401 && setIsUserInfoIncorrect(true);
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -429,167 +448,183 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
   return (
     <>
+      <PanelHeader>Panel studentów</PanelHeader>
       <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
-                      initialValues={initialLoginValues}
-                      onSubmit={handleLoginSubmit}
-                      validationSchema={loginSchema}
-                    >
-                      <LoginForm>
-                        <LoginLogo />
-                        <Label>
-                          <AdminInput
-                            type="text"
-                            name="login"
-                            placeholder={translations[lang]?.loginPlaceholder}
-                            onBlur={() => setIsUserInfoIncorrect(false)}
-                          />
-                          <AdminInputNote component="p" name="login" />
-                        </Label>
-                        <Label>
-                          <AdminInput
-                            type="password"
-                            name="password"
-                            placeholder={translations[lang]?.passwordPlaceholder}
-                            onBlur={() => setIsUserInfoIncorrect(false)}
-                          />
-                          <AdminInputNote component="p" name="password" />
-                        </Label>
-                        <AdminFormBtn type="submit">
-                          <FormBtnText>{translations[lang]?.loginButton}</FormBtnText>
-                        </AdminFormBtn>
-                        <LoginErrorNote
-                          style={
-                            isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
-                          }
-                        >
-                          Password or email is incorrect!
-                        </LoginErrorNote>
-                      </LoginForm>
-                    </Formik>
-        )}
-
-        {isUserAdmin && (
-          <Formik
-            initialValues={initialUserValues}
-            onSubmit={handleUserSubmit}
-            validationSchema={usersSchema}
+            initialValues={initialLoginValues}
+            onSubmit={handleLoginSubmit}
+            validationSchema={loginSchema}
           >
-            <UsersForm>
+            <LoginForm>
+              <LoginLogo />
               <Label>
                 <AdminInput
                   type="text"
-                  name="name"
-                  placeholder={translations[lang]?.name}
+                  name="login"
+                  placeholder={translations[lang]?.loginPlaceholder}
+                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
-                <AdminInputNote component="p" name="name" />
+                <AdminInputNote component="p" name="login" />
               </Label>
               <Label>
                 <AdminInput
-                  type="email"
-                  name="mail"
-                  placeholder={translations[lang]?.email}
-                />
-                <AdminInputNote component="p" name="mail" />
-              </Label>
-              <Label>
-                <AdminInput
-                  type="text"
+                  type="password"
                   name="password"
-                  placeholder={translations[lang]?.password}
+                  placeholder={translations[lang]?.passwordPlaceholder}
+                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <Label>
-                <AdminInput
-                  type="text"
-                  name="pupilId"
-                  placeholder={translations[lang]?.platformId}
-                />
-                <AdminInputNote component="p" name="pupilId" />
-              </Label>
-              <SpeakingLabel>
-                {courseValue && courseValue.value && (
-                  <LabelText>Kurs</LabelText>
-                )}
-                <TeacherLangSelect
-                  ref={selectInputRef}
-                  options={courseOptions}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      border: 'none',
-                      borderRadius: '50px',
-                      minHeight: '34px',
-                    }),
-                    menu: (baseStyles, state) => ({
-                      ...baseStyles,
-                      position: 'absolute',
-                      zIndex: '2',
-                      top: '36px',
-                    }),
-                    dropdownIndicator: (baseStyles, state) => ({
-                      ...baseStyles,
-                      padding: '7px',
-                    }),
-                  }}
-                  placeholder="Wybierz kurs"
-                  name="course"
-                  onChange={course => {
-                    setCourseValue(course);
-                    // Скидаємо значення групи при зміні курсу
-                    setGroupValue(null);
-                  }}
-                />
-              </SpeakingLabel>
-              <SpeakingLabel>
-                {groupValue && groupValue.value && (
-                  <LabelText>{translations[lang]?.group}</LabelText>
-                )}
-                <TeacherLangSelect
-                  ref={selectInputRef}
-                  options={currentGroupOptions}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      border: 'none',
-                      borderRadius: '50px',
-                      minHeight: '34px',
-                    }),
-                    menu: (baseStyles, state) => ({
-                      ...baseStyles,
-                      position: 'absolute',
-                      zIndex: '2',
-                      top: '36px',
-                    }),
-                    dropdownIndicator: (baseStyles, state) => ({
-                      ...baseStyles,
-                      padding: '7px',
-                    }),
-                  }}
-                  placeholder={translations[lang]?.group}
-                  name="group"
-                  isDisabled={!courseValue}
-                  onBlur={() => {
-                    !groupValue
-                      ? setIsGroupEmpty(empty => (empty = true))
-                      : setIsGroupEmpty(empty => (empty = false));
-                  }}
-                  onChange={group => {
-                    setGroupValue(group);
-                    group?.value && setIsGroupEmpty(empty => (empty = false));
-                  }}
-                />
-                {isGroupEmpty && (
-                  <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>
-                )}
-              </SpeakingLabel>
               <AdminFormBtn type="submit">
-                <FormBtnText>{translations[lang]?.addUserButton}</FormBtnText>
+                <FormBtnText>{translations[lang]?.loginButton}</FormBtnText>
               </AdminFormBtn>
-            </UsersForm>
+              <LoginErrorNote
+                style={
+                  isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
+                }
+              >
+                Błędne hasło lub e-mail.
+              </LoginErrorNote>
+            </LoginForm>
           </Formik>
+        )}
+
+        {isUserAdmin && (
+          <>
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <LinkTo to={'/admin'}>Kursy</LinkTo>
+              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo $isDisabled to={'/admin-users'}>
+                Studenci
+              </LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
+
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
+              {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
+            </AdminButtonBoxSwitch>
+            <Formik
+              initialValues={initialUserValues}
+              onSubmit={handleUserSubmit}
+              validationSchema={usersSchema}
+            >
+              <UsersForm>
+                <Label>
+                  <FormField
+                    type="text"
+                    name="name"
+                    placeholder={translations[lang]?.name}
+                  />
+                  <AdminInputNote component="p" name="name" />
+                </Label>
+                <Label>
+                  <FormField
+                    type="email"
+                    name="mail"
+                    placeholder={translations[lang]?.email}
+                  />
+                  <AdminInputNote component="p" name="mail" />
+                </Label>
+                <Label>
+                  <FormField
+                    type="text"
+                    name="password"
+                    placeholder={translations[lang]?.password}
+                  />
+                  <AdminInputNote component="p" name="password" />
+                </Label>
+                <Label>
+                  <FormField
+                    type="text"
+                    name="pupilId"
+                    placeholder={translations[lang]?.platformId}
+                  />
+                  <AdminInputNote component="p" name="pupilId" />
+                </Label>
+                <SpeakingLabel>
+                  {courseValue && courseValue.value && (
+                    <LabelText>Kurs</LabelText>
+                  )}
+                  <FormSelect
+                    ref={selectInputRef}
+                    options={courseOptions}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '38px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
+                    }}
+                    placeholder="Wybierz kurs"
+                    name="course"
+                    onChange={course => {
+                      setCourseValue(course);
+                      // Скидаємо значення групи при зміні курсу
+                      setGroupValue(null);
+                    }}
+                  />
+                </SpeakingLabel>
+                <SpeakingLabel>
+                  {groupValue && groupValue.value && (
+                    <LabelText>{translations[lang]?.group}</LabelText>
+                  )}
+                  <FormSelect
+                    ref={selectInputRef}
+                    options={currentGroupOptions}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '38px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
+                    }}
+                    placeholder={translations[lang]?.group}
+                    name="group"
+                    isDisabled={!courseValue}
+                    onBlur={() => {
+                      !groupValue
+                        ? setIsGroupEmpty(empty => (empty = true))
+                        : setIsGroupEmpty(empty => (empty = false));
+                    }}
+                    onChange={group => {
+                      setGroupValue(group);
+                      group?.value && setIsGroupEmpty(empty => (empty = false));
+                    }}
+                  />
+                  {isGroupEmpty && (
+                    <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>
+                  )}
+                </SpeakingLabel>
+                <SubmitFormBtn type="submit">
+                  <FormBtnText>{translations[lang]?.addUserButton}</FormBtnText>
+                </SubmitFormBtn>
+              </UsersForm>
+            </Formik>
+          </>
         )}
 
         {isUserAdmin && users && (

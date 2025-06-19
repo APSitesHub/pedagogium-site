@@ -43,6 +43,18 @@ const TeacherAdminPanel = lazy(() =>
   )
 );
 
+const KahootAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Teacher page" */ '../pages/AdminPanel/KahootAdminPanel'
+  )
+);
+
+const HostKahootAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Teacher page" */ '../pages/AdminPanel/HostKahootAdminPanel'
+  )
+);
+
 const MyPedagogium = lazy(() =>
   import(
     /* webpackChunkName: "My Pedagogium Page" */ '../pages/MyPedagogium/MyPedagogium'
@@ -107,6 +119,18 @@ export const App = () => {
             element={<TimeTableAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
             noindex={true}
           />
+          <Route
+            path="admin-kahoots"
+            element={<KahootAdminPanel />}
+            noindex={true}
+          />
+
+          <Route
+            path="admin-host-kahoots"
+            element={<HostKahootAdminPanel />}
+            noindex={true}
+          />
+
           <Route path="*" element={<NotFound />} noindex={true} />
 
           <Route path="teacher-main" element={<TeacherMain />} noindex={true} />
@@ -122,32 +146,13 @@ export const App = () => {
           </Route>
 
           <Route path="lesson" element={<Streams />} noindex={true}>
-            {/* <Route
-              path="logistics"
-              element={<StreamToZoomRedirecter />}
-              noindex={true}
-            /> */}
-            <Route path="logistics" element={<Stream />} noindex={true} />
-            <Route
-              path="logistics-chat"
-              element={<WindowedChat />}
-              noindex={true}
-            />
-            <Route path="logistics_2" element={<Stream />} noindex={true} />
-            {/* <Route
-              path="logistics_2"
-              element={<StreamToZoomRedirecter />}
-              noindex={true}
-            /> */}
-            <Route
-              path="logistics_2-chat"
-              element={<WindowedChat />}
-              noindex={true}
-            />
-            {/* <Route path="prep" element={<StreamToZoomRedirecter />} noindex={true} /> */}
-            <Route path="prep" element={<Stream />} noindex={true} />
-            <Route path="prep-chat" element={<WindowedChat />} noindex={true} />
+            <Route path=":group" element={<Stream />} noindex={true} />
           </Route>
+
+          <Route path="chat" element={<Streams />} noindex={true}>
+            <Route path=":group" element={<WindowedChat />} noindex={true} />
+          </Route>
+
           <Route path="chatbot" element={<TestChatBot />} noindex={true} />
         </Routes>
       </Suspense>

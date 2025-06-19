@@ -2,13 +2,13 @@ import axios from 'axios';
 import { Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
+import { SubmitFormBtn } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
 import { EditFormHeader } from 'pages/TeacherPage/TeacherPage.styled';
 import { useState } from 'react';
 import * as yup from 'yup';
 import {
-  AdminFormBtn,
-  AdminInput,
   AdminInputNote,
+  FormField,
   UsersEditForm,
 } from '../TeacherAdminPanel.styled';
 
@@ -66,26 +66,26 @@ export const TeacherEditForm = ({ teacherToEdit, closeEditForm }) => {
         <UsersEditForm>
           <EditFormHeader>{teacherToEdit.name}</EditFormHeader>
           <Label>
-            <AdminInput type="text" name="name" placeholder="Nazwisko i imię" />
+            <FormField type="text" name="name" placeholder="Nazwisko i imię" />
             <AdminInputNote component="p" name="name" />
           </Label>
           <Label>
-            <AdminInput type="text" name="login" placeholder="Login" />
+            <FormField type="text" name="login" placeholder="Login" />
             <AdminInputNote component="p" name="login" />
           </Label>
           <Label>
-            <AdminInput type="text" name="password" placeholder="Hasło" />
+            <FormField type="text" name="password" placeholder="Hasło" />
             <AdminInputNote component="p" name="password" />
           </Label>
           <Label>
-            <AdminInput
+            <FormField
               type="text"
               name="platformId"
               placeholder="ID platformy"
             />
             <AdminInputNote component="p" name="platformId" />
           </Label>
-          <AdminFormBtn type="submit">Potwierdź zmiany</AdminFormBtn>
+          <SubmitFormBtn type="submit">Potwierdź zmiany</SubmitFormBtn>
         </UsersEditForm>
       </Formik>
       {isLoading && <Loader />}

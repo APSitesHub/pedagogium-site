@@ -53,38 +53,29 @@ export const Kahoots = ({
 
   const kahootWidth = isFullScreen ? sectionWidth : (sectionWidth / 10) * 4;
 
-  const getLinksForLocation = () => {
-    const entries = [];
-    Object.values(kahoots[room].links).map(entry => {
-      entries.push(entry);
-      return entries;
-    });
-    return entries;
-  };
-
   const kahootLinksRefresher = async e => {
     if (e.target === e.currentTarget) {
-      setKahoots((await axios.get('/unikahoots')).data);
+      setKahoots((await axios.get(`/pedagogium-kahoots/${room}`)).data.links);
     }
   };
 
   const setKahootNumber = async e => {
     const kahootNumber = parseInt(e.currentTarget.innerText);
-    setKahoots((await axios.get('/unikahoots')).data);
+    setKahoots((await axios.get(`/pedagogium-kahoots/${room}`)).data.links);
     setActiveKahoot(kahootNumber);
   };
 
   useLayoutEffect(() => {
     const getLinksRequest = async () => {
       try {
-        setKahoots((await axios.get('/unikahoots')).data);
+        setKahoots((await axios.get(`/pedagogium-kahoots/${room}`)).data.links);
       } catch (error) {
         console.log(error);
       }
     };
 
     getLinksRequest();
-  }, []);
+  }, [room]);
 
   const toggleFullScreen = () => {
     setIsFullScreen(isFullScreen => (isFullScreen = !isFullScreen));
@@ -276,7 +267,7 @@ export const Kahoots = ({
 
   return (
     <>
-      {Object.keys(kahoots).length && (
+      {kahoots.length && (
         <KahootBox
           ref={ref}
           className={isKahootOpen ? 'shown' : 'hidden'}
@@ -295,7 +286,7 @@ export const Kahoots = ({
             <KahootPickerBtn />
           </KahootNumbersHider>
           <KahootPicker className={isPickerOpen ? 'shown' : 'hidden'}>
-            {Object.values(kahoots[room].links).map((link, i) => (
+            {kahoots.map((link, i) => (
               <KahootNumbersBtn
                 key={i}
                 onClick={setKahootNumber}
@@ -314,7 +305,7 @@ export const Kahoots = ({
               <NameReverse />
             </NameReverseBtn>
           )}
-          {getLinksForLocation().map(
+          {kahoots.map(
             (link, i) =>
               activeKahoot === i + 1 && (
                 <KahootBackground key={i}>

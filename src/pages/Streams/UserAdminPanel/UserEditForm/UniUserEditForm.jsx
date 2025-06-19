@@ -2,19 +2,17 @@ import axios from 'axios';
 import { Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
+import { FormField } from 'pages/AdminPanel/TeacherAdminPanel.styled';
+import { SubmitFormBtn } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
 import { useRef, useState } from 'react';
 import * as yup from 'yup';
 import {
-  AdminFormBtn,
-  AdminInput,
   AdminInputNote,
-  UsersEditForm,
-} from '../UserAdminPanel.styled';
-import {
   ErrorNote,
-  TeacherLangSelect,
+  FormSelect,
   LabelText,
   SpeakingLabel,
+  UsersEditForm,
 } from '../UserAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
@@ -162,7 +160,7 @@ export const UniUserEditForm = ({
       >
         <UsersEditForm>
           <Label>
-            <AdminInput
+            <FormField
               type="text"
               name="name"
               placeholder={translations[lang]?.namePlaceholder}
@@ -170,7 +168,7 @@ export const UniUserEditForm = ({
             <AdminInputNote component="p" name="name" />
           </Label>
           <Label>
-            <AdminInput
+            <FormField
               type="email"
               name="mail"
               placeholder={translations[lang]?.emailPlaceholder}
@@ -179,7 +177,7 @@ export const UniUserEditForm = ({
           </Label>
           {!uni && (
             <Label>
-              <AdminInput
+              <FormField
                 type="text"
                 name="password"
                 placeholder={translations[lang]?.passwordPlaceholder}
@@ -189,7 +187,7 @@ export const UniUserEditForm = ({
           )}
           {!uni && (
             <Label>
-              <AdminInput
+              <FormField
                 type="text"
                 name="crmId"
                 placeholder={translations[lang]?.crmIdPlaceholder}
@@ -199,7 +197,7 @@ export const UniUserEditForm = ({
           )}
           {!uni && (
             <Label>
-              <AdminInput
+              <FormField
                 type="text"
                 name="contactId"
                 placeholder={translations[lang]?.contactIdPlaceholder}
@@ -208,7 +206,7 @@ export const UniUserEditForm = ({
             </Label>
           )}
           <Label>
-            <AdminInput
+            <FormField
               type="text"
               name="points"
               placeholder={translations[lang]?.pointsPlaceholder}
@@ -216,7 +214,7 @@ export const UniUserEditForm = ({
             <AdminInputNote component="p" name="points" />
           </Label>
           <Label>
-            <AdminInput
+            <FormField
               type="text"
               name="pupilId"
               placeholder={translations[lang]?.pupilIdPlaceholder}
@@ -227,7 +225,7 @@ export const UniUserEditForm = ({
             {courseValue && courseValue.value && (
               <LabelText>{translations[lang]?.coursePlaceholder}</LabelText>
             )}
-            <TeacherLangSelect
+            <FormSelect
               ref={selectInputRef}
               options={courseOptions}
               defaultValue={
@@ -242,7 +240,7 @@ export const UniUserEditForm = ({
                   ...baseStyles,
                   border: 'none',
                   borderRadius: '50px',
-                  minHeight: '34px',
+                  minHeight: '38px',
                 }),
                 menu: (baseStyles, state) => ({
                   ...baseStyles,
@@ -266,7 +264,7 @@ export const UniUserEditForm = ({
             {groupValue && groupValue.value && (
               <LabelText>{translations[lang]?.groupPlaceholder}</LabelText>
             )}
-            <TeacherLangSelect
+            <FormSelect
               ref={selectInputRef}
               options={groupOptions}
               defaultValue={
@@ -281,7 +279,7 @@ export const UniUserEditForm = ({
                   ...baseStyles,
                   border: 'none',
                   borderRadius: '50px',
-                  minHeight: '34px',
+                  minHeight: '38px',
                 }),
                 menu: (baseStyles, state) => ({
                   ...baseStyles,
@@ -310,9 +308,9 @@ export const UniUserEditForm = ({
               <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>
             )}
           </SpeakingLabel>
-          <AdminFormBtn type="submit">
+          <SubmitFormBtn type="submit">
             {translations[lang]?.submitButton}
-          </AdminFormBtn>
+          </SubmitFormBtn>
         </UsersEditForm>
       </Formik>
       {isLoading && <Loader />}

@@ -1,13 +1,16 @@
 import { FormBtn, Input, InputNote } from 'components/LeadForm/LeadForm.styled';
-import { Form } from 'formik';
+import { Field, Form } from 'formik';
 import styled from 'styled-components';
 import { ReactComponent as FilterIcon } from '../../img/svg/filter.svg';
 import Select from 'react-select';
+import { SubmitFormBtn } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
+import { BoxHideSwitch, ButtonBox } from 'components/Stream/Stream.styled';
 
 export const FormSelect = styled(Select)`
   width: 100%;
   font-size: 14px;
   border: 2px solid var(--main-color);
+  border-radius: 50px;
 
   line-height: 1;
 
@@ -31,6 +34,7 @@ export const AdminPanelSection = styled.section`
   padding: 30px 20px;
   display: flex;
   align-items: flex-start;
+  margin: 0 auto;
 
   gap: 30px;
 `;
@@ -52,11 +56,13 @@ export const UsersForm = styled(Form)`
   position: sticky;
   top: 50%;
 
+  width: 420px;
+
   transform: translateY(-50%);
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 `;
 
 export const UsersEditForm = styled(Form)`
@@ -97,6 +103,38 @@ export const AdminInput = styled(Input)`
 
   @media screen and (min-width: 768px) {
     width: 360px;
+  }
+`;
+
+export const FormField = styled(Field)`
+  width: 100%;
+  height: 42px;
+  padding: 12px 10px;
+  font-size: 14px;
+  border: 2px solid var(--main-color);
+  border-radius: 50px;
+  line-height: 1;
+
+  @media screen and (min-width: 768px) {
+    font-size: 19px;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--secondary-burnt-color);
+    outline: transparent;
+  }
+
+  &:-webkit-autofill {
+    &,
+    &:hover,
+    &:focus {
+      -webkit-box-shadow: 0 0 0px 1000px var(--accent-semi-transparent-color)
+        inset;
+    }
+  }
+
+  &::placeholder {
   }
 `;
 
@@ -266,4 +304,132 @@ export const DateInputLabel = styled.label`
 export const DateInputSelect = styled(SpeakingSelect)`
   width: 280px;
   border-radius: 50px;
+`;
+
+export const KahootsAdminContainer = styled.div`
+  position: relative;
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: auto;
+`;
+
+export const KahootsAdminForm = styled.div`
+  display: flex;
+  flex-grow: 0;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  width: 420px;
+`;
+
+export const LinkArea = styled.div`
+  flex: 0.6;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  border: 1px solid gray;
+  border-radius: 25px;
+  padding: 12px 4px 4px 4px;
+  min-height: 360px;
+  max-height: 100%;
+`;
+
+export const NoLinksChosen = styled.h3`
+  text-align: center;
+  padding: 4px;
+`;
+
+export const AdminButtonBox = styled(ButtonBox)`
+  top: 16px;
+  background-color: var(--secondary-color);
+  padding: 8px;
+  border: 1px solid var(--main-color);
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  gap: 8px;
+  z-index: 5;
+
+  transition: transform var(--animation-global);
+
+  &.hidden {
+    transform: translateX(calc(-100% - 30px));
+  }
+`;
+
+export const AdminButtonBoxSwitch = styled(BoxHideSwitch)`
+  top: 114px;
+  width: 18px;
+  filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.4));
+
+  & svg {
+    scale: 1.25;
+  }
+`;
+
+export const LinksContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: 360px;
+  max-height: 90%;
+  overflow: auto;
+`;
+
+export const KahootLinkBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+`;
+
+export const VisibleGroupName = styled.h2`
+  text-align: center;
+  border-bottom: 1px solid gray;
+  padding-bottom: 8px;
+`;
+
+export const DefaultInput = styled.input`
+  flex: 1;
+  padding: 4px 8px;
+  border-radius: 50px;
+  border: 1px solid #242329;
+`;
+
+export const AddButton = styled.button`
+  min-width: max-content;
+  margin: 0 auto;
+
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50px;
+  border: 1px solid green;
+  background: none;
+  color: green;
+  transition: var(--animation-global);
+
+  &:hover {
+    background-color: rgba(29, 180, 29, 0.2);
+  }
+`;
+
+export const DeleteButton = styled.button`
+  cursor: pointer;
+  padding: 4px 8px;
+  border: 1px solid red;
+  border-radius: 50px;
+  background: none;
+  color: red;
+  transition: var(--animation-global);
+
+  &:hover {
+    background-color: rgba(233, 103, 103, 0.15);
+  }
+`;
+
+export const SubmitKahootsButton = styled(SubmitFormBtn)`
+  width: 400px;
 `;

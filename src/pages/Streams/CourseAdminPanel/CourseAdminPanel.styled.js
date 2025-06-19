@@ -1,11 +1,11 @@
-import { Input, InputNote } from 'components/LeadForm/LeadForm.styled';
+import { FormBtn, Input, InputNote } from 'components/LeadForm/LeadForm.styled';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const AdminInputHint = styled.p`
   color: var(--main-color);
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   padding: 0 20px;
 `;
 
@@ -24,10 +24,7 @@ export const AdminInputNote = styled(InputNote)`
   bottom: -1.1em;
 `;
 
-export const LinkToUsersAdminPanel = styled(Link)`
-  position: absolute;
-  top: 50px;
-  left: 50px;
+export const LinkTo = styled(Link)`
   background: linear-gradient(
       322deg,
       var(--accent-color) -5.61%,
@@ -37,73 +34,75 @@ export const LinkToUsersAdminPanel = styled(Link)`
   border: 1px solid var(--main-color);
   border-radius: 50px;
   color: var(--main-color);
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
   cursor: pointer;
   transition: color var(--animation-global);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 96px;
-  height: 36px;
+  padding: 12px;
   transition: all ease-in-out 0.3s;
+  color: var(--secondary-color);
+  font-weight: 600;
+  transition: all var(--animation-global);
+  text-decoration: none;
 
   &:hover {
-    width: 200px;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 1px 3px 4px rgba(0, 0, 0, 0.3);
+
+    ${({ $isDisabled }) =>
+      $isDisabled &&
+      css`
+        transform: none;
+        box-shadow: none;
+      `}
   }
 
-  &::before {
-    content: 'Panel studentów';
-    color: var(--secondary-color);
-    font-weight: 600;
-    transition: all var(--animation-global);
-  }
+  ${({ $isDisabled }) =>
+    $isDisabled &&
+    css`
+      background: linear-gradient(
+          322deg,
+          var(--main-transparent-color) -5.61%,
+          var(--secondary-transparent-color) 93.88%
+        ),
+        var(--main-transparent-color);
 
-  &:hover::before {
-    content: 'Do panelu studentów';
-    font-weight: 700;
-  }
+      color: var(--main-color);
+      cursor: default;
+    `};
 `;
 
-export const LinkToTeacherAdminPanel = styled(Link)`
-  position: absolute;
-  top: 100px;
-  left: 50px;
-  background: linear-gradient(
-      322deg,
-      var(--accent-color) -5.61%,
-      var(--main-color) 93.88%
-    ),
-    var(--accent-color);
-  border: 1px solid var(--main-color);
-  border-radius: 50px;
-  color: var(--main-color);
-  font-size: 12px;
+export const SubmitFormBtn = styled(FormBtn)`
+  margin: 0 auto;
+  height: 48px;
+  padding: 0;
+`;
+
+export const PanelHeader = styled.h1`
+  padding: 16px;
+  font-size: 2.5rem;
   text-align: center;
-  cursor: pointer;
-  transition: color var(--animation-global);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 96px;
-  height: 36px;
-  transition: all ease-in-out 0.3s;
+  position: relative;
 
-  &:hover {
-    width: 200px;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
-  }
+  &::after {
+    display: block;
 
-  &::before {
-    content: 'Panel kuratora';
-    color: var(--secondary-color);
-    font-weight: 600;
-    transition: all var(--animation-global);
-  }
+    content: '';
 
-  &:hover::before {
-    content: 'Do panelu kuratora';
-    font-weight: 700;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--secondary-color),
+      var(--main-color) 9%,
+      var(--main-color) 91%,
+      var(--secondary-color) 100%
+    );
   }
 `;

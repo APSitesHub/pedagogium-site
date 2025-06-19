@@ -1,7 +1,12 @@
 import useSize from '@react-hook/size';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import {
+  useLocation,
+  useNavigate,
+  useOutletContext,
+  useParams,
+} from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { JitsiMeeting } from '@jitsi/react-sdk';
 import { Chat } from 'utils/Chat/Chat';
@@ -15,8 +20,6 @@ import {
   ChatLogo,
   KahootBtn,
   KahootLogo,
-  StreamPlaceHolder,
-  StreamPlaceHolderText,
   StreamSection,
 } from '../../../components/Stream/Stream.styled';
 import {
@@ -30,13 +33,14 @@ import { StudentInput } from '../../../components/Stream/StudentInput/StudentInp
 import { StudentOptions } from '../../../components/Stream/StudentInput/StudentOptions';
 import { StudentTrueFalse } from '../../../components/Stream/StudentInput/StudentTrueFalse';
 import { Kahoots } from 'components/Stream/Kahoots/Kahoots';
+import NotFound from 'pages/NotFound/NotFound';
 
-const roomID = 'c57a82b4-188e-4ca3-bb83-8a97c1a6c310';
 const supportedLanguages = ['uk', 'en', 'pl', 'de'];
 const browserLanguage = navigator.language.split('-')[0];
 
 const Stream = () => {
   const navigate = useNavigate();
+  const [isGroupExist, setIsGroupExist] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [scrollOn, setScrollOn] = useState(false);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -52,7 +56,7 @@ const Stream = () => {
   const [isQuizOptionsOpen, setIsQuizOptionsOpen] = useState(false);
   const [isQuizTrueFalseOpen, setIsQuizTrueFalseOpen] = useState(false);
 
-  const [links, isLoading, currentUser] = useOutletContext();
+  const [currentUser, isTeacher] = useOutletContext();
   const chatEl = useRef();
   // eslint-disable-next-line
   const [chatWidth, chatHeight] = useSize(chatEl);
@@ -62,6 +66,7 @@ const Stream = () => {
   const location = useLocation().pathname;
   const params = new URLSearchParams(loc.search);
   const isOffline = params.get('isOffline') === 'true';
+  const { group } = useParams();
 
   const toggleKahoot = e => {
     setIsKahootOpen(isKahootOpen => !isKahootOpen);
@@ -97,12 +102,6 @@ const Stream = () => {
   const socketRef = useRef(null);
   const questionID = useRef('');
 
-  const room = `${document.title
-    .split('|')[1]
-    ?.trim()
-    .trimEnd()
-    .toLowerCase()}_${location.replace('/lesson/', '')}`;
-
   useEffect(() => {
     document.title = `Lesson Online | Pedagogium | ${location
       .replace('/lesson/', '')[0]
@@ -121,7 +120,7 @@ const Stream = () => {
           `https://ap-chat-server.onrender.com/messages/room`,
           {
             params: {
-              room,
+              room: group,
             },
           }
         );
@@ -193,19 +192,19 @@ const Stream = () => {
 
     // open quizzes on event
     socketRef.current.on('question:input', data => {
-      if (data.page === room) {
+      if (data.page === group) {
         setIsQuizInputOpen(true);
         questionID.current = data.question;
       }
     });
     socketRef.current.on('question:options', data => {
-      if (data.page === room) {
+      if (data.page === group) {
         setIsQuizOptionsOpen(true);
         questionID.current = data.question;
       }
     });
     socketRef.current.on('question:trueFalse', data => {
-      if (data.page === room) {
+      if (data.page === group) {
         setIsQuizTrueFalseOpen(true);
         questionID.current = data.question;
       }
@@ -213,13 +212,13 @@ const Stream = () => {
 
     // close quizzes on event
     socketRef.current.on('question:closeInput', data => {
-      data.page === room && setIsQuizInputOpen(false);
+      data.page === group && setIsQuizInputOpen(false);
     });
     socketRef.current.on('question:closeOptions', data => {
-      data.page === room && setIsQuizOptionsOpen(false);
+      data.page === group && setIsQuizOptionsOpen(false);
     });
     socketRef.current.on('question:closeTrueFalse', data => {
-      data.page === room && setIsQuizTrueFalseOpen(false);
+      data.page === group && setIsQuizTrueFalseOpen(false);
     });
 
     return () => {
@@ -227,7 +226,7 @@ const Stream = () => {
       socketRef.current.off('message');
       socketRef.current.disconnect();
     };
-  }, [currentUser, location, room]);
+  }, [currentUser, location, group]);
 
   useEffect(() => {
     const setAppHeight = () => {
@@ -245,6 +244,22 @@ const Stream = () => {
 
     return () => window.removeEventListener('resize', setAppHeight);
   }, [isConnected]);
+
+  useEffect(() => {
+    const checkGroup = async () => {
+      const [course, groupNumber] = group.split('_');
+      const courses = await axios.get('/pedagogium-courses/admin');
+
+      setIsGroupExist(
+        courses.data.some(
+          group =>
+            group.slug === course && group.courseGroups.includes(+groupNumber)
+        )
+      );
+    };
+
+    checkGroup();
+  }, [group]);
 
   const findTeacherId = participants => {
     for (const id in participants) {
@@ -306,14 +321,7 @@ const Stream = () => {
 
   return (
     <>
-      {(links[room] === undefined || links[room][0] < 10) && !isLoading ? (
-        <StreamPlaceHolder>
-          <StreamPlaceHolderText>
-            No stream yet! <br />
-            Try again later.
-          </StreamPlaceHolderText>
-        </StreamPlaceHolder>
-      ) : (
+      {isGroupExist ? (
         <>
           <StreamSection
             style={{
@@ -326,7 +334,7 @@ const Stream = () => {
               style={{
                 width:
                   isChatOpen && width > height ? `${videoBoxWidth}px` : '100%',
-                height: isIframeOpen ? windowHeight : '100%',
+                height: isIframeOpen || isTeacher ? windowHeight : '100%',
                 backgroundColor: '#1a1a1b',
               }}
             >
@@ -359,12 +367,12 @@ const Stream = () => {
                   </GradientBackground>
                   <JitsiContainer
                     style={{
-                      height: isIframeOpen ? windowHeight : '0',
+                      height: isIframeOpen || isTeacher ? windowHeight : '0',
                     }}
                   >
                     <JitsiMeeting
-                      domain="videohost.ap.education"
-                      roomName={roomID}
+                      domain="dev2.ap.education"
+                      roomName={group}
                       configOverwrite={{
                         disableTileEnlargement: true,
                         channelLastN: 1,
@@ -600,7 +608,7 @@ const Stream = () => {
                   messages={messages}
                   isChatOpen={isChatOpen}
                   currentUser={currentUser}
-                  room={room}
+                  room={group}
                 />
               </ChatBox>
             )}
@@ -611,14 +619,14 @@ const Stream = () => {
               isKahootOpen={isKahootOpen}
               isChatOpen={isChatOpen}
               isOpenedLast={isOpenedLast}
-              room={room}
+              room={group}
             />
 
             <StudentInput
               isInputOpen={isQuizInputOpen}
               socket={socketRef.current}
               toggleQuiz={toggleQuizInput}
-              page={room}
+              page={group}
               currentUser={currentUser}
               questionID={questionID.current}
             />
@@ -627,7 +635,7 @@ const Stream = () => {
               isInputOpen={isQuizOptionsOpen}
               socket={socketRef.current}
               toggleQuiz={toggleQuizOptions}
-              page={room}
+              page={group}
               currentUser={currentUser}
               questionID={questionID.current}
             />
@@ -636,7 +644,7 @@ const Stream = () => {
               isInputOpen={isQuizTrueFalseOpen}
               socket={socketRef.current}
               toggleQuiz={toggleQuizTrueFalse}
-              page={room}
+              page={group}
               currentUser={currentUser}
               questionID={questionID.current}
             />
@@ -654,11 +662,13 @@ const Stream = () => {
                 messages={messages}
                 isChatOpen={isChatOpen}
                 currentUser={currentUser}
-                room={room}
+                room={group}
               />
             </ChatBox>
           )}
         </>
+      ) : (
+        <NotFound />
       )}
     </>
   );

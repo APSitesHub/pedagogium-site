@@ -30,24 +30,17 @@ export const HostKahoots = ({
   const minimizedWidth = '124px';
   const minimizedHeight = '70px';
 
-  const getLinksForLocation = () => {
-    const entries = [];
-    Object.values(kahoots[page].links).map(entry => {
-      entries.push(entry);
-      return entries;
-    });
-    return entries;
-  };
-
   const kahootLinksRefresher = async e => {
     if (e.target === e.currentTarget) {
-      setKahoots((await axios.get('/host-kahoots')).data);
+      setKahoots(
+        (await axios.get(`/pedagogium-host-kahoots/${page}`)).data.links
+      );
     }
   };
 
   const setKahootNumber = async e => {
     const kahootNumber = parseInt(e.currentTarget.innerText);
-    setKahoots((await axios.get('/host-kahoots')).data);
+    setKahoots((await axios.get(`pedagogium-host-kahoots/${page}`)).data.links);
     setActiveKahoot(kahootNumber);
   };
 
@@ -65,14 +58,16 @@ export const HostKahoots = ({
   useLayoutEffect(() => {
     const getLinksRequest = async () => {
       try {
-        setKahoots((await axios.get('/host-kahoots')).data);
+        setKahoots(
+          (await axios.get(`/pedagogium-host-kahoots/${page}`)).data.links
+        );
       } catch (error) {
         console.log(error);
       }
     };
 
     getLinksRequest();
-  }, []);
+  }, [page]);
 
   const toggleMinimize = () => {
     setIsMinimized(isMinimized => (isMinimized = !isMinimized));
@@ -80,7 +75,7 @@ export const HostKahoots = ({
 
   return (
     <>
-      {Object.keys(kahoots).length && (
+      {kahoots.length && (
         <KahootBox
           className={classNames()}
           style={{
@@ -102,11 +97,13 @@ export const HostKahoots = ({
           >
             {isMinimized ? <KahootMaximizeIcon /> : <KahootMinimizeIcon />}
           </KahootMinimizerBtn>
-          <KahootEnlargeButton onClick={toggleKahootWidth}>+</KahootEnlargeButton>
+          <KahootEnlargeButton onClick={toggleKahootWidth}>
+            +
+          </KahootEnlargeButton>
 
-          {Object.values(kahoots[page].links).length > 1 && (
+          {kahoots.length > 1 && (
             <KahootPicker>
-              {Object.values(kahoots[page].links).map((link, i) => (
+              {kahoots.map((link, i) => (
                 <KahootNumbersBtn
                   key={i}
                   onClick={setKahootNumber}
@@ -118,8 +115,11 @@ export const HostKahoots = ({
               ))}
             </KahootPicker>
           )}
-          {getLinksForLocation().map((link, i) => (
-            <KahootBackground key={i} className={activeKahoot === i + 1 ? 'active' : ''}>
+          {kahoots.map((link, i) => (
+            <KahootBackground
+              key={i}
+              className={activeKahoot === i + 1 ? 'active' : ''}
+            >
               <iframe
                 id={`host-kahoot-window-${i + 1}`}
                 title={`host-kahoot-${i + 1}`}
