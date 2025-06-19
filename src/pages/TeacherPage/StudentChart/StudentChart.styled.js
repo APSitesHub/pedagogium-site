@@ -299,14 +299,16 @@ export const FeedbackButton = styled.button`
   }
 
   &.prev:hover::before {
-    content: 'Poprzednia recenzja';
+    content: 'Previous feedback';
+    // content: 'Poprzednia opinia';
     opacity: 1;
     color: #000000;
     font-weight: 500;
   }
 
   &.next:hover::before {
-    content: 'Następna recenzja';
+    content: 'Next feedback';
+    // content: 'Następna opinia';
     opacity: 1;
     color: #000000;
     font-weight: 500;
