@@ -19,6 +19,7 @@ import {
 import { Info } from '../Info/Info';
 import { Attendance } from '../Attendance/Attendance';
 import { Feedbacks } from '../Feedbacks/Feedbacks';
+import axios from 'axios';
 
 export const MyPedagogiumPanel = ({
   user,
@@ -32,6 +33,7 @@ export const MyPedagogiumPanel = ({
   const [isCalendarShown, setIsCalendarShown] = useState(false);
   const [isInfoShown, setIsInfoShown] = useState(false);
   const [isButtonBoxShown, setIsButtonBoxShown] = useState(true);
+  const [feedbacks, setFeedbacks] = useState({});
 
   const toggleButtonBox = () => {
     hideBackdrop();
@@ -120,6 +122,18 @@ export const MyPedagogiumPanel = ({
     };
   }, []);
 
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      const feedbacksResponse = await axios.get(
+        `http://localhost:3001/pedagogium-users/feedbacks/${user.id}`
+      );
+
+      setFeedbacks(feedbacksResponse.data);
+    };
+
+    fetchFeedbacks();
+  }, [user]);
+
   return (
     <>
       <PanelBackdrop
@@ -179,7 +193,7 @@ export const MyPedagogiumPanel = ({
       </APPanel>
       {isTimetableShown && <Timetable user={user} timetable={timetable} />}
       {isInfoShown && <Info />}
-      {isFeedbackShown && <Feedbacks feedbacks={user.feedbacks} />}
+      {isFeedbackShown && <Feedbacks feedbacks={feedbacks} />}
       {isCalendarShown && (
         <Attendance user={user} personalLessonsDays={[1, 2, 3, 4, 5]} />
       )}
