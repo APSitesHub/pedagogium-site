@@ -371,7 +371,7 @@ const Stream = () => {
                     }}
                   >
                     <JitsiMeeting
-                      domain="videohost.ap.education"
+                      domain="dev2.ap.education"
                       roomName={group}
                       configOverwrite={{
                         disableTileEnlargement: true,
