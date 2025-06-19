@@ -1,5 +1,5 @@
 import { FormBtn, Input, InputNote } from 'components/LeadForm/LeadForm.styled';
-import { Form } from 'formik';
+import { Field, Form } from 'formik';
 import styled from 'styled-components';
 import Select from 'react-select';
 
@@ -58,7 +58,7 @@ export const AdminInputNote = styled(InputNote)`
 export const ScheduleList = styled.ul`
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 45px;
 
   text-transform: capitalize;
   font-weight: 600;
@@ -68,13 +68,17 @@ export const ScheduleList = styled.ul`
 export const ScheduleHeading = styled.h2`
   font-size: 32px;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 `;
 
 export const ScheduleItem = styled.li`
   width: 100%;
   flex-basis: 40%;
   flex-grow: 0;
+  padding: 25px;
+
+  border-radius: 50px;
+  box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.18);
 `;
 
 export const ScheduleInfo = styled.ul`
@@ -129,4 +133,43 @@ export const FormSelect = styled(Select)`
     background-color: var(--secondary-burnt-color);
     outline: transparent;
   }
+`;
+
+export const FormField = styled(Field)`
+  width: 100%;
+  height: 42px;
+  padding: 12px 10px;
+  font-size: 14px;
+  border: 2px solid var(--main-color);
+  line-height: 1;
+
+  @media screen and (min-width: 768px) {
+    font-size: 19px;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--secondary-burnt-color);
+    outline: transparent;
+  }
+
+  &:-webkit-autofill {
+    &,
+    &:hover,
+    &:focus {
+      -webkit-box-shadow: 0 0 0px 1000px var(--accent-semi-transparent-color)
+        inset;
+    }
+  }
+
+  &::placeholder {
+  }
+`;
+
+export const TimetableDeleteButton = styled.button`
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid red;
+  border-radius: 5px;
+  margin-left: 10px;
 `;

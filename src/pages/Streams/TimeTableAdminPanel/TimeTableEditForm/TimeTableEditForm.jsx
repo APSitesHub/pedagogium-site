@@ -1,97 +1,78 @@
 import axios from 'axios';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
 import { useState } from 'react';
 import * as yup from 'yup';
 import {
   AdminFormBtn,
-  AdminInput,
   AdminInputNote,
   UsersEditForm,
 } from '../../UserAdminPanel/UserAdminPanel.styled';
-import { FormSelect } from '../TimeTableAdminPanel.styled';
+import { FormField, FormSelect } from '../TimeTableAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
 export const TimeTableEditForm = ({
   lessonToEdit,
   scheduleToEdit,
-  languageOptions,
-  levelOptions,
-  levelOptionsWithBeginners,
-  levelOptionsForDe,
   courseOptions,
-  courseEnglishOptions,
-  courseDeutschOptions,
+  groupsOptions,
   daysOptions,
-  typeOptions,
-  packageOptions,
   closeEditForm,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [langValue, setLangValue] = useState(lessonToEdit.lang);
-  const [levelValue, setLevelValue] = useState(lessonToEdit.level);
-  const [courseValue, setCourseValue] = useState(lessonToEdit.course || '');
+  const [courseValue, setCourseValue] = useState(
+    lessonToEdit.group.split('_')[0]
+  );
+  const [groupValue, setGroupValue] = useState(lessonToEdit.group);
   const [dayValue, setDayValue] = useState(scheduleToEdit.day);
-  const [typeValue, setTypeValue] = useState(scheduleToEdit.type);
-  const [packageValue, setPackageValue] = useState(scheduleToEdit.package);
 
   const initialEditTimetableValues = {
-    lang: lessonToEdit.lang,
-    level: lessonToEdit.level,
-    course: lessonToEdit.course || '',
+    group: lessonToEdit.group || '',
     day: scheduleToEdit.day,
-    type: scheduleToEdit.type,
-    package: scheduleToEdit.package,
     time: scheduleToEdit.time,
     lessonNumber: scheduleToEdit.lessonNumber,
-    teacher: scheduleToEdit.teacher,
+    topic: scheduleToEdit.topic,
   };
 
   const timetableSchema = yup.object().shape({
-    lang: yup.string(),
-    level: yup.string(),
-    course: yup.string(),
+    group: yup.string(),
     day: yup.string(),
-    type: yup.string(),
-    package: yup.string(),
     time: yup.string(),
     lessonNumber: yup.string(),
-    teacher: yup.string(),
+    topic: yup.string(),
   });
 
   const handleEditTimetableSubmit = async values => {
     values = {
-      lang: langValue,
-      level: levelValue,
-      course: courseValue,
+      group: groupValue,
       schedule: [
         {
           day: dayValue,
-          type: typeValue,
-          package: packageValue,
           time: values.time,
           lessonNumber: values.lessonNumber,
-          teacher: values.teacher,
+          topic: values.topic,
         },
       ],
     };
 
-    console.log(values);
     setIsLoading(isLoading => (isLoading = true));
     try {
-      const response = await axios.put(`/timetable/${lessonToEdit._id}`, {
-        lessonId: scheduleToEdit._id,
-        body: values,
-      });
+      const response = await axios.put(
+        `/pedagogium-timetable/${lessonToEdit._id}`,
+        {
+          lessonId: scheduleToEdit._id,
+          body: values,
+        }
+      );
       console.log(response);
       closeEditForm();
-      alert('Урок відредаговано');
+      alert('Lekcja pomyślnie edytowana');
     } catch (error) {
       console.error(error);
       alert(
-        'Десь якась проблема - клацай F12, роби скрін консолі, відправляй Кирилу'
+        'Wystąpił nieoczekiwany błąd serwera. Proszę odświeżyć stronę i spróbować ponownie. W przypadku dalszych problemów prosimy o kontakt z pomocą techniczną.'
       );
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -107,32 +88,11 @@ export const TimeTableEditForm = ({
       >
         <UsersEditForm>
           <FormSelect
-            options={languageOptions}
-            styles={{
-              control: (baseStyles, state) => ({
-                ...baseStyles,
-                border: 'none',
-                borderRadius: '0px',
-              }),
-            }}
-            placeholder="Мова"
-            name="lang"
-            defaultValue={languageOptions.find(
-              option => option.value === lessonToEdit.lang
+            defaultValue={courseOptions.find(
+              option => option.value === courseValue
             )}
             isDisabled
-            onChange={lang => {
-              setLangValue(lang.value);
-            }}
-          />
-          <FormSelect
-            options={
-              langValue === 'enkids'
-                ? levelOptionsWithBeginners
-                : langValue === 'de'
-                ? levelOptionsForDe
-                : levelOptions
-            }
+            options={courseOptions}
             styles={{
               control: (baseStyles, state) => ({
                 ...baseStyles,
@@ -140,52 +100,31 @@ export const TimeTableEditForm = ({
                 borderRadius: '0px',
               }),
             }}
-            placeholder="Рівень"
-            name="level"
-            defaultValue={
-              levelOptions.find(
-                option => option.value === lessonToEdit.level
-              ) ||
-              levelOptionsWithBeginners.find(
-                option => option.value === lessonToEdit.level
-              ) ||
-              levelOptionsForDe.find(
-                option => option.value === lessonToEdit.level
-              )
-            }
-            isDisabled
-            onChange={level => {
-              setLevelValue(level.value);
-            }}
-          />
-          <FormSelect
-            options={
-              langValue === 'en' || langValue === 'enkids'
-                ? courseEnglishOptions
-                : langValue === 'de'
-                ? courseDeutschOptions
-                : courseOptions
-            }
-            styles={{
-              control: (baseStyles, state) => ({
-                ...baseStyles,
-                border: 'none',
-                borderRadius: '0px',
-              }),
-            }}
-            placeholder="Потік"
+            placeholder="Kurs"
             name="course"
-            defaultValue={
-              courseOptions.find(
-                option => option.value === lessonToEdit.course
-              ) ||
-              courseEnglishOptions.find(
-                option => option.value === lessonToEdit.course
-              )
-            }
-            isDisabled
             onChange={course => {
               setCourseValue(course.value);
+            }}
+          />
+          <FormSelect
+            defaultValue={groupsOptions.find(
+              option => option.value === groupValue
+            )}
+            options={groupsOptions.filter(option =>
+              option.value.includes(courseValue)
+            )}
+            isDisabled
+            styles={{
+              control: (baseStyles, state) => ({
+                ...baseStyles,
+                border: 'none',
+                borderRadius: '0px',
+              }),
+            }}
+            placeholder="Grupa"
+            name="group"
+            onChange={group => {
+              setGroupValue(group.value);
             }}
           />
           <FormSelect
@@ -197,7 +136,7 @@ export const TimeTableEditForm = ({
                 borderRadius: '0px',
               }),
             }}
-            placeholder="День"
+            placeholder="Dzień tygodnia"
             name="day"
             defaultValue={daysOptions.find(
               option => +option.value === scheduleToEdit.day
@@ -206,59 +145,25 @@ export const TimeTableEditForm = ({
               setDayValue(day.value);
             }}
           />
-          <FormSelect
-            options={typeOptions}
-            styles={{
-              control: baseStyles => ({
-                ...baseStyles,
-                border: 'none',
-                borderRadius: '0px',
-              }),
-            }}
-            placeholder="Тип заняття"
-            name="type"
-            defaultValue={typeOptions.find(
-              option => option.value === scheduleToEdit.type
-            )}
-            onChange={type => {
-              setTypeValue(type.value);
-            }}
-          />
-          <FormSelect
-            options={packageOptions}
-            styles={{
-              control: baseStyles => ({
-                ...baseStyles,
-                border: 'none',
-                borderRadius: '0px',
-              }),
-            }}
-            placeholder="Найнижчий доступний пакет"
-            name="package"
-            defaultValue={packageOptions.find(
-              option => option.value === scheduleToEdit.package
-            )}
-            onChange={pack => {
-              setPackageValue(pack.value);
-            }}
-          />
           <Label>
-            <AdminInput type="text" name="time" placeholder="Час" />
+            <FormField type="text" name="time" placeholder="Czas" />
             <AdminInputNote component="p" name="time" />
           </Label>
           <Label>
-            <AdminInput
+            <FormField
               type="text"
               name="lessonNumber"
-              placeholder="Номер уроку"
+              placeholder="Numer lekcji"
             />
             <AdminInputNote component="p" name="lessonNumber" />
           </Label>
           <Label>
-            <AdminInput type="text" name="teacher" placeholder="Викладач" />
-            <AdminInputNote component="p" name="teacher" />
+            <FormField type="text" name="topic" placeholder="Przedmiot" />
+            <AdminInputNote component="p" name="topic" />
           </Label>
-          <AdminFormBtn type="submit">Змінити розклад</AdminFormBtn>
+          <AdminFormBtn type="submit">
+            <FormBtnText>Zapisz zmiany</FormBtnText>
+          </AdminFormBtn>
         </UsersEditForm>
       </Formik>
       {isLoading && <Loader />}

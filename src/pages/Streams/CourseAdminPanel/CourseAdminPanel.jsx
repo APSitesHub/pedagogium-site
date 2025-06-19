@@ -41,6 +41,7 @@ import {
   SubmitFormBtn,
 } from '../CourseAdminPanel/CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
+import { slugify, transliterate } from 'transliteration';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 

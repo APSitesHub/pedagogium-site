@@ -102,8 +102,13 @@ export const TeacherChartBtn = styled.button`
   font-size: 16px;
   border-radius: 50px;
   padding: 20px 20px;
-  background: radial-gradient(70% 80% at -13.25% 26%, #0f645b 6.9%, rgba(0, 0, 0, 0) 100%),
-    radial-gradient(70% 80% at 113.25% 74%, #0f645b 6.9%, rgba(0, 0, 0, 0) 100%), #000;
+  background: radial-gradient(
+      70% 80% at -13.25% 26%,
+      #0f645b 6.9%,
+      rgba(0, 0, 0, 0) 100%
+    ),
+    radial-gradient(70% 80% at 113.25% 74%, #0f645b 6.9%, rgba(0, 0, 0, 0) 100%),
+    #000;
 
   color: #fff;
   font-family: var(--new-font-family);
@@ -294,14 +299,16 @@ export const FeedbackButton = styled.button`
   }
 
   &.prev:hover::before {
-    content: 'Попередній відгук';
+    content: 'Previous feedback';
+    // content: 'Poprzednia opinia';
     opacity: 1;
     color: #000000;
     font-weight: 500;
   }
 
   &.next:hover::before {
-    content: 'Наступний відгук';
+    content: 'Next feedback';
+    // content: 'Następna opinia';
     opacity: 1;
     color: #000000;
     font-weight: 500;

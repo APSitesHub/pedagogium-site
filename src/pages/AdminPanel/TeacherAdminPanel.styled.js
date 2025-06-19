@@ -216,6 +216,7 @@ export const UserEditButton = styled.button`
   background-color: transparent;
   border: 1px solid var(--accent-color);
   border-radius: 5px;
+  cursor: pointer;
 `;
 
 export const UserDeleteButton = styled.button`
