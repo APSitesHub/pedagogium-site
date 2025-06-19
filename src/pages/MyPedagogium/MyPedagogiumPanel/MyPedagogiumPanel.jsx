@@ -125,7 +125,7 @@ export const MyPedagogiumPanel = ({
   useEffect(() => {
     const fetchFeedbacks = async () => {
       const feedbacksResponse = await axios.get(
-        `http://localhost:3001/pedagogium-users/feedbacks/${user.id}`
+        `https://ap-server-8qi1.onrender.com/pedagogium-users/feedbacks/${user.id}`
       );
 
       setFeedbacks(feedbacksResponse.data);
