@@ -28,11 +28,11 @@ export const WindowedChat = () => {
           `https://ap-chat-server.onrender.com/messages/room`,
           {
             params: {
-              group,
+              room: group,
             },
           }
         );
-        const todayMessages = dbMessages.filter(
+        const todayMessages = dbMessages.data.filter(
           message =>
             new Date(message.createdAt).getDate() === new Date().getDate()
         );

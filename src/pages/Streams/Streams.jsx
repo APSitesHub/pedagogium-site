@@ -4,7 +4,7 @@ import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Formik } from 'formik';
 import { nanoid } from 'nanoid';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import * as yup from 'yup';
 import {
@@ -36,26 +36,6 @@ const Streams = () => {
     try {
       const wake = await axios.get('/');
       console.log(wake.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const detectUser = async () => {
-    try {
-      const id = localStorage.getItem('userID');
-      const user = await axios.get(
-        `https://ap-chat-server.onrender.com/pedagogium-users/${id}`
-      );
-      console.log(user.data, 'detect');
-      setCurrentUser(
-        currentUser =>
-          (currentUser = user.data || {
-            username: 'User Is Not Logged In',
-            isBanned: false,
-            userIP: 'no ip',
-          })
-      );
     } catch (error) {
       console.log(error);
     }
@@ -156,10 +136,6 @@ const Streams = () => {
       }
     };
     refreshToken();
-  }, []);
-
-  useEffect(() => {
-    detectUser();
   }, []);
 
   return (

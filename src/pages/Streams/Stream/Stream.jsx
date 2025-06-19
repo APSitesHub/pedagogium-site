@@ -120,7 +120,7 @@ const Stream = () => {
           `https://ap-chat-server.onrender.com/messages/room`,
           {
             params: {
-              group,
+              room: group,
             },
           }
         );
@@ -259,7 +259,7 @@ const Stream = () => {
     };
 
     checkGroup();
-  }, []);
+  }, [group]);
 
   const findTeacherId = participants => {
     for (const id in participants) {

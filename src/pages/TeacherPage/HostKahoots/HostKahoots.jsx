@@ -67,7 +67,7 @@ export const HostKahoots = ({
     };
 
     getLinksRequest();
-  }, []);
+  }, [page]);
 
   const toggleMinimize = () => {
     setIsMinimized(isMinimized => (isMinimized = !isMinimized));

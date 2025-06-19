@@ -12,28 +12,28 @@ import {
   BoxHideLeftSwitch,
   BoxHideRightSwitch,
   BoxHideUpSwitch,
-  InputButtonBox,
-  // PlatformBtn,
-  // PlatformLogo,
-  TeacherButtonBox,
-  TeacherButtonBoxHideSwitch,
   // ViewerBtn,
   // ViewerLogo,
   // WhiteBoardBtn,
   // WhiteBoardLogo,
   InputBtn,
+  InputButtonBox,
   KahootBtn,
   KahootLogo,
+  // PlatformBtn,
+  // PlatformLogo,
+  TeacherButtonBox,
+  TeacherButtonBoxHideSwitch,
 } from './TeacherPage.styled';
 import { TeacherQuizInput } from './TeacherQuiz/TeacherQuizInput';
 import { TeacherQuizOptions } from './TeacherQuiz/TeacherQuizOptions';
 import { TeacherQuizTrueFalse } from './TeacherQuiz/TeacherQuizTrueFalse';
 // import { Viewer } from './Viewer/Viewer';
 // import { WhiteBoard } from './WhiteBoard/WhiteBoard';
-import { TeacherQuizFeedback } from './TeacherQuiz/TeacherQuizFeedback';
-import { QRCodeModal } from './TeacherQuiz/TeacherQR';
 import axios from 'axios';
 import NotFound from 'pages/NotFound/NotFound';
+import { QRCodeModal } from './TeacherQuiz/TeacherQR';
+import { TeacherQuizFeedback } from './TeacherQuiz/TeacherQuizFeedback';
 
 const TeacherPage = () => {
   const { group } = useParams();
