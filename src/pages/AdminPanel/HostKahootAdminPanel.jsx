@@ -15,6 +15,7 @@ import {
   DeleteButton,
   FormSelect,
   KahootLinkBox,
+  KahootsAdminContainer,
   KahootsAdminForm,
   LinkArea,
   LinksContainer,
@@ -159,6 +160,8 @@ const KahootAdminPanel = () => {
   };
 
   useEffect(() => {
+    document.title = 'Panel kahutów prowadzącego | Pedagogium';
+
     const refreshToken = async () => {
       console.log('token refresher');
       try {
@@ -185,7 +188,7 @@ const KahootAdminPanel = () => {
 
   return (
     <>
-      <PanelHeader>Panel kahutów prowadzącego </PanelHeader>
+      <PanelHeader>Panel kahutów prowadzącego</PanelHeader>
       <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
@@ -231,134 +234,131 @@ const KahootAdminPanel = () => {
             <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
               <LinkTo to={'/admin'}>Kursy</LinkTo>
               <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
               <LinkTo to={'/admin-users'}>Studenci</LinkTo>
               <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
               <LinkTo $isDisabled to={'/admin-host-kahoots'}>
                 Kahooty prowadzącego
               </LinkTo>
             </AdminButtonBox>
-
             <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
             </AdminButtonBoxSwitch>
-            {courses.length && (
-              <KahootsAdminForm>
-                <FormSelect
-                  options={courses.map(course => ({
-                    label: course.courseName,
-                    value: course.slug,
-                  }))}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      border: 'none',
-                      borderRadius: '50px',
-                      minHeight: '38px',
-                      fontSize: '1.5rem',
-                    }),
-                    menu: (baseStyles, state) => ({
-                      ...baseStyles,
-                      position: 'absolute',
-                      zIndex: '2',
-                      top: '36px',
-                      fontSize: '1.5rem',
-                    }),
-                    dropdownIndicator: (baseStyles, state) => ({
-                      ...baseStyles,
-                      padding: '7px',
-                      fontSize: '1.5rem',
-                    }),
-                  }}
-                  placeholder="Kurs"
-                  onChange={handleSelectCourse}
-                />
-                <FormSelect
-                  options={
-                    selectedCourse?.courseGroups?.map(group => ({
-                      label: group,
-                      value: group,
-                    })) || []
-                  }
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      border: 'none',
-                      borderRadius: '50px',
-                      minHeight: '38px',
-                      fontSize: '1.5rem',
-                    }),
-                    menu: (baseStyles, state) => ({
-                      ...baseStyles,
-                      position: 'absolute',
-                      zIndex: '2',
-                      top: '36px',
-                      fontSize: '1.5rem',
-                    }),
-                    dropdownIndicator: (baseStyles, state) => ({
-                      ...baseStyles,
-                      padding: '7px',
-                      fontSize: '1.5rem',
-                    }),
-                  }}
-                  placeholder="Grupę"
-                  onChange={handleSelectGroup}
-                  isDisabled={!selectedCourse}
-                />
+            <KahootsAdminContainer>
+              {courses.length && (
+                <KahootsAdminForm>
+                  <FormSelect
+                    options={courses.map(course => ({
+                      label: course.courseName,
+                      value: course.slug,
+                    }))}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '38px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
+                    }}
+                    placeholder="Kurs"
+                    onChange={handleSelectCourse}
+                  />
+                  <FormSelect
+                    options={
+                      selectedCourse?.courseGroups?.map(group => ({
+                        label: group,
+                        value: group,
+                      })) || []
+                    }
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '38px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
+                    }}
+                    placeholder="Grupę"
+                    onChange={handleSelectGroup}
+                    isDisabled={!selectedCourse}
+                  />
 
-                <SubmitFormBtn type="button" onClick={handleFindKahoots}>
-                  <FormBtnText>Szukaj</FormBtnText>
-                </SubmitFormBtn>
-                <LoginErrorNote>{customError}</LoginErrorNote>
-              </KahootsAdminForm>
-            )}
-            <LinkArea>
-              {links.group ? (
-                <>
-                  <VisibleGroupName>{visibleGroupName}</VisibleGroupName>
-                  <LinksContainer>
-                    {links.links.length ? (
-                      links.links.map((link, index) => (
-                        <KahootLinkBox key={index}>
-                          <DefaultInput
-                            type="text"
-                            name={`link-${index}`}
-                            placeholder={`Link-${index}`}
-                            value={link}
-                            onChange={handleLinkChange}
-                          />
-                          <DeleteButton
-                            type="button"
-                            onClick={() => handleRemoveLink(index)}
-                          >
-                            ✖ Usuń
-                          </DeleteButton>
-                        </KahootLinkBox>
-                      ))
-                    ) : (
-                      <NoLinksChosen>
-                        Nie dodano jeszcze linków do kahutów. Możesz je teraz
-                        dodać
-                      </NoLinksChosen>
-                    )}
-                    <AddButton onClick={handleAddKahootLink}>
-                      🞣 Dodaj link
-                    </AddButton>
-                  </LinksContainer>
-
-                  <SubmitKahootsButton
-                    type="button"
-                    onClick={handleSubmit}
-                    style={{ marginTop: 'auto' }}
-                  >
-                    <FormBtnText>Zapisz</FormBtnText>
-                  </SubmitKahootsButton>
-                </>
-              ) : (
-                <NoLinksChosen>
-                  Wybierz kurs i grupę w formularzu po lewej stronie
-                </NoLinksChosen>
+                  <SubmitFormBtn type="button" onClick={handleFindKahoots}>
+                    <FormBtnText>Szukaj</FormBtnText>
+                  </SubmitFormBtn>
+                  <LoginErrorNote>{customError}</LoginErrorNote>
+                </KahootsAdminForm>
               )}
-            </LinkArea>
+
+              <LinkArea>
+                {links.group ? (
+                  <>
+                    <VisibleGroupName>{visibleGroupName}</VisibleGroupName>
+                    <LinksContainer>
+                      {links.links.length ? (
+                        links.links.map((link, index) => (
+                          <KahootLinkBox key={index}>
+                            <DefaultInput
+                              type="text"
+                              name={`link-${index}`}
+                              placeholder={`Link-${index}`}
+                              value={link}
+                              onChange={handleLinkChange}
+                            />
+                            <DeleteButton
+                              type="button"
+                              onClick={() => handleRemoveLink(index)}
+                            >
+                              ✖ Usuń
+                            </DeleteButton>
+                          </KahootLinkBox>
+                        ))
+                      ) : (
+                        <NoLinksChosen>
+                          Nie dodano jeszcze linków do kahutów. Możesz je teraz
+                          dodać
+                        </NoLinksChosen>
+                      )}
+                      <AddButton onClick={handleAddKahootLink}>
+                        🞣 Dodaj link
+                      </AddButton>
+                    </LinksContainer>
+
+                    <SubmitKahootsButton
+                      type="button"
+                      onClick={handleSubmit}
+                      style={{ marginTop: 'auto' }}
+                    >
+                      <FormBtnText>Zapisz</FormBtnText>
+                    </SubmitKahootsButton>
+                  </>
+                ) : (
+                  <NoLinksChosen>
+                    Wybierz kurs i grupę w formularzu po lewej stronie
+                  </NoLinksChosen>
+                )}
+              </LinkArea>
+            </KahootsAdminContainer>
           </>
         )}
 

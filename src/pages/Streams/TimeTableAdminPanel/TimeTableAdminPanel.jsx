@@ -2,21 +2,25 @@ import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
+import {
+  BoxHideLeftSwitch,
+  BoxHideRightSwitch,
+  LoginLogo,
+} from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
+import { AdminFormBtn, LoginForm } from '../AdminPanel/AdminPanel.styled';
+import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import {
-  AdminFormBtn,
   AdminInput,
   AdminInputNote,
   AdminPanelSection,
-  LoginForm,
+  FormSelect,
   UserEditButton,
   UsersForm,
 } from '../UserAdminPanel/UserAdminPanel.styled';
 import {
-  FormField,
-  FormSelect,
   ScheduleData,
   ScheduleDataDayText,
   ScheduleDataTimeText,
@@ -27,6 +31,16 @@ import {
   TimetableDeleteButton,
 } from './TimeTableAdminPanel.styled';
 import { TimeTableEditForm } from './TimeTableEditForm/TimeTableEditForm';
+import {
+  LinkTo,
+  PanelHeader,
+  SubmitFormBtn,
+} from '../CourseAdminPanel/CourseAdminPanel.styled';
+import {
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  FormField,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 const setAuthToken = token => {
@@ -41,12 +55,14 @@ const TimeTableAdminPanel = () => {
   const [lessonToEdit, setLessonToEdit] = useState({});
   const [scheduleToEdit, setScheduleToEdit] = useState('');
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+  const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
+  const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
   const [courseValue, setCourseValue] = useState(null);
   const [groupValue, setGroupValue] = useState(null);
   const [dayValue, setDayValue] = useState(null);
 
   useEffect(() => {
-    document.title = 'Timetable Admin Panel | AP Education';
+    document.title = 'Panel harmonogramów | Pedagogium';
 
     const refreshToken = async () => {
       console.log('token refresher');
@@ -112,6 +128,10 @@ const TimeTableAdminPanel = () => {
     login: yup.string().required('Podaj login!'),
     password: yup.string().required('Podaj hasło!'),
   });
+
+  const toggleButtonBox = () => {
+    setIsButtonBoxOpen(isOpen => !isOpen);
+  };
 
   const handleLoginSubmit = async (values, { resetForm }) => {
     setIsLoading(isLoading => (isLoading = true));
@@ -322,6 +342,7 @@ const TimeTableAdminPanel = () => {
 
   return (
     <>
+      <PanelHeader>Panel harmonogramów</PanelHeader>
       <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
@@ -330,8 +351,14 @@ const TimeTableAdminPanel = () => {
             validationSchema={loginSchema}
           >
             <LoginForm>
+              <LoginLogo />
               <Label>
-                <AdminInput type="text" name="login" placeholder="Login" />
+                <AdminInput
+                  type="text"
+                  name="login"
+                  placeholder="Login"
+                  onBlur={() => setIsUserInfoIncorrect(false)}
+                />
                 <AdminInputNote component="p" name="login" />
               </Label>
               <Label>
@@ -339,93 +366,152 @@ const TimeTableAdminPanel = () => {
                   type="password"
                   name="password"
                   placeholder="Hasło"
+                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <AdminFormBtn type="submit">Zaloguj się</AdminFormBtn>
+              <AdminFormBtn type="submit">
+                <FormBtnText>Zaloguj się</FormBtnText>
+              </AdminFormBtn>
+              <LoginErrorNote
+                style={
+                  isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
+                }
+              >
+                Błędne hasło lub e-mail.
+              </LoginErrorNote>
             </LoginForm>
           </Formik>
         )}
 
         {isUserAdmin && (
-          <Formik
-            initialValues={initialTimetableValues}
-            onSubmit={handleTimetableSubmit}
-            validationSchema={timetableSchema}
-          >
-            <UsersForm>
-              <FormSelect
-                value={courseValue ? courseValue.value : null}
-                options={courseOptions}
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Kurs"
-                name="course"
-                onChange={course => {
-                  setCourseValue(course.value);
-                }}
-              />
-              <FormSelect
-                value={groupValue ? groupValue.value : null}
-                options={groupsOptions.filter(option =>
-                  option.value.includes(courseValue)
-                )}
-                isDisabled={!courseValue ? true : false}
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Grupa"
-                name="group"
-                onChange={group => {
-                  setGroupValue(group.value);
-                }}
-              />
-              <FormSelect
-                value={dayValue ? dayValue.value : null}
-                options={daysOptions}
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    border: 'none',
-                    borderRadius: '0px',
-                  }),
-                }}
-                placeholder="Dzień tygodnia"
-                name="day"
-                onChange={day => {
-                  setDayValue(day.value);
-                }}
-              />
-              <Label>
-                <FormField type="text" name="time" placeholder="Czas" />
-                <AdminInputNote component="p" name="time" />
-              </Label>
-              <Label>
-                <FormField
-                  type="text"
-                  name="lessonNumber"
-                  placeholder="Numer lekcji"
+          <>
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <LinkTo to={'/admin'}>Kursy</LinkTo>
+              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo $isDisabled to={'/admin-timetable'}>
+                Harmonogramy
+              </LinkTo>
+              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
+
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
+              {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
+            </AdminButtonBoxSwitch>
+            <Formik
+              initialValues={initialTimetableValues}
+              onSubmit={handleTimetableSubmit}
+              validationSchema={timetableSchema}
+            >
+              <UsersForm>
+                <FormSelect
+                  value={courseValue ? courseValue.value : null}
+                  options={courseOptions}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '38px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                    }),
+                  }}
+                  placeholder="Kurs"
+                  name="course"
+                  onChange={course => {
+                    setCourseValue(course.value);
+                  }}
                 />
-                <AdminInputNote component="p" name="lessonNumber" />
-              </Label>
-              <Label>
-                <FormField type="text" name="topic" placeholder="Przedmiot" />
-                <AdminInputNote component="p" name="topic" />
-              </Label>
-              <AdminFormBtn type="submit">
-                <FormBtnText>Dodaj</FormBtnText>
-              </AdminFormBtn>
-            </UsersForm>
-          </Formik>
+                <FormSelect
+                  value={groupValue ? groupValue.value : null}
+                  options={groupsOptions.filter(option =>
+                    option.value.includes(courseValue)
+                  )}
+                  isDisabled={!courseValue ? true : false}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '38px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                    }),
+                  }}
+                  placeholder="Grupa"
+                  name="group"
+                  onChange={group => {
+                    setGroupValue(group.value);
+                  }}
+                />
+                <FormSelect
+                  value={dayValue ? dayValue.value : null}
+                  options={daysOptions}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '38px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                    }),
+                  }}
+                  placeholder="Dzień tygodnia"
+                  name="day"
+                  onChange={day => {
+                    setDayValue(day.value);
+                  }}
+                />
+                <Label>
+                  <FormField type="text" name="time" placeholder="Czas" />
+                  <AdminInputNote component="p" name="time" />
+                </Label>
+                <Label>
+                  <FormField
+                    type="text"
+                    name="lessonNumber"
+                    placeholder="Numer lekcji"
+                  />
+                  <AdminInputNote component="p" name="lessonNumber" />
+                </Label>
+                <Label>
+                  <FormField type="text" name="topic" placeholder="Przedmiot" />
+                  <AdminInputNote component="p" name="topic" />
+                </Label>
+                <SubmitFormBtn type="submit">
+                  <FormBtnText>Dodaj</FormBtnText>
+                </SubmitFormBtn>
+              </UsersForm>
+            </Formik>
+          </>
         )}
         <ScheduleList>
           {lessons &&

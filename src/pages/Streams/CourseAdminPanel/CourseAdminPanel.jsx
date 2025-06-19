@@ -41,16 +41,11 @@ import {
   SubmitFormBtn,
 } from '../CourseAdminPanel/CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
-import { slugify, transliterate } from 'transliteration';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
 const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-};
-
-const Universities = {
-  PEDAGOGIUM: 'Pedagogium',
 };
 
 const translations = {
@@ -119,9 +114,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
 
   useEffect(() => {
-    document.title = uni
-      ? `${Universities[uni]} | Panel administracyjny kursów`
-      : 'Courses Admin Panel';
+    document.title = 'Panel kursów | Pedagogium';
 
     const refreshToken = async () => {
       console.log('token refresher');
@@ -305,6 +298,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                 Kursy
               </LinkTo>
               <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
               <LinkTo to={'/admin-users'}>Studenci</LinkTo>
               <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
               <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>

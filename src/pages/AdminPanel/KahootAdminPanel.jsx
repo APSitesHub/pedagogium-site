@@ -160,6 +160,8 @@ const KahootAdminPanel = () => {
   };
 
   useEffect(() => {
+    document.title = 'Panel kahutów | Pedagogium';
+
     const refreshToken = async () => {
       console.log('token refresher');
       try {
@@ -232,6 +234,7 @@ const KahootAdminPanel = () => {
             <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
               <LinkTo to={'/admin'}>Kursy</LinkTo>
               <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
               <LinkTo to={'/admin-users'}>Studenci</LinkTo>
               <LinkTo $isDisabled to={'/admin-kahoots'}>
                 Kahooty

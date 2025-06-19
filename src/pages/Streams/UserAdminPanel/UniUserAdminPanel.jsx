@@ -158,9 +158,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
   }, [courseValue]);
 
   useEffect(() => {
-    document.title = uni
-      ? `${University[uni]} Admin Panel | AP Education`
-      : 'Polish University Users Admin Panel | AP Education';
+    document.title = 'Panel studentów | Pedagogium';
 
     const refreshToken = async () => {
       console.log('token refresher');
@@ -495,6 +493,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
             <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
               <LinkTo to={'/admin'}>Kursy</LinkTo>
               <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
               <LinkTo $isDisabled to={'/admin-users'}>
                 Studenci
               </LinkTo>

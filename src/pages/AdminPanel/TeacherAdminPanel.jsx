@@ -57,7 +57,7 @@ const TeacherAdminPanel = () => {
   const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
 
   useEffect(() => {
-    document.title = 'Teacher Admin Panel | Pedagogium';
+    document.title = 'Panel kuratora | Pedagogium';
 
     const refreshToken = async () => {
       console.log('token refresher');
@@ -271,6 +271,7 @@ const TeacherAdminPanel = () => {
               <LinkTo $isDisabled to={'/admin-teacher'}>
                 Nauczyciele
               </LinkTo>
+              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
               <LinkTo to={'/admin-users'}>Studenci</LinkTo>
               <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
               <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
