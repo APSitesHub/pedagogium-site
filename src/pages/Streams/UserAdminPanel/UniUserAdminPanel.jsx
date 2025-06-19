@@ -441,7 +441,17 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
   return (
     <>
-      <AdminPanelSection>
+      <h1
+        style={{
+          padding: '16px',
+          fontSize: '2.5rem',
+          textAlign: 'center',
+          borderBottom: '1px solid gray',
+        }}
+      >
+        Panel studentów
+      </h1>
+      <AdminPanelSection style={{ fontSize: '1.2rem' }}>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -512,38 +522,58 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
               onSubmit={handleUserSubmit}
               validationSchema={usersSchema}
             >
-              <UsersForm>
+              <UsersForm style={{ fontSize: '1.2rem', minWidth: '200px' }}>
                 <Label>
                   <AdminInput
                     type="text"
                     name="name"
                     placeholder={translations[lang]?.name}
+                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote component="p" name="name" />
+                  <AdminInputNote
+                    component="p"
+                    name="name"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <Label>
                   <AdminInput
                     type="email"
                     name="mail"
                     placeholder={translations[lang]?.email}
+                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote component="p" name="mail" />
+                  <AdminInputNote
+                    component="p"
+                    name="mail"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <Label>
                   <AdminInput
                     type="text"
                     name="password"
                     placeholder={translations[lang]?.password}
+                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote component="p" name="password" />
+                  <AdminInputNote
+                    component="p"
+                    name="password"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <Label>
                   <AdminInput
                     type="text"
                     name="pupilId"
                     placeholder={translations[lang]?.platformId}
+                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote component="p" name="pupilId" />
+                  <AdminInputNote
+                    component="p"
+                    name="pupilId"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <SpeakingLabel>
                   {courseValue && courseValue.value && (

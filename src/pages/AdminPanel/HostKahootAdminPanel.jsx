@@ -11,9 +11,8 @@ import {
   KahootsAdminContainer,
   LinksContainer,
   LoginForm,
-  SpeakingSelect,
 } from './TeacherAdminPanel.styled';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Formik } from 'formik';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import * as yup from 'yup';
@@ -24,6 +23,8 @@ import {
   ButtonBox,
 } from 'components/Stream/Stream.styled';
 import { LinkTo } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
+import { TeacherLangSelect } from 'pages/Streams/UserAdminPanel/UserAdminPanel.styled';
+import { LoginErrorNote } from 'pages/TeacherPage/TeacherPage.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 // axios.defaults.baseURL = 'http://localhost:3001';
@@ -41,6 +42,7 @@ const KahootAdminPanel = () => {
   const [links, setLinks] = useState([]);
   const [visibleGroupName, setVisibleGroupName] = useState('');
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
+  const [customError, setCustomError] = useState('');
 
   const initialLoginValues = {
     login: '',
@@ -73,13 +75,25 @@ const KahootAdminPanel = () => {
 
   const handleSelectCourse = item => {
     setSelectedCourse(courses.find(course => course.slug === item.value));
+    setCustomError('');
   };
 
   const handleSelectGroup = item => {
     setSelectedGroup(item.value);
+    setCustomError('');
   };
 
   const handleFindKahoots = async () => {
+    if (!selectedCourse?.slug) {
+      setCustomError('Wybierz kurs');
+      return;
+    }
+
+    if (!selectedGroup) {
+      setCustomError('Wybierz grupę');
+      return;
+    }
+
     const slug = `${selectedCourse.slug}_${selectedGroup}`;
     const response = await axios.get(`/pedagogium-host-kahoots/${slug}`);
 
@@ -155,151 +169,220 @@ const KahootAdminPanel = () => {
   }, []);
 
   return (
-    <AdminPanelSection>
-      {!isUserAdmin && (
-        <Formik
-          initialValues={initialLoginValues}
-          onSubmit={handleLoginSubmit}
-          validationSchema={loginSchema}
-        >
-          <LoginForm>
-            <Label>
-              <AdminInput type="text" name="login" placeholder="Login" />
-              <AdminInputNote component="p" name="login" />
-            </Label>
-            <Label>
-              <AdminInput type="password" name="password" placeholder="Hasło" />
-              <AdminInputNote component="p" name="password" />
-            </Label>
-            <AdminFormBtn type="submit">Zaloguj się</AdminFormBtn>
-          </LoginForm>
-        </Formik>
-      )}
-      {isUserAdmin && (
-        <>
-          <ButtonBox
-            className={!isButtonBoxOpen ? 'hidden' : ''}
-            style={{
-              backgroundColor: '#fff',
-              padding: '8px',
-              border: '1px solid gray',
-              borderRadius: '24px',
-              top: '100px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            }}
+    <>
+      <h1
+        style={{
+          padding: '16px',
+          fontSize: '2.5rem',
+          textAlign: 'center',
+          borderBottom: '1px solid gray',
+        }}
+      >
+        Panel host-kahutów
+      </h1>
+      <AdminPanelSection style={{ fontSize: '1.5rem' }}>
+        {!isUserAdmin && (
+          <Formik
+            initialValues={initialLoginValues}
+            onSubmit={handleLoginSubmit}
+            validationSchema={loginSchema}
           >
-            <LinkTo to={'/admin'}>Panel kursów</LinkTo>
-            <LinkTo to={'/admin-teacher'}>Panel kuratora</LinkTo>
-            <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
-            <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
-            <LinkTo $isDisabled to={'/admin-host-kahoots'}>
-              Panel host-kahutów
-            </LinkTo>
-          </ButtonBox>
-
-          <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
-            {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
-          </BoxHideSwitch>
-          {courses.length && (
-            <KahootsAdminContainer>
-              <SpeakingSelect
-                options={courses.map(course => ({
-                  label: course.courseName,
-                  value: course.slug,
-                }))}
-                placeholder="Kurs"
-                onChange={handleSelectCourse}
-              />
-              <SpeakingSelect
-                options={
-                  selectedCourse?.courseGroups?.map(group => ({
-                    label: group,
-                    value: group,
-                  })) || []
-                }
-                placeholder="Grupę"
-                onChange={handleSelectGroup}
-                isDisabled={!selectedCourse}
-              />
-
-              <AdminFormBtn type="button" onClick={handleFindKahoots}>
-                Szukaj
+            <LoginForm>
+              <Label>
+                <AdminInput type="text" name="login" placeholder="Login" />
+                <AdminInputNote component="p" name="login" />
+              </Label>
+              <Label>
+                <AdminInput
+                  type="password"
+                  name="password"
+                  placeholder="Hasło"
+                />
+                <AdminInputNote component="p" name="password" />
+              </Label>
+              <AdminFormBtn type="submit">
+                <FormBtnText>Zaloguj się</FormBtnText>
               </AdminFormBtn>
-            </KahootsAdminContainer>
-          )}
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'start',
-              height: '100%',
-              border: '1px solid gray',
-              borderRadius: '25px',
-              padding: '12px 4px 4px 4px',
-            }}
-          >
-            {links.group ? (
-              <>
-                <h2
-                  style={{
-                    textAlign: 'center',
-                    borderBottom: '1px solid gray',
-                    paddingBottom: '8px',
+            </LoginForm>
+          </Formik>
+        )}
+        {isUserAdmin && (
+          <>
+            <ButtonBox
+              className={!isButtonBoxOpen ? 'hidden' : ''}
+              style={{
+                backgroundColor: '#fff',
+                padding: '8px',
+                border: '1px solid gray',
+                borderRadius: '24px',
+                top: '100px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              }}
+            >
+              <LinkTo to={'/admin'}>Panel kursów</LinkTo>
+              <LinkTo to={'/admin-teacher'}>Panel kuratora</LinkTo>
+              <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
+              <LinkTo $isDisabled to={'/admin-host-kahoots'}>
+                Panel host-kahutów
+              </LinkTo>
+            </ButtonBox>
+
+            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+              {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
+            </BoxHideSwitch>
+            {courses.length && (
+              <KahootsAdminContainer>
+                <TeacherLangSelect
+                  options={courses.map(course => ({
+                    label: course.courseName,
+                    value: course.slug,
+                  }))}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '34px',
+                      fontSize: '1.5rem',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                      fontSize: '1.5rem',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                      fontSize: '1.5rem',
+                    }),
                   }}
-                >
-                  {visibleGroupName}
-                </h2>
-                <LinksContainer>
-                  {links.links.length ? (
-                    links.links.map((link, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '1rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <DefaultInput
-                          type="text"
-                          name={`link-${index}`}
-                          placeholder={`Link-${index}`}
-                          value={link}
-                          onChange={handleLinkChange}
-                        />
-                        <DeleteButton
-                          type="button"
-                          onClick={() => handleRemoveLink(index)}
-                        >
-                          ✖
-                        </DeleteButton>
-                      </div>
-                    ))
-                  ) : (
-                    <h3>Nie ma linków do kahutów, możesz je dodać</h3>
-                  )}
-                  <AddButton onClick={handleAddKahootLink}>+</AddButton>
-                </LinksContainer>
+                  placeholder="Kurs"
+                  onChange={handleSelectCourse}
+                />
+                <TeacherLangSelect
+                  options={
+                    selectedCourse?.courseGroups?.map(group => ({
+                      label: group,
+                      value: group,
+                    })) || []
+                  }
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '34px',
+                      fontSize: '1.5rem',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      position: 'absolute',
+                      zIndex: '2',
+                      top: '36px',
+                      fontSize: '1.5rem',
+                    }),
+                    dropdownIndicator: (baseStyles, state) => ({
+                      ...baseStyles,
+                      padding: '7px',
+                      fontSize: '1.5rem',
+                    }),
+                  }}
+                  placeholder="Grupę"
+                  onChange={handleSelectGroup}
+                  isDisabled={!selectedCourse}
+                />
 
-                <AdminFormBtn
-                  type="button"
-                  onClick={handleSubmit}
-                  style={{ marginTop: 'auto' }}
-                >
-                  Zapisz
+                <AdminFormBtn type="button" onClick={handleFindKahoots}>
+                  <FormBtnText>Szukaj</FormBtnText>
                 </AdminFormBtn>
-              </>
-            ) : (
-              <h3>Wybierz kurs i grupę</h3>
+                <LoginErrorNote
+                  style={{ fontSize: '14px', fontWeight: 'normal' }}
+                >
+                  {customError}
+                </LoginErrorNote>
+              </KahootsAdminContainer>
             )}
-          </div>
-        </>
-      )}
+            <div
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'start',
+                border: '1px solid gray',
+                borderRadius: '25px',
+                padding: '12px 4px 4px 4px',
+                minHeight: '360px',
+                maxHeight: '100%',
+              }}
+            >
+              {links.group ? (
+                <>
+                  <h2
+                    style={{
+                      textAlign: 'center',
+                      borderBottom: '1px solid gray',
+                      paddingBottom: '8px',
+                    }}
+                  >
+                    {visibleGroupName}
+                  </h2>
+                  <LinksContainer>
+                    {links.links.length ? (
+                      links.links.map((link, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '1rem',
+                            marginBottom: '0.5rem',
+                          }}
+                        >
+                          <DefaultInput
+                            type="text"
+                            name={`link-${index}`}
+                            placeholder={`Link-${index}`}
+                            value={link}
+                            onChange={handleLinkChange}
+                          />
+                          <DeleteButton
+                            type="button"
+                            onClick={() => handleRemoveLink(index)}
+                          >
+                            <p>✖</p>
+                            <p>usunąć</p>
+                          </DeleteButton>
+                        </div>
+                      ))
+                    ) : (
+                      <h3>Nie ma linków do kahutów, możesz je dodać</h3>
+                    )}
+                    <AddButton onClick={handleAddKahootLink}>
+                      + Dodaj link
+                    </AddButton>
+                  </LinksContainer>
 
-      {isLoading && <Loader />}
-    </AdminPanelSection>
+                  <AdminFormBtn
+                    type="button"
+                    onClick={handleSubmit}
+                    style={{ marginTop: 'auto' }}
+                  >
+                    <FormBtnText>Zapisz</FormBtnText>
+                  </AdminFormBtn>
+                </>
+              ) : (
+                <h3>Wybierz kurs i grupę</h3>
+              )}
+            </div>
+          </>
+        )}
+
+        {isLoading && <Loader />}
+      </AdminPanelSection>
+    </>
   );
 };
 

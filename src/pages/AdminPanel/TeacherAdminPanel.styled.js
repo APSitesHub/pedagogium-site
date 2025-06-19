@@ -273,8 +273,6 @@ export const KahootsAdminContainer = styled.div`
   display: flex;
   flex-basis: 30%;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 1rem;
   height: 100%;
 `;
@@ -284,6 +282,7 @@ export const LinksContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
+  min-height: 360px;
   max-height: 90%;
   overflow: auto;
 `;
@@ -297,12 +296,11 @@ export const DefaultInput = styled.input`
 
 export const AddButton = styled.button`
   cursor: pointer;
-  padding: 0;
+  padding: 8px;
   border-radius: 50px;
   border: 1px solid transparent;
   background: none;
   color: green;
-  font-size: 2rem;
   transition: 0.5s ease;
 
   &:hover {
@@ -311,6 +309,9 @@ export const AddButton = styled.button`
 `;
 
 export const DeleteButton = styled.button`
+  display: flex;
+  gap: 4px;
+  align-items: center;
   cursor: pointer;
   padding: 0;
   border: none;

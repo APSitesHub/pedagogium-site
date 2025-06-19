@@ -34,15 +34,14 @@ export const LinkTo = styled(Link)`
   border: 1px solid var(--main-color);
   border-radius: 50px;
   color: var(--main-color);
-  font-size: 12px;
+  font-size: 18px;
   text-align: center;
   cursor: pointer;
   transition: color var(--animation-global);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 96px;
-  height: 36px;
+  padding: 12px;
   transition: all ease-in-out 0.3s;
   color: var(--secondary-color);
   font-weight: 600;

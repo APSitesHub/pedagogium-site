@@ -264,7 +264,7 @@ export const FormBtn = styled.button`
 
 export const FormBtnText = styled.span`
   position: absolute;
-  z-index: 5;
+  z-index: 1;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

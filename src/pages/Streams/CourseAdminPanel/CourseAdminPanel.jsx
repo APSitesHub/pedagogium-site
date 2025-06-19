@@ -249,7 +249,17 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
   return (
     <>
-      <AdminPanelSection>
+      <h1
+        style={{
+          padding: '16px',
+          fontSize: '2.5rem',
+          textAlign: 'center',
+          borderBottom: '1px solid gray',
+        }}
+      >
+        Panel kursów
+      </h1>
+      <AdminPanelSection style={{ fontSize: '1.2rem' }}>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -321,25 +331,27 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
               validationSchema={courseSchema}
             >
               <UsersForm>
-                <Label>
-                  <AdminInputHint>
+                <Label style={{ fontSize: '1.2rem' }}>
+                  <AdminInputHint style={{ fontSize: '1.2rem' }}>
                     {translations[lang]?.courseNameLabel}
                   </AdminInputHint>
                   <AdminInput
                     type="text"
                     name="courseName"
                     placeholder={`${translations[lang]?.courseName}`}
+                    style={{ fontSize: '1.2rem' }}
                   />
                   <AdminInputNote component="p" name="courseName" />
                 </Label>
-                <Label>
-                  <AdminInputHint>
+                <Label style={{ fontSize: '1.2rem' }}>
+                  <AdminInputHint style={{ fontSize: '1.2rem' }}>
                     {translations[lang]?.courseGroupsLabel}
                   </AdminInputHint>
                   <AdminInput
                     type="text"
                     name="courseGroups"
                     placeholder={`${translations[lang]?.courseGroups}`}
+                    style={{ fontSize: '1.2rem' }}
                   />
                   <AdminInputNote component="p" name="courseGroups" />
                 </Label>

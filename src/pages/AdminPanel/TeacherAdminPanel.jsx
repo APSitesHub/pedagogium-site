@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import { Formik } from 'formik';
 import { useEffect, useState } from 'react';
@@ -209,7 +209,17 @@ const TeacherAdminPanel = () => {
 
   return (
     <>
-      <AdminPanelSection>
+      <h1
+        style={{
+          padding: '16px',
+          fontSize: '2.5rem',
+          textAlign: 'center',
+          borderBottom: '1px solid gray',
+        }}
+      >
+        Panel kuratora
+      </h1>
+      <AdminPanelSection style={{ fontSize: '1.2rem' }}>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -229,7 +239,9 @@ const TeacherAdminPanel = () => {
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
-              <AdminFormBtn type="submit">Zaloguj się</AdminFormBtn>
+              <AdminFormBtn type="submit">
+                <FormBtnText>Zaloguj się</FormBtnText>
+              </AdminFormBtn>
             </LoginForm>
           </Formik>
         )}
@@ -270,26 +282,56 @@ const TeacherAdminPanel = () => {
                     type="text"
                     name="name"
                     placeholder="Nazwisko i imię"
+                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote component="p" name="name" />
+                  <AdminInputNote
+                    component="p"
+                    name="name"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <Label>
-                  <AdminInput type="text" name="login" placeholder="Login" />
-                  <AdminInputNote component="p" name="login" />
+                  <AdminInput
+                    type="text"
+                    name="login"
+                    placeholder="Login"
+                    style={{ fontSize: '1.2rem' }}
+                  />
+                  <AdminInputNote
+                    component="p"
+                    name="login"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <Label>
-                  <AdminInput type="text" name="password" placeholder="Hasło" />
-                  <AdminInputNote component="p" name="password" />
+                  <AdminInput
+                    type="text"
+                    name="password"
+                    placeholder="Hasło"
+                    style={{ fontSize: '1.2rem' }}
+                  />
+                  <AdminInputNote
+                    component="p"
+                    name="password"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
                 <Label>
                   <AdminInput
                     type="text"
                     name="platformId"
                     placeholder="ID platformy"
+                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote component="p" name="platformId" />
+                  <AdminInputNote
+                    component="p"
+                    name="platformId"
+                    style={{ fontSize: '1.2rem' }}
+                  />
                 </Label>
-                <AdminFormBtn type="submit">Dodaj nauczyciela</AdminFormBtn>
+                <AdminFormBtn type="submit">
+                  <FormBtnText>Dodaj nauczyciela</FormBtnText>
+                </AdminFormBtn>
               </UsersForm>
             </Formik>
           </>
