@@ -33,7 +33,7 @@ export const Feedbacks = ({ feedbacks }) => {
 
     setSortedFeedbacks(sorted);
     setCurrentFeedback(0);
-  }, []);
+  }, [feedbacks]);
 
   return (
     <AttendanceBox>
