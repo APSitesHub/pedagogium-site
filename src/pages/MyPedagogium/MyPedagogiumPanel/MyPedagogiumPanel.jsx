@@ -5,6 +5,7 @@ import {
   APPanel,
   APPanelBtn,
   CalendarBtnIcon,
+  FeedbackBtnIcon,
   InfoBtnIcon,
   LogoutBtn,
   LogoutBtnIcon,
@@ -17,6 +18,8 @@ import {
 } from './MyPedagogiumPanel.styled';
 import { Info } from '../Info/Info';
 import { Attendance } from '../Attendance/Attendance';
+import { Feedbacks } from '../Feedbacks/Feedbacks';
+import axios from 'axios';
 
 export const MyPedagogiumPanel = ({
   user,
@@ -26,9 +29,11 @@ export const MyPedagogiumPanel = ({
 }) => {
   const [isBackdropShown, setIsBackdropShown] = useState(false);
   const [isTimetableShown, setIsTimetableShown] = useState(false);
+  const [isFeedbackShown, setIsFeedbackShown] = useState(false);
   const [isCalendarShown, setIsCalendarShown] = useState(false);
   const [isInfoShown, setIsInfoShown] = useState(false);
   const [isButtonBoxShown, setIsButtonBoxShown] = useState(true);
+  const [feedbacks, setFeedbacks] = useState({});
 
   const toggleButtonBox = () => {
     hideBackdrop();
@@ -40,44 +45,66 @@ export const MyPedagogiumPanel = ({
     setIsTimetableShown(false);
     setIsCalendarShown(false);
     setIsInfoShown(false);
+    setIsFeedbackShown(false);
   };
 
   const toggleTimetable = () => {
     !isBackdropShown &&
-      (!isCalendarShown || !isInfoShown) &&
+      (!isCalendarShown || !isInfoShown || !isFeedbackShown) &&
       setIsBackdropShown(isBackdropShown => (isBackdropShown = true));
     isBackdropShown &&
       !isCalendarShown &&
       !isInfoShown &&
+      !isFeedbackShown &&
       setIsBackdropShown(isBackdropShown => (isBackdropShown = false));
     setIsCalendarShown(false);
     setIsInfoShown(false);
+    setIsFeedbackShown(false);
     setIsTimetableShown(isTimetableShown => !isTimetableShown);
+  };
+
+  const toggleFeedback = () => {
+    !isBackdropShown &&
+      (!isTimetableShown || !isCalendarShown || !isInfoShown) &&
+      setIsBackdropShown(isBackdropShown => (isBackdropShown = true));
+    isBackdropShown &&
+      !isTimetableShown &&
+      !isCalendarShown &&
+      !isInfoShown &&
+      setIsBackdropShown(isBackdropShown => (isBackdropShown = false));
+    setIsTimetableShown(false);
+    setIsInfoShown(false);
+    setIsCalendarShown(false);
+    setIsFeedbackShown(isFeedbackShown => !isFeedbackShown);
   };
 
   const toggleInfo = () => {
     !isBackdropShown &&
-      (!isCalendarShown || !isTimetableShown) &&
+      (!isCalendarShown || !isTimetableShown || !isFeedbackShown) &&
       setIsBackdropShown(isBackdropShown => (isBackdropShown = true));
     isBackdropShown &&
       !isCalendarShown &&
       !isTimetableShown &&
+      !isFeedbackShown &&
       setIsBackdropShown(isBackdropShown => (isBackdropShown = false));
     setIsTimetableShown(false);
     setIsCalendarShown(false);
+    setIsFeedbackShown(false);
     setIsInfoShown(isInfoShown => !isInfoShown);
   };
 
   const toggleCalendar = () => {
     !isBackdropShown &&
-      (!isInfoShown || !isTimetableShown) &&
+      (!isInfoShown || !isTimetableShown || !isFeedbackShown) &&
       setIsBackdropShown(isBackdropShown => (isBackdropShown = true));
     isBackdropShown &&
       !isInfoShown &&
       !isTimetableShown &&
+      !isFeedbackShown &&
       setIsBackdropShown(isBackdropShown => (isBackdropShown = false));
     setIsTimetableShown(false);
     setIsInfoShown(false);
+    setIsFeedbackShown(false);
     setIsCalendarShown(isCalendarShown => !isCalendarShown);
   };
 
@@ -93,7 +120,19 @@ export const MyPedagogiumPanel = ({
     return () => {
       window.removeEventListener('keydown', onEscapeClose);
     };
-  });
+  }, []);
+
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      const feedbacksResponse = await axios.get(
+        `https://ap-server-8qi1.onrender.com/pedagogium-users/feedbacks/${user.id}`
+      );
+
+      setFeedbacks(feedbacksResponse.data);
+    };
+
+    fetchFeedbacks();
+  }, [user]);
 
   return (
     <>
@@ -123,6 +162,12 @@ export const MyPedagogiumPanel = ({
                 id="timetable-btn"
               />
             </APPanelBtn>
+            <APPanelBtn onClick={toggleFeedback}>
+              <FeedbackBtnIcon
+                id="feedback-btn"
+                className={isFeedbackShown && 'active'}
+              />
+            </APPanelBtn>
             {user.package !== 'online' && (
               <APPanelBtn onClick={toggleCalendar}>
                 <CalendarBtnIcon
@@ -148,6 +193,7 @@ export const MyPedagogiumPanel = ({
       </APPanel>
       {isTimetableShown && <Timetable user={user} timetable={timetable} />}
       {isInfoShown && <Info />}
+      {isFeedbackShown && <Feedbacks feedbacks={feedbacks} />}
       {isCalendarShown && (
         <Attendance user={user} personalLessonsDays={[1, 2, 3, 4, 5]} />
       )}

@@ -354,6 +354,7 @@ export const StudentTextArea = styled(AdminTextArea)`
   padding: 10px;
   background-color: white;
   font-size: 16px;
+  resize: none;
 
   @media screen and (min-height: 960px) {
     min-height: 280px;
