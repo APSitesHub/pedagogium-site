@@ -33,7 +33,8 @@ import {
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { UserFeedbackEditForm } from './EditForms/UserFeedbackEditForm';
 
-axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
+// axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
+axios.defaults.baseURL = 'http://localhost:3001';
 
 const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -114,12 +115,8 @@ const TeacherPageFeedback = () => {
   };
 
   const updateFeedback = updatedUser => {
-    setUsers(
-      users =>
-        (users = [
-          ...users.filter(user => user._id !== updatedUser._id),
-          updatedUser,
-        ])
+    setUsers(users =>
+      users.map(user => (user._id === updatedUser._id ? updatedUser : user))
     );
   };
 
