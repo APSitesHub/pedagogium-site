@@ -5,19 +5,26 @@ import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import {
   BoxHideLeftSwitch,
   BoxHideRightSwitch,
-  BoxHideSwitch,
-  ButtonBox,
   LoginLogo,
 } from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
+import {
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  FormField,
+  UsersForm,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
   AdminFormBtn,
   LoginForm,
 } from 'pages/Streams/AdminPanel/AdminPanel.styled';
 import { useEffect, useState } from 'react';
+import { slugify, transliterate } from 'transliteration';
 import * as yup from 'yup';
 import {
+  AdminInput,
+  AdminInputNote,
   AdminPanelSection,
   UserCell,
   UserDBCaption,
@@ -26,16 +33,14 @@ import {
   UserDeleteButton,
   UserEditButton,
   UserHeadCell,
-  UsersForm,
-} from '../UserAdminPanel/UserAdminPanel.styled';
+} from '../../Streams/UserAdminPanel/UserAdminPanel.styled';
 import {
-  AdminInput,
   AdminInputHint,
-  AdminInputNote,
   LinkTo,
-} from './CourseAdminPanel.styled';
+  PanelHeader,
+  SubmitFormBtn,
+} from '../CourseAdminPanel/CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
-import { slugify, transliterate } from 'transliteration';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -50,7 +55,7 @@ const Universities = {
 const translations = {
   pl: {
     loginPlaceholder: 'Login',
-    passwordPlaceholder: 'Password',
+    passwordPlaceholder: 'Hasło',
     loginRequired: 'Podaj login!',
     passwordRequired: 'Podaj hasło!',
     loginButton: 'Zaloguj się',
@@ -175,6 +180,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
       localStorage.setItem('isAdmin', true);
       resetForm();
     } catch (error) {
+      error.response.status === 401 && setIsUserInfoIncorrect(true);
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -249,17 +255,8 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
   return (
     <>
-      <h1
-        style={{
-          padding: '16px',
-          fontSize: '2.5rem',
-          textAlign: 'center',
-          borderBottom: '1px solid gray',
-        }}
-      >
-        Panel kursów
-      </h1>
-      <AdminPanelSection style={{ fontSize: '1.2rem' }}>
+      <PanelHeader>Panel kursów</PanelHeader>
+      <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -294,7 +291,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
                 }
               >
-                Password or email is incorrect!
+                Błędne hasło lub e-mail.
               </LoginErrorNote>
             </LoginForm>
           </Formik>
@@ -302,64 +299,52 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
         {isUserAdmin && courses && (
           <>
-            <ButtonBox
-              className={!isButtonBoxOpen ? 'hidden' : ''}
-              style={{
-                backgroundColor: '#fff',
-                padding: '8px',
-                border: '1px solid gray',
-                borderRadius: '24px',
-                top: '100px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              }}
-            >
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
               <LinkTo $isDisabled to={'/admin'}>
-                Panel kursów
+                Kursy
               </LinkTo>
-              <LinkTo to={'/admin-teacher'}>Panel kuratora</LinkTo>
-              <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Panel host-kahutów</LinkTo>
-            </ButtonBox>
+              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
 
-            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
-            </BoxHideSwitch>
+            </AdminButtonBoxSwitch>
             <Formik
               initialValues={initialCourseValues}
               onSubmit={handleCourseSubmit}
               validationSchema={courseSchema}
             >
               <UsersForm>
-                <Label style={{ fontSize: '1.2rem' }}>
-                  <AdminInputHint style={{ fontSize: '1.2rem' }}>
+                <Label>
+                  <AdminInputHint>
                     {translations[lang]?.courseNameLabel}
                   </AdminInputHint>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="courseName"
                     placeholder={`${translations[lang]?.courseName}`}
-                    style={{ fontSize: '1.2rem' }}
                   />
                   <AdminInputNote component="p" name="courseName" />
                 </Label>
-                <Label style={{ fontSize: '1.2rem' }}>
-                  <AdminInputHint style={{ fontSize: '1.2rem' }}>
+                <Label>
+                  <AdminInputHint>
                     {translations[lang]?.courseGroupsLabel}
                   </AdminInputHint>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="courseGroups"
                     placeholder={`${translations[lang]?.courseGroups}`}
-                    style={{ fontSize: '1.2rem' }}
                   />
                   <AdminInputNote component="p" name="courseGroups" />
                 </Label>
-                <AdminFormBtn type="submit">
+                <SubmitFormBtn type="submit">
                   <FormBtnText>
                     {translations[lang]?.addCourseButton}
                   </FormBtnText>
-                </AdminFormBtn>
+                </SubmitFormBtn>
               </UsersForm>
             </Formik>
             <UserDBTable>

@@ -2,15 +2,33 @@ import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
+import {
+  BoxHideLeftSwitch,
+  BoxHideRightSwitch,
+  LoginLogo,
+} from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
+import {
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  FormField,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
+import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
+import {
+  AdminFormBtn,
+  LoginForm,
+} from 'pages/Streams/AdminPanel/AdminPanel.styled';
 import { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import {
-  AdminFormBtn,
+  LinkTo,
+  PanelHeader,
+  SubmitFormBtn,
+} from '../Streams/CourseAdminPanel/CourseAdminPanel.styled';
+import {
   AdminInput,
   AdminInputNote,
   AdminPanelSection,
-  LoginForm,
   UserCell,
   UserDBCaption,
   UserDBRow,
@@ -19,18 +37,11 @@ import {
   UserEditButton,
   UserHeadCell,
   UsersForm,
-} from './TeacherAdminPanel.styled';
+} from '../Streams/UserAdminPanel/UserAdminPanel.styled';
 import { TeacherEditForm } from './TeacherEditForm/TeacherEditForm';
-import {
-  BoxHideLeftSwitch,
-  BoxHideRightSwitch,
-  BoxHideSwitch,
-  ButtonBox,
-} from 'components/Stream/Stream.styled';
-import { LinkTo } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
-// axios.defaults.baseURL = 'http://localhost:3001';
+
 const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 };
@@ -43,6 +54,7 @@ const TeacherAdminPanel = () => {
   const [teacherToEdit, setTeacherToEdit] = useState({});
   const [isTimeToUpdate, setIsTimeToUpdate] = useState(false);
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
+  const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
 
   useEffect(() => {
     document.title = 'Teacher Admin Panel | Pedagogium';
@@ -94,7 +106,7 @@ const TeacherAdminPanel = () => {
 
   const loginSchema = yup.object().shape({
     login: yup.string().required('Podaj login!'),
-    password: yup.string().required('Wprowadź hasło!'),
+    password: yup.string().required('Podaj hasło!'),
   });
 
   const toggleButtonBox = () => {
@@ -120,6 +132,7 @@ const TeacherAdminPanel = () => {
       localStorage.setItem('isAdmin', true);
       resetForm();
     } catch (error) {
+      error.response.status === 401 && setIsUserInfoIncorrect(true);
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -209,17 +222,8 @@ const TeacherAdminPanel = () => {
 
   return (
     <>
-      <h1
-        style={{
-          padding: '16px',
-          fontSize: '2.5rem',
-          textAlign: 'center',
-          borderBottom: '1px solid gray',
-        }}
-      >
-        Panel kuratora
-      </h1>
-      <AdminPanelSection style={{ fontSize: '1.2rem' }}>
+      <PanelHeader>Panel kuratora</PanelHeader>
+      <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -227,50 +231,54 @@ const TeacherAdminPanel = () => {
             validationSchema={loginSchema}
           >
             <LoginForm>
+              <LoginLogo />
               <Label>
-                <AdminInput type="text" name="login" placeholder="Login" />
+                <AdminInput
+                  type="text"
+                  name="login"
+                  placeholder={'Login'}
+                  onBlur={() => setIsUserInfoIncorrect(false)}
+                />
                 <AdminInputNote component="p" name="login" />
               </Label>
               <Label>
                 <AdminInput
                   type="password"
                   name="password"
-                  placeholder="Hasło"
+                  placeholder={'Hasło'}
+                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
               <AdminFormBtn type="submit">
                 <FormBtnText>Zaloguj się</FormBtnText>
               </AdminFormBtn>
+              <LoginErrorNote
+                style={
+                  isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
+                }
+              >
+                Błędne hasło lub e-mail.
+              </LoginErrorNote>
             </LoginForm>
           </Formik>
         )}
 
         {isUserAdmin && (
           <>
-            <ButtonBox
-              className={!isButtonBoxOpen ? 'hidden' : ''}
-              style={{
-                backgroundColor: '#fff',
-                padding: '8px',
-                border: '1px solid gray',
-                borderRadius: '24px',
-                top: '100px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              }}
-            >
-              <LinkTo to={'/admin'}>Panel kursów</LinkTo>
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <LinkTo to={'/admin'}>Kursy</LinkTo>
               <LinkTo $isDisabled to={'/admin-teacher'}>
-                Panel kuratora
+                Nauczyciele
               </LinkTo>
-              <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Panel host-kahutów</LinkTo>
-            </ButtonBox>
+              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
+              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
 
-            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
-            </BoxHideSwitch>
+            </AdminButtonBoxSwitch>
             <Formik
               initialValues={initialTeacherValues}
               onSubmit={handleTeacherSubmit}
@@ -278,67 +286,39 @@ const TeacherAdminPanel = () => {
             >
               <UsersForm>
                 <Label>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="name"
                     placeholder="Nazwisko i imię"
-                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote
-                    component="p"
-                    name="name"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <AdminInputNote component="p" name="name" />
                 </Label>
                 <Label>
-                  <AdminInput
-                    type="text"
-                    name="login"
-                    placeholder="Login"
-                    style={{ fontSize: '1.2rem' }}
-                  />
-                  <AdminInputNote
-                    component="p"
-                    name="login"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <FormField type="text" name="login" placeholder="Login" />
+                  <AdminInputNote component="p" name="login" />
                 </Label>
                 <Label>
-                  <AdminInput
-                    type="text"
-                    name="password"
-                    placeholder="Hasło"
-                    style={{ fontSize: '1.2rem' }}
-                  />
-                  <AdminInputNote
-                    component="p"
-                    name="password"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <FormField type="text" name="password" placeholder="Hasło" />
+                  <AdminInputNote component="p" name="password" />
                 </Label>
                 <Label>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="platformId"
                     placeholder="ID platformy"
-                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote
-                    component="p"
-                    name="platformId"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <AdminInputNote component="p" name="platformId" />
                 </Label>
-                <AdminFormBtn type="submit">
+                <SubmitFormBtn type="submit">
                   <FormBtnText>Dodaj nauczyciela</FormBtnText>
-                </AdminFormBtn>
+                </SubmitFormBtn>
               </UsersForm>
             </Formik>
           </>
         )}
         {isUserAdmin && (
           <UserDBTable>
-            <UserDBCaption>Lista kont nauczycieli</UserDBCaption>
+            <UserDBCaption>Lista nauczycieli</UserDBCaption>
             <thead>
               <UserDBRow>
                 <UserHeadCell>Imię i nazwisko</UserHeadCell>
@@ -377,7 +357,7 @@ const TeacherAdminPanel = () => {
                     <UserCell>
                       {teacher.name === 'Dev Acc' ? null : (
                         <UserEditButton onClick={() => handleEdit(teacher._id)}>
-                          Edit
+                          Edytuj
                         </UserEditButton>
                       )}
                     </UserCell>
@@ -386,7 +366,7 @@ const TeacherAdminPanel = () => {
                         <UserDeleteButton
                           onClick={() => handleDelete(teacher._id)}
                         >
-                          Del
+                          Usuń
                         </UserDeleteButton>
                       )}
                     </UserCell>

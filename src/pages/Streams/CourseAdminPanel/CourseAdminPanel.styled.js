@@ -1,11 +1,11 @@
-import { Input, InputNote } from 'components/LeadForm/LeadForm.styled';
+import { FormBtn, Input, InputNote } from 'components/LeadForm/LeadForm.styled';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 export const AdminInputHint = styled.p`
   color: var(--main-color);
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   padding: 0 20px;
 `;
 
@@ -34,7 +34,7 @@ export const LinkTo = styled(Link)`
   border: 1px solid var(--main-color);
   border-radius: 50px;
   color: var(--main-color);
-  font-size: 18px;
+  font-size: 14px;
   text-align: center;
   cursor: pointer;
   transition: color var(--animation-global);
@@ -49,8 +49,7 @@ export const LinkTo = styled(Link)`
   text-decoration: none;
 
   &:hover {
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
-    transform: scale(1.1);
+    box-shadow: 0px 1px 3px 4px rgba(0, 0, 0, 0.3);
 
     ${({ $isDisabled }) =>
       $isDisabled &&
@@ -72,5 +71,38 @@ export const LinkTo = styled(Link)`
 
       color: var(--main-color);
       cursor: default;
-    `}
+    `};
+`;
+
+export const SubmitFormBtn = styled(FormBtn)`
+  margin: 0 auto;
+  height: 48px;
+  padding: 0;
+`;
+
+export const PanelHeader = styled.h1`
+  padding: 16px;
+  font-size: 2.5rem;
+  text-align: center;
+  position: relative;
+
+  &::after {
+    display: block;
+
+    content: '';
+
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--secondary-color),
+      var(--main-color) 9%,
+      var(--main-color) 91%,
+      var(--secondary-color) 100%
+    );
+  }
 `;

@@ -1,27 +1,39 @@
 import axios from 'axios';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
-import { Label } from 'components/LeadForm/LeadForm.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import { Formik } from 'formik';
-import { useEffect, useRef, useState, useMemo } from 'react';
-import * as yup from 'yup';
 import {
   BoxHideLeftSwitch,
   BoxHideRightSwitch,
-  BoxHideSwitch,
-  ButtonBox,
   LoginLogo,
 } from 'components/Stream/Stream.styled';
+import { Formik } from 'formik';
+import {
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  FormField,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
 import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
 import {
   AdminFormBtn,
   LoginForm,
 } from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import * as yup from 'yup';
+import {
+  LinkTo,
+  PanelHeader,
+  SubmitFormBtn,
+} from '../CourseAdminPanel/CourseAdminPanel.styled';
 import {
   AdminInput,
   AdminInputNote,
   AdminPanelSection,
   ArrowDownIcon,
+  ErrorNote,
+  FormSelect,
+  LabelText,
+  SpeakingLabel,
   UserCell,
   UserDBCaption,
   UserDBRow,
@@ -30,15 +42,9 @@ import {
   UserEditButton,
   UserHeadCell,
   UsersForm,
-  LabelText,
-  SpeakingLabel,
-  ErrorNote,
-  TeacherLangSelect,
-  FormBtnText,
 } from './UserAdminPanel.styled';
 import { UniUserEditForm } from './UserEditForm/UniUserEditForm';
 import { UserVisitedEditForm } from './UserEditForm/UserVisitedEditForm';
-import { LinkTo } from '../CourseAdminPanel/CourseAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -58,7 +64,7 @@ const translations = {
     passwordRequired: 'Podaj hasło!',
     loginButton: 'Zaloguj się',
     addUserButton: 'Dodaj użytkownika',
-    userListCaption: 'Lista użytkowników z dostępem do lekcji',
+    userListCaption: 'Lista studentów z dostępem do lekcji',
     crmLeadContact: 'CRM&nbsp;Lider Kontakt',
     name: 'Nazwisko i imię',
     email: 'Poczta (login)',
@@ -259,6 +265,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
       localStorage.setItem('isAdmin', true);
       resetForm();
     } catch (error) {
+      error.response.status === 401 && setIsUserInfoIncorrect(true);
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -441,17 +448,8 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
   return (
     <>
-      <h1
-        style={{
-          padding: '16px',
-          fontSize: '2.5rem',
-          textAlign: 'center',
-          borderBottom: '1px solid gray',
-        }}
-      >
-        Panel studentów
-      </h1>
-      <AdminPanelSection style={{ fontSize: '1.2rem' }}>
+      <PanelHeader>Panel studentów</PanelHeader>
+      <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -486,7 +484,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                   isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
                 }
               >
-                Password or email is incorrect!
+                Błędne hasło lub e-mail.
               </LoginErrorNote>
             </LoginForm>
           </Formik>
@@ -494,92 +492,62 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
         {isUserAdmin && (
           <>
-            <ButtonBox
-              className={!isButtonBoxOpen ? 'hidden' : ''}
-              style={{
-                backgroundColor: '#fff',
-                padding: '8px',
-                border: '1px solid gray',
-                borderRadius: '24px',
-                top: '100px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              }}
-            >
-              <LinkTo to={'/admin'}>Panel kursów</LinkTo>
-              <LinkTo to={'/admin-teacher'}>Panel kuratora</LinkTo>
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <LinkTo to={'/admin'}>Kursy</LinkTo>
+              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
               <LinkTo $isDisabled to={'/admin-users'}>
-                Panel studentów
+                Studenci
               </LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Panel kahutów</LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Panel host-kahutów</LinkTo>
-            </ButtonBox>
+              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
 
-            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
-            </BoxHideSwitch>
+            </AdminButtonBoxSwitch>
             <Formik
               initialValues={initialUserValues}
               onSubmit={handleUserSubmit}
               validationSchema={usersSchema}
             >
-              <UsersForm style={{ fontSize: '1.2rem', minWidth: '200px' }}>
+              <UsersForm>
                 <Label>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="name"
                     placeholder={translations[lang]?.name}
-                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote
-                    component="p"
-                    name="name"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <AdminInputNote component="p" name="name" />
                 </Label>
                 <Label>
-                  <AdminInput
+                  <FormField
                     type="email"
                     name="mail"
                     placeholder={translations[lang]?.email}
-                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote
-                    component="p"
-                    name="mail"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <AdminInputNote component="p" name="mail" />
                 </Label>
                 <Label>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="password"
                     placeholder={translations[lang]?.password}
-                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote
-                    component="p"
-                    name="password"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <AdminInputNote component="p" name="password" />
                 </Label>
                 <Label>
-                  <AdminInput
+                  <FormField
                     type="text"
                     name="pupilId"
                     placeholder={translations[lang]?.platformId}
-                    style={{ fontSize: '1.2rem' }}
                   />
-                  <AdminInputNote
-                    component="p"
-                    name="pupilId"
-                    style={{ fontSize: '1.2rem' }}
-                  />
+                  <AdminInputNote component="p" name="pupilId" />
                 </Label>
                 <SpeakingLabel>
                   {courseValue && courseValue.value && (
                     <LabelText>Kurs</LabelText>
                   )}
-                  <TeacherLangSelect
+                  <FormSelect
                     ref={selectInputRef}
                     options={courseOptions}
                     styles={{
@@ -587,7 +555,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                         ...baseStyles,
                         border: 'none',
                         borderRadius: '50px',
-                        minHeight: '34px',
+                        minHeight: '38px',
                       }),
                       menu: (baseStyles, state) => ({
                         ...baseStyles,
@@ -613,7 +581,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                   {groupValue && groupValue.value && (
                     <LabelText>{translations[lang]?.group}</LabelText>
                   )}
-                  <TeacherLangSelect
+                  <FormSelect
                     ref={selectInputRef}
                     options={currentGroupOptions}
                     styles={{
@@ -621,7 +589,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                         ...baseStyles,
                         border: 'none',
                         borderRadius: '50px',
-                        minHeight: '34px',
+                        minHeight: '38px',
                       }),
                       menu: (baseStyles, state) => ({
                         ...baseStyles,
@@ -651,9 +619,9 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
                     <ErrorNote>{translations[lang]?.groupRequired}</ErrorNote>
                   )}
                 </SpeakingLabel>
-                <AdminFormBtn type="submit">
+                <SubmitFormBtn type="submit">
                   <FormBtnText>{translations[lang]?.addUserButton}</FormBtnText>
-                </AdminFormBtn>
+                </SubmitFormBtn>
               </UsersForm>
             </Formik>
           </>

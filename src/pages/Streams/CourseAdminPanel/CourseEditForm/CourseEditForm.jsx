@@ -9,8 +9,8 @@ import {
   AdminInput,
   AdminInputHint,
   AdminInputNote,
+  SubmitFormBtn,
 } from '../CourseAdminPanel.styled';
-import { AdminFormBtn } from 'pages/Streams/AdminPanel/AdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -90,9 +90,9 @@ export const CourseEditForm = ({
             />
             <AdminInputNote component="p" name="courseGroups" />
           </Label>
-          <AdminFormBtn type="submit">
+          <SubmitFormBtn type="submit">
             <FormBtnText>{translations[lang]?.editCourseButton}</FormBtnText>
-          </AdminFormBtn>
+          </SubmitFormBtn>
         </UsersEditForm>
       </Formik>
       {isLoading && <Loader />}

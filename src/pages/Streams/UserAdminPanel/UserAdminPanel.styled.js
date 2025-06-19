@@ -4,11 +4,11 @@ import { Field, Form } from 'formik';
 import { InputNote } from 'components/LeadForm/LeadForm.styled';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { FormBtn, } from 'components/LeadForm/LeadForm.styled';
+import { FormBtn } from 'components/LeadForm/LeadForm.styled';
 
 export const AdminPanelSection = styled.section`
   height: max-content;
-  min-height: 100vh;
+  min-height: calc(100vh - 78px);
   padding: 30px 20px;
   display: flex;
   align-items: flex-start;
@@ -41,7 +41,8 @@ export const Input = styled(Field)`
     &,
     &:hover,
     &:focus {
-      -webkit-box-shadow: 0 0 0px 1000px var(--accent-semi-transparent-color) inset;
+      -webkit-box-shadow: 0 0 0px 1000px var(--accent-semi-transparent-color)
+        inset;
     }
   }
 
@@ -88,18 +89,19 @@ export const AdminInputNote = styled(InputNote)`
   bottom: -1.1em;
 `;
 
-
 export const UsersForm = styled(Form)`
   margin: 0 auto;
 
   position: sticky;
   top: 50%;
 
+  width: 400px;
+
   transform: translateY(-50%);
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 `;
 
 export const UsersEditForm = styled(Form)`
@@ -126,10 +128,8 @@ export const UserEditButton = styled.button`
   border-radius: 5px;
 `;
 
-
 export const UserDBTable = styled.table`
-  max-width: 50vw;
-  min-height: 80vh;
+  max-width: 65vw;
   margin: 0 auto;
 
   table-layout: auto;
@@ -333,6 +333,7 @@ export const FormSelect = styled(Select)`
   width: 100%;
   font-size: 14px;
   border: 2px solid var(--main-color);
+  border-radius: 50px;
 
   line-height: 1;
 
@@ -387,12 +388,4 @@ export const ErrorNote = styled.p`
   @media screen and (min-width: 768px) {
     max-width: 360px;
   }
-`;
-
-export const FormBtnText = styled.span`
-  position: absolute;
-  z-index: 5;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 `;

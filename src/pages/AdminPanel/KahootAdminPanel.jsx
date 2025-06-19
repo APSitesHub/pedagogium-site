@@ -1,33 +1,47 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import {
-  AddButton,
-  AdminFormBtn,
-  AdminInput,
-  AdminInputNote,
-  AdminPanelSection,
-  DefaultInput,
-  DeleteButton,
-  KahootsAdminContainer,
-  LinksContainer,
-  LoginForm,
-} from './TeacherAdminPanel.styled';
 import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
-import { Formik } from 'formik';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import * as yup from 'yup';
 import {
   BoxHideLeftSwitch,
   BoxHideRightSwitch,
-  BoxHideSwitch,
-  ButtonBox,
+  LoginLogo,
 } from 'components/Stream/Stream.styled';
-import { LinkTo } from 'pages/Streams/CourseAdminPanel/CourseAdminPanel.styled';
-import { TeacherLangSelect } from 'pages/Streams/UserAdminPanel/UserAdminPanel.styled';
-import { LoginErrorNote } from 'pages/TeacherPage/TeacherPage.styled';
+import { Formik } from 'formik';
+import {
+  AddButton,
+  AdminButtonBox,
+  AdminButtonBoxSwitch,
+  DefaultInput,
+  DeleteButton,
+  FormSelect,
+  KahootLinkBox,
+  KahootsAdminContainer,
+  KahootsAdminForm,
+  LinkArea,
+  LinksContainer,
+  NoLinksChosen,
+  SubmitKahootsButton,
+  VisibleGroupName,
+} from 'pages/AdminPanel/TeacherAdminPanel.styled';
+import { LoginErrorNote } from 'pages/MyPedagogium/MyPedagogiumPanel/MyPedagogiumPanel.styled';
+import {
+  AdminFormBtn,
+  LoginForm,
+} from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import { useEffect, useState } from 'react';
+import * as yup from 'yup';
+import {
+  LinkTo,
+  PanelHeader,
+  SubmitFormBtn,
+} from '../Streams/CourseAdminPanel/CourseAdminPanel.styled';
+import {
+  AdminInput,
+  AdminInputNote,
+  AdminPanelSection,
+} from '../Streams/UserAdminPanel/UserAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
-// axios.defaults.baseURL = 'http://localhost:3001';
 
 const setAuthToken = token => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -42,6 +56,7 @@ const KahootAdminPanel = () => {
   const [links, setLinks] = useState([]);
   const [visibleGroupName, setVisibleGroupName] = useState('');
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
+  const [isUserInfoIncorrect, setIsUserInfoIncorrect] = useState(false);
   const [customError, setCustomError] = useState('');
 
   const initialLoginValues = {
@@ -51,7 +66,7 @@ const KahootAdminPanel = () => {
 
   const loginSchema = yup.object().shape({
     login: yup.string().required('Podaj login!'),
-    password: yup.string().required('Wprowadź hasło!'),
+    password: yup.string().required('Podaj hasło!'),
   });
 
   const toggleButtonBox = () => {
@@ -67,6 +82,7 @@ const KahootAdminPanel = () => {
       localStorage.setItem('isAdmin', true);
       resetForm();
     } catch (error) {
+      error.response.status === 401 && setIsUserInfoIncorrect(true);
       console.error(error);
     } finally {
       setIsLoading(isLoading => (isLoading = false));
@@ -132,7 +148,7 @@ const KahootAdminPanel = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.patch(`/pedagogium-host-kahoots`, {
+      await axios.patch(`/pedagogium-kahoots`, {
         group: links.group,
         links: links.links,
       });
@@ -170,17 +186,8 @@ const KahootAdminPanel = () => {
 
   return (
     <>
-      <h1
-        style={{
-          padding: '16px',
-          fontSize: '2.5rem',
-          textAlign: 'center',
-          borderBottom: '1px solid gray',
-        }}
-      >
-        Panel kahutów
-      </h1>
-      <AdminPanelSection style={{ fontSize: '1.5rem' }}>
+      <PanelHeader>Panel kahutów</PanelHeader>
+      <AdminPanelSection>
         {!isUserAdmin && (
           <Formik
             initialValues={initialLoginValues}
@@ -188,195 +195,166 @@ const KahootAdminPanel = () => {
             validationSchema={loginSchema}
           >
             <LoginForm>
+              <LoginLogo />
               <Label>
-                <AdminInput type="text" name="login" placeholder="Login" />
+                <AdminInput
+                  type="text"
+                  name="login"
+                  placeholder={'Login'}
+                  onBlur={() => setIsUserInfoIncorrect(false)}
+                />
                 <AdminInputNote component="p" name="login" />
               </Label>
               <Label>
                 <AdminInput
                   type="password"
                   name="password"
-                  placeholder="Hasło"
+                  placeholder={'Hasło'}
+                  onBlur={() => setIsUserInfoIncorrect(false)}
                 />
                 <AdminInputNote component="p" name="password" />
               </Label>
               <AdminFormBtn type="submit">
                 <FormBtnText>Zaloguj się</FormBtnText>
               </AdminFormBtn>
+              <LoginErrorNote
+                style={
+                  isUserInfoIncorrect ? { opacity: '1' } : { opacity: '0' }
+                }
+              >
+                Błędne hasło lub e-mail.
+              </LoginErrorNote>
             </LoginForm>
           </Formik>
         )}
         {isUserAdmin && (
           <>
-            <ButtonBox
-              className={!isButtonBoxOpen ? 'hidden' : ''}
-              style={{
-                backgroundColor: '#fff',
-                padding: '8px',
-                border: '1px solid gray',
-                borderRadius: '24px',
-                top: '100px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              }}
-            >
-              <LinkTo to={'/admin'}>Panel kursów</LinkTo>
-              <LinkTo to={'/admin-teacher'}>Panel kuratora</LinkTo>
-              <LinkTo to={'/admin-users'}>Panel studentów</LinkTo>
+            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+              <LinkTo to={'/admin'}>Kursy</LinkTo>
+              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
+              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
               <LinkTo $isDisabled to={'/admin-kahoots'}>
-                Panel kahutów
+                Kahooty
               </LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Panel host-kahutów</LinkTo>
-            </ButtonBox>
-
-            <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
+              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
+            </AdminButtonBox>
+            <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
-            </BoxHideSwitch>
-            {courses.length && (
-              <KahootsAdminContainer>
-                <TeacherLangSelect
-                  options={courses.map(course => ({
-                    label: course.courseName,
-                    value: course.slug,
-                  }))}
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      border: 'none',
-                      borderRadius: '50px',
-                      minHeight: '34px',
-                      fontSize: '1.5rem',
-                    }),
-                    menu: (baseStyles, state) => ({
-                      ...baseStyles,
-                      position: 'absolute',
-                      zIndex: '2',
-                      top: '36px',
-                      fontSize: '1.5rem',
-                    }),
-                    dropdownIndicator: (baseStyles, state) => ({
-                      ...baseStyles,
-                      padding: '7px',
-                      fontSize: '1.5rem',
-                    }),
-                  }}
-                  placeholder="Kurs"
-                  onChange={handleSelectCourse}
-                />
-                <TeacherLangSelect
-                  options={
-                    selectedCourse?.courseGroups?.map(group => ({
-                      label: group,
-                      value: group,
-                    })) || []
-                  }
-                  styles={{
-                    control: (baseStyles, state) => ({
-                      ...baseStyles,
-                      border: 'none',
-                      borderRadius: '50px',
-                      minHeight: '34px',
-                      fontSize: '1.5rem',
-                    }),
-                    menu: (baseStyles, state) => ({
-                      ...baseStyles,
-                      position: 'absolute',
-                      zIndex: '2',
-                      top: '36px',
-                      fontSize: '1.5rem',
-                    }),
-                    dropdownIndicator: (baseStyles, state) => ({
-                      ...baseStyles,
-                      padding: '7px',
-                      fontSize: '1.5rem',
-                    }),
-                  }}
-                  placeholder="Grupę"
-                  onChange={handleSelectGroup}
-                  isDisabled={!selectedCourse}
-                />
-
-                <AdminFormBtn type="button" onClick={handleFindKahoots}>
-                  <FormBtnText>Szukaj</FormBtnText>
-                </AdminFormBtn>
-                <LoginErrorNote
-                  style={{ fontSize: '14px', fontWeight: 'normal' }}
-                >
-                  {customError}
-                </LoginErrorNote>
-              </KahootsAdminContainer>
-            )}
-            <div
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'start',
-                border: '1px solid gray',
-                borderRadius: '25px',
-                padding: '12px 4px 4px 4px',
-                minHeight: '360px',
-                maxHeight: '100%',
-              }}
-            >
-              {links.group ? (
-                <>
-                  <h2
-                    style={{
-                      textAlign: 'center',
-                      borderBottom: '1px solid gray',
-                      paddingBottom: '8px',
+            </AdminButtonBoxSwitch>
+            <KahootsAdminContainer>
+              {courses.length && (
+                <KahootsAdminForm>
+                  <FormSelect
+                    options={courses.map(course => ({
+                      label: course.courseName,
+                      value: course.slug,
+                    }))}
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '38px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
                     }}
-                  >
-                    {visibleGroupName}
-                  </h2>
-                  <LinksContainer>
-                    {links.links.length ? (
-                      links.links.map((link, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '1rem',
-                            marginBottom: '0.5rem',
-                          }}
-                        >
-                          <DefaultInput
-                            type="text"
-                            name={`link-${index}`}
-                            placeholder={`Link-${index}`}
-                            value={link}
-                            onChange={handleLinkChange}
-                          />
-                          <DeleteButton
-                            type="button"
-                            onClick={() => handleRemoveLink(index)}
-                          >
-                            <p>✖</p>
-                            <p>usunąć</p>
-                          </DeleteButton>
-                        </div>
-                      ))
-                    ) : (
-                      <h3>Nie ma linków do kahutów, możesz je dodać</h3>
-                    )}
-                    <AddButton onClick={handleAddKahootLink}>
-                      + Dodaj link
-                    </AddButton>
-                  </LinksContainer>
+                    placeholder="Kurs"
+                    onChange={handleSelectCourse}
+                  />
+                  <FormSelect
+                    options={
+                      selectedCourse?.courseGroups?.map(group => ({
+                        label: group,
+                        value: group,
+                      })) || []
+                    }
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        border: 'none',
+                        borderRadius: '50px',
+                        minHeight: '38px',
+                      }),
+                      menu: (baseStyles, state) => ({
+                        ...baseStyles,
+                        position: 'absolute',
+                        zIndex: '2',
+                        top: '36px',
+                      }),
+                      dropdownIndicator: (baseStyles, state) => ({
+                        ...baseStyles,
+                        padding: '7px',
+                      }),
+                    }}
+                    placeholder="Grupa"
+                    onChange={handleSelectGroup}
+                    isDisabled={!selectedCourse}
+                  />
 
-                  <AdminFormBtn
-                    type="button"
-                    onClick={handleSubmit}
-                    style={{ marginTop: 'auto' }}
-                  >
-                    <FormBtnText>Zapisz</FormBtnText>
-                  </AdminFormBtn>
-                </>
-              ) : (
-                <h3>Wybierz kurs i grupę</h3>
+                  <SubmitFormBtn type="button" onClick={handleFindKahoots}>
+                    <FormBtnText>Szukaj</FormBtnText>
+                  </SubmitFormBtn>
+                  <LoginErrorNote>{customError}</LoginErrorNote>
+                </KahootsAdminForm>
               )}
-            </div>
+              <LinkArea>
+                {links.group ? (
+                  <>
+                    <VisibleGroupName>{visibleGroupName}</VisibleGroupName>
+                    <LinksContainer>
+                      {links.links.length ? (
+                        links.links.map((link, index) => (
+                          <KahootLinkBox key={index}>
+                            <DefaultInput
+                              type="text"
+                              name={`link-${index}`}
+                              placeholder={`Link-${index}`}
+                              value={link}
+                              onChange={handleLinkChange}
+                            />
+                            <DeleteButton
+                              type="button"
+                              onClick={() => handleRemoveLink(index)}
+                            >
+                              ✖ Usuń
+                            </DeleteButton>
+                          </KahootLinkBox>
+                        ))
+                      ) : (
+                        <NoLinksChosen>
+                          Nie dodano jeszcze linków do kahutów. Możesz je teraz
+                          dodać
+                        </NoLinksChosen>
+                      )}
+                      <AddButton onClick={handleAddKahootLink}>
+                        🞣 Dodaj link
+                      </AddButton>
+                    </LinksContainer>
+
+                    <SubmitKahootsButton
+                      type="button"
+                      onClick={handleSubmit}
+                      style={{ marginTop: 'auto' }}
+                    >
+                      <FormBtnText>Zapisz</FormBtnText>
+                    </SubmitKahootsButton>
+                  </>
+                ) : (
+                  <NoLinksChosen>
+                    Wybierz kurs i grupę w formularzu po lewej stronie
+                  </NoLinksChosen>
+                )}
+              </LinkArea>
+            </KahootsAdminContainer>
           </>
         )}
 
