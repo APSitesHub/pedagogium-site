@@ -14,14 +14,15 @@ import { Formik } from 'formik';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
 import * as yup from 'yup';
 import {
+  AdminSideBox,
   BoxHideLeftSwitch,
   BoxHideRightSwitch,
   BoxHideSwitch,
-  ButtonBox,
   LoginLogo,
 } from 'components/Stream/Stream.styled';
 import {
   FeedbackHeader,
+  TeacherFeedback,
   TeacherSpeakingDBSection,
   TeacherSpeakingDBTable,
 } from './TeacherPage.styled';
@@ -193,17 +194,7 @@ const TeacherPageFeedback = () => {
       )}
       {isUserAdmin && (
         <>
-          <ButtonBox
-            className={!isButtonBoxOpen ? 'hidden' : ''}
-            style={{
-              backgroundColor: '#fff',
-              padding: '8px',
-              border: '1px solid gray',
-              borderRadius: '24px',
-              top: '100px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            }}
-          >
+          <AdminSideBox className={!isButtonBoxOpen ? 'hidden' : ''}>
             {courses.length && (
               <>
                 <SpeakingSelect
@@ -222,7 +213,7 @@ const TeacherPageFeedback = () => {
                     }),
                     menu: (baseStyles, state) => ({
                       ...baseStyles,
-                      fz1ontSize: '18px',
+                      fontSize: '18px',
                       width: 'max-content',
                       minWidth: '100%',
                     }),
@@ -248,7 +239,7 @@ const TeacherPageFeedback = () => {
                     }),
                     menu: (baseStyles, state) => ({
                       ...baseStyles,
-                      fz1ontSize: '18px',
+                      fontSize: '18px',
                       width: 'max-content',
                       minWidth: '100%',
                     }),
@@ -263,13 +254,13 @@ const TeacherPageFeedback = () => {
                 </AdminFormBtn>
               </>
             )}
-          </ButtonBox>
+          </AdminSideBox>
 
           <BoxHideSwitch id="no-transform" onClick={toggleButtonBox}>
             {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
           </BoxHideSwitch>
 
-          <TeacherSpeakingDBSection style={{ flex: '1' }}>
+          <TeacherSpeakingDBSection className="wide">
             <TeacherSpeakingDBTable>
               <UserDBCaption>{visibleGroupName}</UserDBCaption>
               <thead>
@@ -295,7 +286,7 @@ const TeacherPageFeedback = () => {
                       <UserCell>
                         {user.visited && user.visited[user.visited.length - 1]}
                       </UserCell>
-                      <UserCellLeft style={{ whiteSpace: 'pre-wrap' }}>
+                      <UserCellLeft className="pre-wrap">
                         {latest?.feedbacks?.length > 0 && (
                           <>
                             <FeedbackHeader>
@@ -303,18 +294,9 @@ const TeacherPageFeedback = () => {
                             </FeedbackHeader>
                             {latest.feedbacks.map((feedback, index) => (
                               <>
-                                <div
-                                  style={{
-                                    padding: '4px 0',
-                                    borderBottom:
-                                      latest.feedbacks.length - 1 !== index
-                                        ? '1px solid lightgray'
-                                        : 'none',
-                                  }}
-                                  key={index}
-                                >
+                                <TeacherFeedback key={index}>
                                   {feedback}
-                                </div>
+                                </TeacherFeedback>
                               </>
                             ))}
                           </>

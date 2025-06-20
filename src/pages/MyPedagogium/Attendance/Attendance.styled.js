@@ -11,6 +11,7 @@ export const AttendanceBox = styled.div`
   top: 60px;
   right: 60px;
   z-index: 5;
+  padding: 12px;
 
   display: flex;
   flex-direction: column;
@@ -19,7 +20,6 @@ export const AttendanceBox = styled.div`
 
   overflow: hidden;
   border-radius: 20px;
-  padding: 0 20px;
 
   overflow-y: scroll;
   width: calc(100% - 65px);
