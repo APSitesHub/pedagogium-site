@@ -264,5 +264,4 @@ export const FormBtn = styled.button`
 
 export const FormBtnText = styled.span`
   position: relative;
-  z-index: 1;
 `;

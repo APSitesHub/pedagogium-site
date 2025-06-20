@@ -1001,3 +1001,16 @@ export const LoginErrorNote = styled.p`
 
   transition: opacity var(--animation-global);
 `;
+
+export const FeedbackHeader = styled.div`
+  border-bottom: 1px solid lightgray;
+  margin-bottom: '4px';
+  font-weight: bold;
+`;
+
+export const UserFeedbackText = styled.p`
+  white-space: pre-wrap;
+  max-width: 380px;
+  max-height: 50vh;
+  overflow: auto;
+`;

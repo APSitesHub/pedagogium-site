@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import {
-  AdminFormBtn,
-  AdminInput,
-  AdminInputNote,
   AdminPanelSection,
   LoginForm,
   SpeakingSelect,
@@ -21,8 +18,10 @@ import {
   BoxHideRightSwitch,
   BoxHideSwitch,
   ButtonBox,
+  LoginLogo,
 } from 'components/Stream/Stream.styled';
 import {
+  FeedbackHeader,
   TeacherSpeakingDBSection,
   TeacherSpeakingDBTable,
 } from './TeacherPage.styled';
@@ -32,6 +31,11 @@ import {
 } from 'pages/Streams/UserAdminPanel/UserAdminPanel.styled';
 import { Backdrop } from 'components/LeadForm/Backdrop/Backdrop.styled';
 import { UserFeedbackEditForm } from './EditForms/UserFeedbackEditForm';
+import {
+  AdminFormBtn,
+  AdminInput,
+  AdminInputNote,
+} from 'pages/Streams/AdminPanel/AdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -120,20 +124,25 @@ const TeacherPageFeedback = () => {
   };
 
   const getLatestFeedback = feedbacks => {
-    if (!feedbacks || feedbacks.length === 0) return '';
+    if (!feedbacks || feedbacks.length === 0) return [];
 
     const parseDate = str => {
       const [day, month, year] = str.split('.').map(Number);
       return new Date(year, month - 1, day);
     };
 
-    const latestFeedback = feedbacks.reduce((latest, current) => {
+    const latestDate = feedbacks.reduce((latest, current) => {
       return parseDate(current.date) > parseDate(latest.date)
         ? current
         : latest;
-    });
+    }).date;
 
-    return latestFeedback.feedback;
+    return {
+      date: latestDate,
+      feedbacks: feedbacks
+        .filter(fb => fb.date === latestDate)
+        .map(fb => fb.feedback),
+    };
   };
 
   useEffect(() => {
@@ -169,6 +178,7 @@ const TeacherPageFeedback = () => {
           validationSchema={loginSchema}
         >
           <LoginForm>
+            <LoginLogo />
             <Label>
               <AdminInput type="text" name="login" placeholder="Login" />
               <AdminInputNote component="p" name="login" />
@@ -201,6 +211,22 @@ const TeacherPageFeedback = () => {
                     label: course.courseName,
                     value: course.slug,
                   }))}
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '38px',
+                      lineHeight: '1.5',
+                      fontSize: '18px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      fz1ontSize: '18px',
+                      width: 'max-content',
+                      minWidth: '100%',
+                    }),
+                  }}
                   placeholder="Kurs"
                   onChange={handleSelectCourse}
                 />
@@ -211,6 +237,22 @@ const TeacherPageFeedback = () => {
                       value: group,
                     })) || []
                   }
+                  styles={{
+                    control: (baseStyles, state) => ({
+                      ...baseStyles,
+                      border: 'none',
+                      borderRadius: '50px',
+                      minHeight: '38px',
+                      lineHeight: '1.5',
+                      fontSize: '18px',
+                    }),
+                    menu: (baseStyles, state) => ({
+                      ...baseStyles,
+                      fz1ontSize: '18px',
+                      width: 'max-content',
+                      minWidth: '100%',
+                    }),
+                  }}
                   placeholder="Grupę"
                   onChange={handleSelectGroup}
                   isDisabled={!selectedCourse}
@@ -238,23 +280,49 @@ const TeacherPageFeedback = () => {
                 <UserHeadCell>Feedback</UserHeadCell>
               </thead>
               <tbody>
-                {users.map((user, i) => (
-                  <UserDBRow key={user._id}>
-                    <UserCell>{i + 1}</UserCell>
-                    <UserCell>{user.name}</UserCell>
-                    <UserCell>
-                      <UserEditButton onClick={() => handleUserEdit(user)}>
-                        Edit
-                      </UserEditButton>
-                    </UserCell>
-                    <UserCell>
-                      {user.visited && user.visited[user.visited.length - 1]}
-                    </UserCell>
-                    <UserCellLeft style={{ whiteSpace: 'pre-wrap' }}>
-                      {getLatestFeedback(user.feedbacks)}
-                    </UserCellLeft>
-                  </UserDBRow>
-                ))}
+                {users.map((user, i) => {
+                  const latest = getLatestFeedback(user.feedbacks);
+
+                  return (
+                    <UserDBRow key={user._id}>
+                      <UserCell>{i + 1}</UserCell>
+                      <UserCell>{user.name}</UserCell>
+                      <UserCell>
+                        <UserEditButton onClick={() => handleUserEdit(user)}>
+                          Edit
+                        </UserEditButton>
+                      </UserCell>
+                      <UserCell>
+                        {user.visited && user.visited[user.visited.length - 1]}
+                      </UserCell>
+                      <UserCellLeft style={{ whiteSpace: 'pre-wrap' }}>
+                        {latest?.feedbacks?.length > 0 && (
+                          <>
+                            <FeedbackHeader>
+                              Feedbacks from {latest.date}:
+                            </FeedbackHeader>
+                            {latest.feedbacks.map((feedback, index) => (
+                              <>
+                                <div
+                                  style={{
+                                    padding: '4px 0',
+                                    borderBottom:
+                                      latest.feedbacks.length - 1 !== index
+                                        ? '1px solid lightgray'
+                                        : 'none',
+                                  }}
+                                  key={index}
+                                >
+                                  {feedback}
+                                </div>
+                              </>
+                            ))}
+                          </>
+                        )}
+                      </UserCellLeft>
+                    </UserDBRow>
+                  );
+                })}
               </tbody>
             </TeacherSpeakingDBTable>
 

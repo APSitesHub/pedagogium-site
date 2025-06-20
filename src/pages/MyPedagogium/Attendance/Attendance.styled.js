@@ -8,7 +8,7 @@ import {
 
 export const AttendanceBox = styled.div`
   position: absolute;
-  top: 30px;
+  top: 60px;
   right: 60px;
   z-index: 5;
 
@@ -37,7 +37,6 @@ export const AttendanceBox = styled.div`
   }
 
   @media screen and (min-height: 480px) {
-    top: 60px;
     height: auto;
   }
 

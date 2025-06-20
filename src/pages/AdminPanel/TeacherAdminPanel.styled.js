@@ -92,7 +92,6 @@ export const AdminInput = styled(Input)`
   width: 240px;
   padding: 8px 10px;
   font-size: 16px;
-  height: 40px;
   -webkit-text-stroke: 0px;
 
   border: 2px solid var(--main-color);
