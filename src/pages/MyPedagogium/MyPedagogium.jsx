@@ -59,7 +59,7 @@ const MyPedagogium = () => {
     const getTimetable = async () => {
       console.log('timetable getter');
       try {
-        const res = await axios.get('/unitimetable');
+        const res = await axios.get('/pedagogium-timetable');
         console.log(res);
         setTimetable(timetable => (timetable = res.data));
       } catch (error) {

@@ -22,6 +22,7 @@ import {
   TimetableWebinars,
   TimetableWebinarsHead,
 } from './Timetable.styled';
+import { slugify, transliterate } from 'transliteration';
 
 export const Timetable = ({ user, timetable }) => {
   const [isAnimated, setIsAnimated] = useState(false);
@@ -29,8 +30,14 @@ export const Timetable = ({ user, timetable }) => {
     user.group === '2' ? '72421-2' : '72421'
   );
   const [personalTimetable, setPersonalTimetable] = useState(
-    timetable.find(timeline => marathonId === timeline.marathon)
+    timetable.find(timeline => `${slugify(transliterate(user.courseName))}_${user.group}` === timeline.group)
   );
+
+  console.log(30, personalTimetable);
+  
+
+  console.log(35, user);
+  
 
   const changeTimetable = () => {
     setIsAnimated(true);
@@ -113,11 +120,6 @@ export const Timetable = ({ user, timetable }) => {
               </thead>
               <tbody>
                 {personalTimetable.schedule
-                  .filter(
-                    lesson =>
-                      lesson.type.toLowerCase() === 'webinar' ||
-                      lesson.type.toLowerCase() === 'webinar, repeat'
-                  )
                   .sort((a, b) => a.day - b.day)
                   .map((lesson, i) => (
                     <TimetableDaysItem
