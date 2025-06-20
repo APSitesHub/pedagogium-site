@@ -31,13 +31,7 @@ export const Timetable = ({ user, timetable }) => {
   );
   const [personalTimetable, setPersonalTimetable] = useState(
     timetable.find(timeline => `${slugify(transliterate(user.courseName))}_${user.group}` === timeline.group)
-  );
-
-  console.log(30, personalTimetable);
-  
-
-  console.log(35, user);
-  
+  );  
 
   const changeTimetable = () => {
     setIsAnimated(true);
