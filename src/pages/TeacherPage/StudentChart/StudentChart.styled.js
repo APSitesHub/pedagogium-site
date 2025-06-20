@@ -228,6 +228,7 @@ export const TooltipValueText = styled.span`
 export const FeedbackButtonsBox = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-bottom: 16px;
 `;
 
 export const PreviousFeedbackButton = styled(ArrowPrevious)`

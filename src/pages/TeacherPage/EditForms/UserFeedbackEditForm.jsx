@@ -46,16 +46,13 @@ export const UserFeedbackEditForm = ({
     }
 
     const date = normalizeDate(startDate);
-    const feedback = `Feedback from: ${date}:
-
-${values.feedback}`;
 
     try {
       const response = await axios.patch(
         `pedagogium-users/feedback/${userToEdit._id}`,
         {
           date: date,
-          feedback: feedback,
+          feedback: values.feedback,
         }
       );
 

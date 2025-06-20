@@ -166,6 +166,15 @@ export const ButtonBox = styled.div`
   }
 `;
 
+export const AdminSideBox = styled(ButtonBox)`
+  background-color: #ffffff;
+  padding: 8px;
+  border: 1px solid var(--main-color);
+  border-radius: 24px;
+  top: 100px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+`;
+
 export const ChatBtn = styled.button`
   display: flex;
   align-items: center;

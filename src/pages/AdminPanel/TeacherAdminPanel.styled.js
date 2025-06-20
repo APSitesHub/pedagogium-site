@@ -92,7 +92,6 @@ export const AdminInput = styled(Input)`
   width: 240px;
   padding: 8px 10px;
   font-size: 16px;
-  height: 40px;
   -webkit-text-stroke: 0px;
 
   border: 2px solid var(--main-color);
@@ -210,6 +209,10 @@ export const UserCellLeft = styled(UserCell)`
   text-align: start;
   padding-left: 8px;
   max-width: 50vw;
+
+  &.pre-wrap {
+    white-space: pre-wrap;
+  }
 `;
 
 export const UserEditButton = styled.button`
@@ -432,4 +435,8 @@ export const DeleteButton = styled.button`
 
 export const SubmitKahootsButton = styled(SubmitFormBtn)`
   width: 400px;
+
+  &.bottom-btn {
+    margin-top: auto;
+  }
 `;
