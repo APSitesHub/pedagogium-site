@@ -78,7 +78,7 @@ const Teacher = () => {
 
         setIsUserLogged(true);
       } catch (error) {
-        if (error?.response?.status !== 401) {
+        if (error?.response?.status === 401) {
           console.error('Teacher refresh failed:', error);
         }
       }
