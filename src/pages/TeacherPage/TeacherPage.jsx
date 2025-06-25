@@ -76,6 +76,7 @@ const TeacherPage = () => {
   const [isNameInputOpen, setIsNameInputOpen] = useState(true);
   const [isLogined, setIsLogined] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isKahootsWasOpened, setIsKahootsWasOpened] = useState(false);
   const [isCorrectLessonInfo, setIsCorrectLessonInfo] = useState(false);
   const questionID = useRef(nanoid(5));
 
@@ -271,6 +272,8 @@ const TeacherPage = () => {
     isQuizFeedbackOpen
       ? setIsOpenedLast(isOpenedLast => 'kahoot')
       : setIsOpenedLast(isOpenedLast => '');
+
+    setIsKahootsWasOpened(true);
   };
   // eslint-disable-next-line
   const toggleQuizInput = () => {
@@ -404,13 +407,15 @@ const TeacherPage = () => {
                 isPlatformOpen={true}
                 isOpenedLast={isOpenedLast}
               />
-              <HostKahoots
-                page={group}
-                sectionWidth={width}
-                sectionHeight={height}
-                isKahootOpen={isKahootOpen}
-                isOpenedLast={isOpenedLast}
-              />
+              {isKahootsWasOpened && (
+                <HostKahoots
+                  page={group}
+                  sectionWidth={width}
+                  sectionHeight={height}
+                  isKahootOpen={isKahootOpen}
+                  isOpenedLast={isOpenedLast}
+                />
+              )}
               <TeacherChat page={group} />
               <TeacherQuizInput
                 page={group}
