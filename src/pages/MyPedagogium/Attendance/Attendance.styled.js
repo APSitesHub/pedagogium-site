@@ -8,9 +8,10 @@ import {
 
 export const AttendanceBox = styled.div`
   position: absolute;
-  top: 30px;
+  top: 60px;
   right: 60px;
   z-index: 5;
+  padding: 12px;
 
   display: flex;
   flex-direction: column;
@@ -19,7 +20,6 @@ export const AttendanceBox = styled.div`
 
   overflow: hidden;
   border-radius: 20px;
-  padding: 0 20px;
 
   overflow-y: scroll;
   width: calc(100% - 65px);
@@ -37,7 +37,6 @@ export const AttendanceBox = styled.div`
   }
 
   @media screen and (min-height: 480px) {
-    top: 60px;
     height: auto;
   }
 

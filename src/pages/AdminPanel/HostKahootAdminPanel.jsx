@@ -340,7 +340,7 @@ const KahootAdminPanel = () => {
                     <SubmitKahootsButton
                       type="button"
                       onClick={handleSubmit}
-                      style={{ marginTop: 'auto' }}
+                      className="bottom-btn"
                     >
                       <FormBtnText>Zapisz</FormBtnText>
                     </SubmitKahootsButton>

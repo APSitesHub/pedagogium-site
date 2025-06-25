@@ -37,6 +37,10 @@ export const pulse = keyframes`
 
 export const TeacherSpeakingDBSection = styled.section`
   padding: 30px;
+
+  &.wide {
+    flex: 1;
+  }
 `;
 
 export const TeacherSpeakingDBTable = styled(UserDBTable)`
@@ -999,4 +1003,25 @@ export const LoginErrorNote = styled.p`
   color: red;
 
   transition: opacity var(--animation-global);
+`;
+
+export const FeedbackHeader = styled.div`
+  border-bottom: 1px solid lightgray;
+  margin-bottom: '4px';
+  font-weight: bold;
+`;
+
+export const UserFeedbackText = styled.p`
+  white-space: pre-wrap;
+  max-width: 380px;
+  max-height: 50vh;
+  overflow: auto;
+`;
+
+export const TeacherFeedback = styled.div`
+  padding: 4px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid lightgray;
+  }
 `;

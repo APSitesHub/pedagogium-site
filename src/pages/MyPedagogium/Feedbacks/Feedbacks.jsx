@@ -6,6 +6,10 @@ import {
   NextFeedbackButton,
   PreviousFeedbackButton,
 } from 'pages/TeacherPage/StudentChart/StudentChart.styled';
+import {
+  FeedbackHeader,
+  UserFeedbackText,
+} from 'pages/TeacherPage/TeacherPage.styled';
 
 export const Feedbacks = ({ feedbacks }) => {
   const [sortedFeedbacks, setSortedFeedbacks] = useState([]);
@@ -37,38 +41,38 @@ export const Feedbacks = ({ feedbacks }) => {
 
   return (
     <AttendanceBox>
-      <div
-        style={{
-          padding: '12px',
-        }}
-      >
-        <FeedbackButtonsBox style={{ marginBottom: '8px' }}>
-          <FeedbackButton
-            onClick={getPreviousFeedback}
-            disabled={
-              currentFeedback === sortedFeedbacks.length - 1 ||
-              !sortedFeedbacks.length
-            }
-            className="prev"
-          >
-            <PreviousFeedbackButton />
-          </FeedbackButton>
-          <FeedbackButton
-            onClick={getNextFeedback}
-            disabled={currentFeedback === 0 || !sortedFeedbacks.length}
-            className="next"
-          >
-            <NextFeedbackButton />
-          </FeedbackButton>
-        </FeedbackButtonsBox>
-        {sortedFeedbacks.length && currentFeedback !== null ? (
-          <p style={{ whiteSpace: 'pre-wrap', maxWidth: '380px' }}>
+      <FeedbackButtonsBox>
+        <FeedbackButton
+          onClick={getPreviousFeedback}
+          disabled={
+            currentFeedback === sortedFeedbacks.length - 1 ||
+            !sortedFeedbacks.length
+          }
+          className="prev"
+        >
+          <PreviousFeedbackButton />
+        </FeedbackButton>
+        <FeedbackButton
+          onClick={getNextFeedback}
+          disabled={currentFeedback === 0 || !sortedFeedbacks.length}
+          className="next"
+        >
+          <NextFeedbackButton />
+        </FeedbackButton>
+      </FeedbackButtonsBox>
+      {sortedFeedbacks.length && currentFeedback !== null ? (
+        <>
+          <FeedbackHeader>
+            Feedback from {sortedFeedbacks[currentFeedback].date}:
+          </FeedbackHeader>
+          <br />
+          <UserFeedbackText>
             {sortedFeedbacks[currentFeedback].feedback}
-          </p>
-        ) : (
-          <p>Nie ma jeszcze żadnych recenzji</p>
-        )}
-      </div>
+          </UserFeedbackText>
+        </>
+      ) : (
+        <p>Nie ma jeszcze żadnych recenzji</p>
+      )}
     </AttendanceBox>
   );
 };
