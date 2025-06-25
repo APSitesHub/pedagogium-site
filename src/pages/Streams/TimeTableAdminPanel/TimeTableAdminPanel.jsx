@@ -64,7 +64,7 @@ const TimeTableAdminPanel = () => {
     document.title = 'Panel harmonogramów | Pedagogium';
 
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       try {
         if (localStorage.getItem('isAdmin')) {
           const res = await axios.post('admins/refresh/users/', {});

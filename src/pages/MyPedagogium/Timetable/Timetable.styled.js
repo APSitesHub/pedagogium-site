@@ -275,8 +275,14 @@ export const TimetableHead = styled.th`
 export const TimetableDaysItem = styled.tr`
   height: 36px;
   /* clip-path: xywh(0 0 100% 100% round 7px); */
+  display: flex;
+  justify-content: space-between;
 `;
 
 export const TimetableDaysCell = styled.td`
   border: none;
+`;
+
+export const TimetableText = styled.span`
+  min-width: 4em;
 `;

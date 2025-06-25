@@ -116,7 +116,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
     document.title = 'Panel kursów | Pedagogium';
 
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       try {
         if (localStorage.getItem('isAdmin')) {
           const res = await axios.post('admins/refresh/pedagogium/', {});
@@ -183,6 +183,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
   const initialCourseValues = {
     courseName: '',
     courseGroups: '',
+    subjects: [],
     university: 'Pedagogium (Wyższa Szkoła Nauk Społecznych)',
   };
 
@@ -341,7 +342,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
                   <UserHeadCell>№</UserHeadCell>
                   <UserHeadCell>{translations[lang]?.courseName}</UserHeadCell>
                   <UserHeadCell>
-                    {translations[lang]?.courseGroups}
+                    {translations[lang]?.courseGroupsTableHead}
                   </UserHeadCell>
                   <UserHeadCell>{translations[lang]?.edit}</UserHeadCell>
                   <UserHeadCell>{translations[lang]?.delete}</UserHeadCell>

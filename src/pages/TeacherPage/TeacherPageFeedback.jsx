@@ -138,7 +138,7 @@ const TeacherPageFeedback = () => {
 
   useEffect(() => {
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       try {
         const res = await axios.post('/pedagogium-teachers/refresh/', {
           login: localStorage.getItem('mail'),

@@ -96,7 +96,7 @@ export const UsersForm = styled(Form)`
 
   width: 400px;
 
-  transform: translateY(-50%);
+  transform: translateY(-15%);
 
   display: flex;
   flex-direction: column;

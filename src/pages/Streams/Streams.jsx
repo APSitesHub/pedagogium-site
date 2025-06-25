@@ -108,7 +108,7 @@ const Streams = () => {
     wakeupRequest();
 
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       try {
         const teacherLogin = await axios.post('/pedagogium-teachers/refresh', {
           login: localStorage.getItem('mail'),

@@ -92,13 +92,14 @@ export const ScheduleData = styled.li`
   font-weight: 400;
   display: flex;
   gap: 20px;
+  align-items: center;
   justify-content: space-between;
   padding-bottom: 5px;
   border-bottom: 1px solid black;
 `;
 
 export const ScheduleDataDayText = styled.span`
-  min-width: 24px;
+  min-width: 2em;
 `;
 
 export const ScheduleDataTypeText = styled.span`
@@ -107,7 +108,7 @@ export const ScheduleDataTypeText = styled.span`
 `;
 
 export const ScheduleDataTimeText = styled.span`
-  min-width: 100px;
+  width: 150px;
   text-align: center;
 `;
 

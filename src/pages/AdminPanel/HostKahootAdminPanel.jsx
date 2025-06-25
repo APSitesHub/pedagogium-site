@@ -159,10 +159,10 @@ const KahootAdminPanel = () => {
   };
 
   useEffect(() => {
-    document.title = 'Panel kahutów prowadzącego | Pedagogium';
+    document.title = 'Panel kahutów właściciela | Pedagogium';
 
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       try {
         if (localStorage.getItem('isAdmin')) {
           const res = await axios.post('admins/refresh/pedagogium/', {});
@@ -187,7 +187,7 @@ const KahootAdminPanel = () => {
 
   return (
     <>
-      <PanelHeader>Panel kahutów prowadzącego</PanelHeader>
+      <PanelHeader>Panel kahutów właściciela</PanelHeader>
       <AdminPanelSection>
         {!isUserAdmin && (
           <Formik

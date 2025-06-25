@@ -34,7 +34,7 @@ const MyPedagogium = () => {
     document.title = 'My Pedagogium | Pedagogium';
 
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       const mail = localStorage.getItem('mail');
       try {
         if (!mail) {

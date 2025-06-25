@@ -160,7 +160,7 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
     document.title = 'Panel studentów | Pedagogium';
 
     const refreshToken = async () => {
-      console.log('token refresher');
+      
       try {
         if (localStorage.getItem('isAdmin')) {
           const res = await axios.post('admins/refresh/pedagogium/', {});
