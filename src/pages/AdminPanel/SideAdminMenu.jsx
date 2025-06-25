@@ -24,7 +24,7 @@ const menuItems = [
   },
   {
     slug: 'admin-host-kahoots',
-    label: 'Kahooty prowadzącego',
+    label: 'Kahooty właściciela',
   },
   {
     slug: 'admin-points',
