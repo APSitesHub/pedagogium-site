@@ -2,16 +2,14 @@ import useSize from '@react-hook/size';
 import { nanoid } from 'nanoid';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import * as yup from 'yup';
 import { HostKahoots } from './HostKahoots/HostKahoots';
-import { NameInput } from './NameInput/NameInput';
-import { LessonInfoBox, NameInputBtn } from './NameInput/NameInput.styled';
+import { LessonInfoBox } from './NameInput/NameInput.styled';
 import { Platform } from './Platform/Platform';
 import { TeacherChat } from './TeacherChat/TeacherChat';
 import {
-  BoxHideDownSwitch,
   BoxHideLeftSwitch,
   BoxHideRightSwitch,
-  BoxHideUpSwitch,
   // ViewerBtn,
   // ViewerLogo,
   // WhiteBoardBtn,
@@ -25,6 +23,10 @@ import {
   TeacherButtonBox,
   TeacherButtonBoxHideSwitch,
 } from './TeacherPage.styled';
+import {
+  AdminInput,
+  AdminInputNote,
+} from '../Streams/UserAdminPanel/UserAdminPanel.styled';
 import { TeacherQuizInput } from './TeacherQuiz/TeacherQuizInput';
 import { TeacherQuizOptions } from './TeacherQuiz/TeacherQuizOptions';
 import { TeacherQuizTrueFalse } from './TeacherQuiz/TeacherQuizTrueFalse';
@@ -34,6 +36,21 @@ import axios from 'axios';
 import NotFound from 'pages/NotFound/NotFound';
 import { QRCodeModal } from './TeacherQuiz/TeacherQR';
 import { TeacherQuizFeedback } from './TeacherQuiz/TeacherQuizFeedback';
+import { Formik } from 'formik';
+import {
+  AdminFormBtn,
+  LoginForm,
+} from 'pages/Streams/AdminPanel/AdminPanel.styled';
+import { LoginLogo } from 'components/Stream/Stream.styled';
+import { FormBtnText, Label } from 'components/LeadForm/LeadForm.styled';
+import { Loader } from 'components/SharedLayout/Loaders/Loader';
+
+axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
+// axios.defaults.baseURL = 'http://localhost:3001';
+
+const setAuthToken = token => {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+};
 
 const TeacherPage = () => {
   const { group } = useParams();
@@ -57,10 +74,95 @@ const TeacherPage = () => {
   // eslint-disable-next-line
   const [width, height] = useSize(document.body);
   const [isNameInputOpen, setIsNameInputOpen] = useState(true);
-  const [teacherInfo, setTeacherInfo] = useState({});
+  const [isLogined, setIsLogined] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCorrectLessonInfo, setIsCorrectLessonInfo] = useState(false);
   const questionID = useRef(nanoid(5));
 
   console.log('group:', group);
+
+  const initialLoginValue = {
+    login: '',
+    password: '',
+    lessonName: '',
+    lessonNumber: '',
+  };
+
+  const initialLessonValue = {
+    lessonName: localStorage.getItem('lessonName') || '',
+    lessonNumber: localStorage.getItem('lessonNumber') || '',
+  };
+
+  const loginSchema = yup.object().shape({
+    login: yup.string().required('Wpisz login'),
+    password: yup.string().required('Wpisz hasło'),
+    lessonName: yup.string().required('Wpisz nazwę lekcji'),
+    lessonNumber: yup.string().required('Wpisz numer lekcji'),
+  });
+
+  const lessonSchema = yup.object().shape({
+    lessonName: yup.string().required('Wpisz nazwę lekcji'),
+    lessonNumber: yup.string().required('Wpisz numer lekcji'),
+  });
+
+  const handleLoginSubmit = async (values, { resetForm }) => {
+    console.log('login');
+
+    try {
+      const response = await axios.post('/pedagogium-teachers/login', {
+        login: values.login,
+        password: values.password,
+      });
+
+      setAuthToken(response.data.token);
+      localStorage.setItem('teacherName', response.data.teacher.name);
+      localStorage.setItem('login', values.login);
+      localStorage.setItem('lessonName', values.lessonName);
+      localStorage.setItem('lessonNumber', values.lessonNumber);
+      localStorage.setItem('lessonGroup', group);
+
+      setIsLogined(true);
+      setIsCorrectLessonInfo(true);
+      resetForm();
+    } catch (error) {
+      if (error?.response?.status !== 401) {
+        console.error('Teacher login failed:', error);
+        return;
+      }
+    }
+  };
+
+  const handleLessonSubmit = async (values, { resetForm }) => {
+    console.log(values);
+
+    if (
+      values.lessonName === localStorage.getItem('lessonName') &&
+      values.lessonNumber === localStorage.getItem('lessonNumber') &&
+      group === localStorage.getItem('lessonGroup')
+    ) {
+      setIsCorrectLessonInfo(true);
+      resetForm();
+      return;
+    }
+
+    try {
+      const response = await axios.post('/pedagogium-lessons', {
+        page: group,
+        teacherName: localStorage.getItem('teacherName'),
+        lessonName: values.lessonName,
+        lessonNumber: values.lessonNumber,
+      });
+
+      localStorage.setItem('lessonId', response.data.lessonId);
+      localStorage.setItem('lessonName', values.lessonName);
+      localStorage.setItem('lessonNumber', values.lessonNumber);
+      localStorage.setItem('lessonGroup', group);
+      resetForm();
+    } catch (e) {
+      console.error(e);
+    }
+    setIsCorrectLessonInfo(true);
+  };
 
   const closeInputs = () => {
     setIsQuizInputOpen(false);
@@ -73,18 +175,27 @@ const TeacherPage = () => {
     questionID.current = nanoid(5);
   };
 
-  const changeTeacherInfo = (nameValue, lessonValue, levelValue) => {
-    setTeacherInfo(
-      teacherInfo =>
-        (teacherInfo = {
-          ...{ name: nameValue, lesson: lessonValue, level: levelValue },
-        })
-    );
-    setIsNameInputOpen(isOpen => (isOpen = false));
-  };
-
   useEffect(() => {
     document.title = `Teacher ${group.toLocaleUpperCase()} | AP Education`;
+
+    const refreshToken = async () => {
+      console.log('token refresher');
+      const login = localStorage.getItem('login');
+      try {
+        if (login) {
+          const res = await axios.post('pedagogium-teachers/refresh', {
+            login,
+          });
+          setAuthToken(res.data.newToken);
+          setIsLogined(true);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    refreshToken();
 
     const checkGroup = async () => {
       const [course, groupNumber] = group.split('_');
@@ -231,126 +342,208 @@ const TeacherPage = () => {
     <>
       {isGroupExist ? (
         <>
-          <NameInputBtn onClick={toggleNameInput}>
-            {isNameInputOpen ? <BoxHideUpSwitch /> : <BoxHideDownSwitch />}
-          </NameInputBtn>
-          <LessonInfoBox
-            className={
-              !teacherInfo.name + teacherInfo.level + teacherInfo.lesson
-                ? ''
-                : 'no-info'
-            }
-          >
-            {teacherInfo.name} <br />
-            {teacherInfo.level} {teacherInfo.lesson}
-          </LessonInfoBox>
-          <TeacherButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
-            {/* <ViewerBtn onClick={toggleViewer}>
+          {isCorrectLessonInfo ? (
+            <>
+              <LessonInfoBox>
+                {localStorage.getItem('teacherName')} <br />
+                {localStorage.getItem('lessonName')}{' '}
+                {localStorage.getItem('lessonNumber')}
+              </LessonInfoBox>
+              <TeacherButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
+                {/* <ViewerBtn onClick={toggleViewer}>
           <ViewerLogo />
         </ViewerBtn> */}
-            {/* <WhiteBoardBtn onClick={toggleWhiteBoard}>
+                {/* <WhiteBoardBtn onClick={toggleWhiteBoard}>
           <WhiteBoardLogo />
         </WhiteBoardBtn> */}
-            {/* <PlatformBtn onClick={togglePlatform}>
+                {/* <PlatformBtn onClick={togglePlatform}>
           <PlatformLogo />
         </PlatformBtn> */}
-            <KahootBtn onClick={toggleKahoot}>
-              <KahootLogo />
-            </KahootBtn>
-            <InputBtn onClick={toggleInputButtonBox}>QUIZ</InputBtn>
-            <InputButtonBox className={isInputButtonBoxOpen ? '' : 'hidden'}>
-              <InputBtn onClick={toggleQuizInput}>TEXT</InputBtn>
+                <KahootBtn onClick={toggleKahoot}>
+                  <KahootLogo />
+                </KahootBtn>
+                <InputBtn onClick={toggleInputButtonBox}>QUIZ</InputBtn>
+                <InputButtonBox
+                  className={isInputButtonBoxOpen ? '' : 'hidden'}
+                >
+                  <InputBtn onClick={toggleQuizInput}>TEXT</InputBtn>
 
-              <InputBtn onClick={toggleQuizOptions}>A-B-C</InputBtn>
+                  <InputBtn onClick={toggleQuizOptions}>A-B-C</InputBtn>
 
-              <InputBtn onClick={toggleQuizTrueFalse}>TRUE FALSE</InputBtn>
+                  <InputBtn onClick={toggleQuizTrueFalse}>TRUE FALSE</InputBtn>
 
-              <InputBtn onClick={toggleQROPen}>QR</InputBtn>
+                  <InputBtn onClick={toggleQROPen}>QR</InputBtn>
 
-              {/* TODO: delete conditional randering ↓ */}
-              {['a0', 'a0_2', 'a1', 'a2'].includes(group) && (
-                <InputBtn onClick={toggleQuizFeedback}>FEED BACK</InputBtn>
-              )}
-            </InputButtonBox>
-          </TeacherButtonBox>
-          <TeacherButtonBoxHideSwitch
-            id="no-transform"
-            onClick={toggleButtonBox}
-          >
-            {isButtonBoxOpen ? <BoxHideRightSwitch /> : <BoxHideLeftSwitch />}
-          </TeacherButtonBoxHideSwitch>
+                  {/* TODO: delete conditional randering ↓ */}
+                  {['a0', 'a0_2', 'a1', 'a2'].includes(group) && (
+                    <InputBtn onClick={toggleQuizFeedback}>FEED BACK</InputBtn>
+                  )}
+                </InputButtonBox>
+              </TeacherButtonBox>
+              <TeacherButtonBoxHideSwitch
+                id="no-transform"
+                onClick={toggleButtonBox}
+              >
+                {isButtonBoxOpen ? (
+                  <BoxHideRightSwitch />
+                ) : (
+                  <BoxHideLeftSwitch />
+                )}
+              </TeacherButtonBoxHideSwitch>
 
-          {/* <Viewer
+              {/* <Viewer
         page={group}
         sectionWidth={width}
         isViewerOpen={isViewerOpen}
         isOpenedLast={isOpenedLast}
       /> */}
 
-          <Platform
-            page={group}
-            sectionWidth={width}
-            isPlatformOpen={true}
-            isOpenedLast={isOpenedLast}
-          />
-          <HostKahoots
-            page={group}
-            sectionWidth={width}
-            sectionHeight={height}
-            isKahootOpen={isKahootOpen}
-            isOpenedLast={isOpenedLast}
-          />
-          <TeacherChat page={group} />
-          <TeacherQuizInput
-            page={group}
-            isQuizInputOpen={isQuizInputOpen}
-            isQuizOptionsOpen={isQuizOptionsOpen}
-            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-            isQuizFeedbackOpen={isQuizFeedbackOpen}
-            closeInputs={closeInputs}
-            isOpenedLast={isOpenedLast}
-            questionID={questionID.current}
-            changeQuestionID={changeQuestionID}
-          />
-          <TeacherQuizOptions
-            page={group}
-            isQuizInputOpen={isQuizInputOpen}
-            isQuizOptionsOpen={isQuizOptionsOpen}
-            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-            isQuizFeedbackOpen={isQuizFeedbackOpen}
-            closeInputs={closeInputs}
-            isOpenedLast={isOpenedLast}
-            questionID={questionID.current}
-            changeQuestionID={changeQuestionID}
-          />
-          <TeacherQuizTrueFalse
-            page={group}
-            isQuizInputOpen={isQuizInputOpen}
-            isQuizOptionsOpen={isQuizOptionsOpen}
-            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-            isQuizFeedbackOpen={isQuizFeedbackOpen}
-            closeInputs={closeInputs}
-            isOpenedLast={isOpenedLast}
-            questionID={questionID.current}
-            changeQuestionID={changeQuestionID}
-          />
-          <TeacherQuizFeedback
-            page={group}
-            isQuizInputOpen={isQuizInputOpen}
-            isQuizOptionsOpen={isQuizOptionsOpen}
-            isQuizTrueFalseOpen={isQuizTrueFalseOpen}
-            isQuizFeedbackOpen={isQuizFeedbackOpen}
-            closeInputs={closeInputs}
-            isOpenedLast={isOpenedLast}
-            questionID={questionID.current}
-            changeQuestionID={changeQuestionID}
-            teacherName={teacherInfo.name}
-          />
-          <QRCodeModal onClose={toggleQROPen} isOpen={isQROpen} />
-          <NameInput
-            isNameInputOpen={isNameInputOpen}
-            changeTeacherInfo={changeTeacherInfo}
-          />
+              <Platform
+                page={group}
+                sectionWidth={width}
+                isPlatformOpen={true}
+                isOpenedLast={isOpenedLast}
+              />
+              <HostKahoots
+                page={group}
+                sectionWidth={width}
+                sectionHeight={height}
+                isKahootOpen={isKahootOpen}
+                isOpenedLast={isOpenedLast}
+              />
+              <TeacherChat page={group} />
+              <TeacherQuizInput
+                page={group}
+                isQuizInputOpen={isQuizInputOpen}
+                isQuizOptionsOpen={isQuizOptionsOpen}
+                isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+                isQuizFeedbackOpen={isQuizFeedbackOpen}
+                closeInputs={closeInputs}
+                isOpenedLast={isOpenedLast}
+                questionID={questionID.current}
+                changeQuestionID={changeQuestionID}
+              />
+              <TeacherQuizOptions
+                page={group}
+                isQuizInputOpen={isQuizInputOpen}
+                isQuizOptionsOpen={isQuizOptionsOpen}
+                isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+                isQuizFeedbackOpen={isQuizFeedbackOpen}
+                closeInputs={closeInputs}
+                isOpenedLast={isOpenedLast}
+                questionID={questionID.current}
+                changeQuestionID={changeQuestionID}
+              />
+              <TeacherQuizTrueFalse
+                page={group}
+                isQuizInputOpen={isQuizInputOpen}
+                isQuizOptionsOpen={isQuizOptionsOpen}
+                isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+                isQuizFeedbackOpen={isQuizFeedbackOpen}
+                closeInputs={closeInputs}
+                isOpenedLast={isOpenedLast}
+                questionID={questionID.current}
+                changeQuestionID={changeQuestionID}
+              />
+              <TeacherQuizFeedback
+                page={group}
+                isQuizInputOpen={isQuizInputOpen}
+                isQuizOptionsOpen={isQuizOptionsOpen}
+                isQuizTrueFalseOpen={isQuizTrueFalseOpen}
+                isQuizFeedbackOpen={isQuizFeedbackOpen}
+                closeInputs={closeInputs}
+                isOpenedLast={isOpenedLast}
+                questionID={questionID.current}
+                changeQuestionID={changeQuestionID}
+                teacherName={localStorage.getItem('teacherName')}
+              />
+              <QRCodeModal onClose={toggleQROPen} isOpen={isQROpen} />
+            </>
+          ) : (
+            <>
+              {isLoading ? (
+                <Loader />
+              ) : (
+                <>
+                  {isLogined ? (
+                    <Formik
+                      initialValues={initialLessonValue}
+                      onSubmit={handleLessonSubmit}
+                      validationSchema={lessonSchema}
+                    >
+                      <LoginForm>
+                        <LoginLogo />
+                        <Label>
+                          <AdminInput
+                            type="text"
+                            name="lessonName"
+                            placeholder="Nazwa lekcji"
+                          />
+                          <AdminInputNote component="p" name="lessonName" />
+                        </Label>
+                        <Label>
+                          <AdminInput
+                            type="text"
+                            name="lessonNumber"
+                            placeholder="Numer lekcji"
+                          />
+                          <AdminInputNote component="p" name="lessonNumber" />
+                        </Label>
+                        <AdminFormBtn type="submit">
+                          <FormBtnText>rozpocząć lekcję</FormBtnText>
+                        </AdminFormBtn>
+                      </LoginForm>
+                    </Formik>
+                  ) : (
+                    <Formik
+                      initialValues={initialLoginValue}
+                      onSubmit={handleLoginSubmit}
+                      validationSchema={loginSchema}
+                    >
+                      <LoginForm>
+                        <LoginLogo />
+                        <Label>
+                          <AdminInput
+                            type="text"
+                            name="login"
+                            placeholder="Login"
+                          />
+                          <AdminInputNote component="p" name="login" />
+                        </Label>
+                        <Label>
+                          <AdminInput
+                            type="password"
+                            name="password"
+                            placeholder="Hasło"
+                          />
+                          <AdminInputNote component="p" name="password" />
+                        </Label>
+                        <Label>
+                          <AdminInput
+                            type="text"
+                            name="lessonName"
+                            placeholder="Nazwa lekcji"
+                          />
+                          <AdminInputNote component="p" name="lessonName" />
+                        </Label>
+                        <Label>
+                          <AdminInput
+                            type="text"
+                            name="lessonNumber"
+                            placeholder="Numer lekcji"
+                          />
+                          <AdminInputNote component="p" name="lessonNumber" />
+                        </Label>
+                        <AdminFormBtn type="submit">
+                          <FormBtnText>rozpocząć lekcję</FormBtnText>
+                        </AdminFormBtn>
+                      </LoginForm>
+                    </Formik>
+                  )}
+                </>
+              )}
+            </>
+          )}
         </>
       ) : (
         <NotFound />

@@ -23,6 +23,9 @@ import {
 } from './TeacherQuiz.styled';
 import { nanoid } from 'nanoid';
 
+axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
+// axios.defaults.baseURL = 'http://localhost:3001';
+
 export const TeacherQuizContainer = ({
   page,
   quizType,
@@ -44,8 +47,6 @@ export const TeacherQuizContainer = ({
     setAnswers(answers => (answers = { ...{} }));
     console.log(socket.id, 'socket.id');
     console.log(questionID, 'questionID.current');
-
-    console.log(teacherName);
 
     if (quizType === 'feedback') {
       socket.emit('question:asked', {
@@ -71,7 +72,11 @@ export const TeacherQuizContainer = ({
 
   const emitQuizEnd = () => {
     setAnswers(answers => (answers = { ...{} }));
-    socket.emit('question:closed', { question: 'bye', page: page, quizType: quizType });
+    socket.emit('question:closed', {
+      question: 'bye',
+      page: page,
+      quizType: quizType,
+    });
     closeInputs();
     setIsQuizActive(false);
   };
@@ -81,15 +86,38 @@ export const TeacherQuizContainer = ({
     setIsConfirmationOpen(true);
   };
 
+  const saveAnswers = async () => {
+    try {
+      await axios.post(
+        `/pedagogium-lessons/question/${localStorage.getItem('lessonId')}`,
+        {
+          questionId: questionID,
+          correctAnswer: correctAnswer.current.toLowerCase(),
+          answers: list.current.data.map(ans => {
+            return {
+              userId: ans.userID,
+              userName: ans.username,
+              answer: ans.answer,
+            };
+          }),
+        }
+      );
+
+      emitQuizEnd();
+    } catch (e) {
+      alert('Błąd podczas zapisywania odpowiedzi. Spróbuj ponownie.');
+      console.log(e);
+    }
+  };
+
   const sendConfirmedAnswer = async () => {
     console.log(answers, 'answers before sendConfirmedAnswer');
     console.log(correctAnswer.current, 'correctAnswer.current');
-    list.current = await axios.get(
-      `https://ap-server-8qi1.onrender.com/answers/${questionID}`
-    );
+    list.current = await axios.get(`/answers/${questionID}`);
     console.log(
       list.current.data.filter(
-        item => item.answer.toLowerCase() === correctAnswer.current.toLowerCase()
+        item =>
+          item.answer.toLowerCase() === correctAnswer.current.toLowerCase()
       ),
       'list.current.data'
     );
@@ -101,8 +129,12 @@ export const TeacherQuizContainer = ({
     socket &&
       socket.on('answer:acquired', (answer, answerPage) => {
         if (page === answerPage) {
-          const answerNumbers = answers.hasOwnProperty(answer) ? answers[answer] + 1 : 1;
-          setAnswers(answers => (answers = { ...answers, [answer]: answerNumbers }));
+          const answerNumbers = answers.hasOwnProperty(answer)
+            ? answers[answer] + 1
+            : 1;
+          setAnswers(
+            prev => (prev = { ...prev, [answer]: answerNumbers })
+          );
         }
       });
   }, [socket, answers, page]);
@@ -120,7 +152,9 @@ export const TeacherQuizContainer = ({
             <TeacherQuizConfirmationHighlight>
               "{correctAnswer.current}"
             </TeacherQuizConfirmationHighlight>{' '}
-            {uni ? 'as correct or delete it?' : 'правильна чи її необхідно видалити?'}{' '}
+            {uni
+              ? 'as correct or delete it?'
+              : 'правильна чи її необхідно видалити?'}{' '}
           </TeacherQuizConfirmationText>
           <TeacherQuizConfirmationBtnBox>
             <TeacherChartBtn onClick={sendConfirmedAnswer}>
@@ -149,7 +183,9 @@ export const TeacherQuizContainer = ({
           <TeacherQuizCorrectListUsers>
             {list.current.data
               .filter(
-                item => item.answer.toLowerCase() === correctAnswer.current.toLowerCase()
+                item =>
+                  item.answer.toLowerCase() ===
+                  correctAnswer.current.toLowerCase()
               )
               .map((item, index) => (
                 <TeacherQuizCorrectListUser key={index}>
@@ -176,6 +212,9 @@ export const TeacherQuizContainer = ({
           </TeacherQuizCorrectListUsers>
           {isQuizActive && (
             <TeacherQuizCorrectListEndQuizBtnBox>
+              <TeacherChartResetBtn type="button" onClick={saveAnswers}>
+                Save & End
+              </TeacherChartResetBtn>
               <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
                 End
               </TeacherChartResetBtn>

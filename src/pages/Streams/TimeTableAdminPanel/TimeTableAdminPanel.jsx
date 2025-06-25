@@ -32,15 +32,14 @@ import {
 } from './TimeTableAdminPanel.styled';
 import { TimeTableEditForm } from './TimeTableEditForm/TimeTableEditForm';
 import {
-  LinkTo,
   PanelHeader,
   SubmitFormBtn,
 } from '../CourseAdminPanel/CourseAdminPanel.styled';
 import {
-  AdminButtonBox,
   AdminButtonBoxSwitch,
   FormField,
 } from 'pages/AdminPanel/TeacherAdminPanel.styled';
+import SideAdminMenu from 'pages/AdminPanel/SideAdminMenu';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 const setAuthToken = token => {
@@ -386,16 +385,10 @@ const TimeTableAdminPanel = () => {
 
         {isUserAdmin && (
           <>
-            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
-              <LinkTo to={'/admin'}>Kursy</LinkTo>
-              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
-              <LinkTo $isDisabled to={'/admin-timetable'}>
-                Harmonogramy
-              </LinkTo>
-              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
-            </AdminButtonBox>
+            <SideAdminMenu
+              isOpen={isButtonBoxOpen}
+              currentPage={'admin-timetable'}
+            />
 
             <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}

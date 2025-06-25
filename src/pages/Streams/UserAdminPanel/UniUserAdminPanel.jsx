@@ -9,7 +9,6 @@ import {
 } from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
 import {
-  AdminButtonBox,
   AdminButtonBoxSwitch,
   FormField,
 } from 'pages/AdminPanel/TeacherAdminPanel.styled';
@@ -21,7 +20,6 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as yup from 'yup';
 import {
-  LinkTo,
   PanelHeader,
   SubmitFormBtn,
 } from '../CourseAdminPanel/CourseAdminPanel.styled';
@@ -45,6 +43,7 @@ import {
 } from './UserAdminPanel.styled';
 import { UniUserEditForm } from './UserEditForm/UniUserEditForm';
 import { UserVisitedEditForm } from './UserEditForm/UserVisitedEditForm';
+import SideAdminMenu from 'pages/AdminPanel/SideAdminMenu';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -490,16 +489,10 @@ const UniUserAdminPanel = ({ uni, lang = 'pl' }) => {
 
         {isUserAdmin && (
           <>
-            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
-              <LinkTo to={'/admin'}>Kursy</LinkTo>
-              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
-              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
-              <LinkTo $isDisabled to={'/admin-users'}>
-                Studenci
-              </LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
-            </AdminButtonBox>
+            <SideAdminMenu
+              isOpen={isButtonBoxOpen}
+              currentPage={'admin-users'}
+            />
 
             <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}

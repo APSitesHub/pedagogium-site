@@ -9,7 +9,6 @@ import {
 import { Formik } from 'formik';
 import {
   AddButton,
-  AdminButtonBox,
   AdminButtonBoxSwitch,
   DefaultInput,
   DeleteButton,
@@ -31,7 +30,6 @@ import {
 import { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import {
-  LinkTo,
   PanelHeader,
   SubmitFormBtn,
 } from '../Streams/CourseAdminPanel/CourseAdminPanel.styled';
@@ -40,6 +38,7 @@ import {
   AdminInputNote,
   AdminPanelSection,
 } from '../Streams/UserAdminPanel/UserAdminPanel.styled';
+import SideAdminMenu from './SideAdminMenu';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -231,16 +230,10 @@ const KahootAdminPanel = () => {
         )}
         {isUserAdmin && (
           <>
-            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
-              <LinkTo to={'/admin'}>Kursy</LinkTo>
-              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
-              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
-              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
-              <LinkTo $isDisabled to={'/admin-host-kahoots'}>
-                Kahooty prowadzącego
-              </LinkTo>
-            </AdminButtonBox>
+            <SideAdminMenu
+              isOpen={isButtonBoxOpen}
+              currentPage={'admin-host-kahoots'}
+            />
             <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
             </AdminButtonBoxSwitch>
