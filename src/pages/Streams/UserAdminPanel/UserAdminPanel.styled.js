@@ -12,7 +12,6 @@ export const AdminPanelSection = styled.section`
   padding: 30px 20px;
   display: flex;
   align-items: flex-start;
-
   gap: 30px;
 `;
 
