@@ -58,7 +58,7 @@ const PointsAdminPanel = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [findedLessons, setFindedLessons] = useState([]);
+  const [foundLessons, setFoundLessons] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [selectedLessonPoints, setSelectedLessonPoints] = useState([]);
   const [isButtonBoxOpen, setIsButtonBoxOpen] = useState(true);
@@ -133,7 +133,7 @@ const PointsAdminPanel = () => {
         return;
       }
 
-      setFindedLessons(response.data);
+      setFoundLessons(response.data);
     } catch (e) {
       console.error(e);
     }
@@ -143,7 +143,7 @@ const PointsAdminPanel = () => {
     const response = await axios.get(`/pedagogium-lessons/points/${lessonId}`);
 
     setSelectedLessonPoints(response.data);
-    setSelectedLesson(findedLessons.find(lesson => lesson._id === lessonId));
+    setSelectedLesson(foundLessons.find(lesson => lesson._id === lessonId));
   };
 
   useEffect(() => {
@@ -311,9 +311,9 @@ const PointsAdminPanel = () => {
                   </Formik>
                 )}
 
-                {findedLessons.length > 0 && (
+                {foundLessons.length > 0 && (
                   <LessonsContainer>
-                    {findedLessons.map(lesson => (
+                    {foundLessons.map(lesson => (
                       <LessonItem
                         key={lesson._id}
                         onClick={() => handleFetchLessonPoints(lesson._id)}

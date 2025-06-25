@@ -122,6 +122,7 @@ const TeacherPage = () => {
       localStorage.setItem('lessonGroup', group);
 
       setIsLogined(true);
+      setIsCorrectLessonInfo(true);
       resetForm();
     } catch (error) {
       if (error?.response?.status !== 401) {
@@ -129,8 +130,6 @@ const TeacherPage = () => {
         return;
       }
     }
-
-    setIsCorrectLessonInfo(true);
   };
 
   const handleLessonSubmit = async (values, { resetForm }) => {
@@ -189,10 +188,11 @@ const TeacherPage = () => {
           });
           setAuthToken(res.data.newToken);
           setIsLogined(true);
-          setIsLoading(false);
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     refreshToken();

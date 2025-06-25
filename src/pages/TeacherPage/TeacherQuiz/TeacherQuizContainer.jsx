@@ -48,8 +48,6 @@ export const TeacherQuizContainer = ({
     console.log(socket.id, 'socket.id');
     console.log(questionID, 'questionID.current');
 
-    console.log(teacherName);
-
     if (quizType === 'feedback') {
       socket.emit('question:asked', {
         id: socket.id,
@@ -94,7 +92,7 @@ export const TeacherQuizContainer = ({
         `/pedagogium-lessons/question/${localStorage.getItem('lessonId')}`,
         {
           questionId: questionID,
-          correctAnswrer: correctAnswer.current.toLowerCase(),
+          correctAnswer: correctAnswer.current.toLowerCase(),
           answers: list.current.data.map(ans => {
             return {
               userId: ans.userID,
@@ -135,7 +133,7 @@ export const TeacherQuizContainer = ({
             ? answers[answer] + 1
             : 1;
           setAnswers(
-            answers => (answers = { ...answers, [answer]: answerNumbers })
+            prev => (prev = { ...prev, [answer]: answerNumbers })
           );
         }
       });

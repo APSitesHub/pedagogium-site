@@ -36,7 +36,11 @@ const SideAdminMenu = ({ isOpen, currentPage }) => {
   return (
     <AdminButtonBox className={!isOpen ? 'hidden' : ''}>
       {menuItems.map(item => (
-        <LinkTo $isDisabled={currentPage === item.slug} to={`/${item.slug}`}>
+        <LinkTo
+          key={item.slug}
+          $isDisabled={currentPage === item.slug}
+          to={`/${item.slug}`}
+        >
           {item.label}
         </LinkTo>
       ))}
