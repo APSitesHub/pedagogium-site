@@ -73,7 +73,6 @@ const TeacherPage = () => {
   const [isInputButtonBoxOpen, setIsInputButtonBoxOpen] = useState(false);
   // eslint-disable-next-line
   const [width, height] = useSize(document.body);
-  const [isNameInputOpen, setIsNameInputOpen] = useState(true);
   const [isLogined, setIsLogined] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isKahootsWasOpened, setIsKahootsWasOpened] = useState(false);
@@ -335,10 +334,6 @@ const TeacherPage = () => {
   // eslint-disable-next-line
   const toggleInputButtonBox = () => {
     setIsInputButtonBoxOpen(isInputButtonBoxOpen => !isInputButtonBoxOpen);
-  };
-
-  const toggleNameInput = () => {
-    setIsNameInputOpen(isNameInputOpen => !isNameInputOpen);
   };
 
   return (
