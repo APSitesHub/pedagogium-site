@@ -128,12 +128,11 @@ const PointsAdminPanel = () => {
         }_${selectedGroup}/${selectedDate.toLocaleDateString('pl-PL')}`
       );
 
+      setFoundLessons(response.data);
+
       if (response.data.length === 0) {
         alert('Nie znaleziono żadnych lekcji dla podanych parametrów!');
-        return;
       }
-
-      setFoundLessons(response.data);
     } catch (e) {
       console.error(e);
     }
@@ -347,7 +346,7 @@ const PointsAdminPanel = () => {
                       </UserDBRow>
                     </thead>
                     <tbody>
-                      {selectedLessonPoints.length &&
+                      {selectedLessonPoints.length > 0 &&
                         selectedLessonPoints.map((user, index) => (
                           <UserDBRow key={user._id}>
                             <UserCell>{index + 1}</UserCell>
