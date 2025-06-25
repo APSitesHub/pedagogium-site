@@ -11,7 +11,6 @@ export const AdminPanelSection = styled.section`
   min-height: calc(100vh - 78px);
   padding: 30px 20px;
   display: flex;
-  align-items: flex-start;
 
   gap: 30px;
 `;
