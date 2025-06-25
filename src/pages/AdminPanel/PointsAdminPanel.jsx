@@ -226,7 +226,7 @@ const PointsAdminPanel = () => {
             </AdminButtonBoxSwitch>
             <PointsAdminContainer>
               <PointsAdminSidebar>
-                {courses.length && (
+                {courses.length > 0 && (
                   <Formik
                     initialValues={initialLessonValues}
                     onSubmit={handleFindLessons}
