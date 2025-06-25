@@ -55,6 +55,12 @@ const HostKahootAdminPanel = lazy(() =>
   )
 );
 
+const PointsAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Points page" */ '../pages/AdminPanel/PointsAdminPanel'
+  )
+);
+
 const MyPedagogium = lazy(() =>
   import(
     /* webpackChunkName: "My Pedagogium Page" */ '../pages/MyPedagogium/MyPedagogium'
@@ -128,6 +134,12 @@ export const App = () => {
           <Route
             path="admin-host-kahoots"
             element={<HostKahootAdminPanel />}
+            noindex={true}
+          />
+
+          <Route
+            path="admin-points"
+            element={<PointsAdminPanel />}
             noindex={true}
           />
 

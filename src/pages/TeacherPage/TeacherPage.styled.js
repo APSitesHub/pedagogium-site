@@ -411,7 +411,6 @@ export const StreamSection = styled.section`
   position: relative;
   overflow: hidden;
   height: 100vh;
-  background-color: #4ec82d;
 `;
 
 export const Video = styled.div`

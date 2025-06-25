@@ -9,7 +9,6 @@ import {
 } from 'components/Stream/Stream.styled';
 import { Formik } from 'formik';
 import {
-  AdminButtonBox,
   AdminButtonBoxSwitch,
   FormField,
   UsersForm,
@@ -36,11 +35,11 @@ import {
 } from '../../Streams/UserAdminPanel/UserAdminPanel.styled';
 import {
   AdminInputHint,
-  LinkTo,
   PanelHeader,
   SubmitFormBtn,
 } from '../CourseAdminPanel/CourseAdminPanel.styled';
 import { CourseEditForm } from './CourseEditForm/CourseEditForm';
+import SideAdminMenu from 'pages/AdminPanel/SideAdminMenu';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 
@@ -293,16 +292,7 @@ const CourseAdminPanel = ({ uni, lang = 'ua' }) => {
 
         {isUserAdmin && courses && (
           <>
-            <AdminButtonBox className={!isButtonBoxOpen ? 'hidden' : ''}>
-              <LinkTo $isDisabled to={'/admin'}>
-                Kursy
-              </LinkTo>
-              <LinkTo to={'/admin-teacher'}>Nauczyciele</LinkTo>
-              <LinkTo to={'/admin-timetable'}>Harmonogramy</LinkTo>
-              <LinkTo to={'/admin-users'}>Studenci</LinkTo>
-              <LinkTo to={'/admin-kahoots'}>Kahooty</LinkTo>
-              <LinkTo to={'/admin-host-kahoots'}>Kahooty prowadzącego</LinkTo>
-            </AdminButtonBox>
+            <SideAdminMenu isOpen={isButtonBoxOpen} currentPage={'admin'} />
 
             <AdminButtonBoxSwitch id="no-transform" onClick={toggleButtonBox}>
               {isButtonBoxOpen ? <BoxHideLeftSwitch /> : <BoxHideRightSwitch />}
