@@ -214,10 +214,10 @@ export const TeacherQuizContainer = ({
           {isQuizActive && (
             <TeacherQuizCorrectListEndQuizBtnBox>
               <TeacherChartSaveBtn type="button" onClick={saveAnswers}>
-                Save & End
+                Save & Exit
               </TeacherChartSaveBtn>
               <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
-                End
+                Exit
               </TeacherChartResetBtn>
             </TeacherQuizCorrectListEndQuizBtnBox>
           )}
@@ -237,7 +237,7 @@ export const TeacherQuizContainer = ({
         )}
         {isQuizActive && (
           <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
-            End
+            Exit
           </TeacherChartResetBtn>
         )}
       </TeacherChartBtnBox>
