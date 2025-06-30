@@ -5,6 +5,7 @@ import {
   TeacherChartBtn,
   TeacherChartBtnBox,
   TeacherChartResetBtn,
+  TeacherChartSaveBtn,
 } from '../StudentChart/StudentChart.styled';
 import { TeacherAnswersChart } from '../StudentChart/TeacherAnswersChart';
 import {
@@ -212,9 +213,9 @@ export const TeacherQuizContainer = ({
           </TeacherQuizCorrectListUsers>
           {isQuizActive && (
             <TeacherQuizCorrectListEndQuizBtnBox>
-              <TeacherChartResetBtn type="button" onClick={saveAnswers}>
+              <TeacherChartSaveBtn type="button" onClick={saveAnswers}>
                 Save & End
-              </TeacherChartResetBtn>
+              </TeacherChartSaveBtn>
               <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
                 End
               </TeacherChartResetBtn>
