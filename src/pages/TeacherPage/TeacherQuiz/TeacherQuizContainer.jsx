@@ -23,6 +23,7 @@ import {
   TeacherQuizCorrectListUsers,
 } from './TeacherQuiz.styled';
 import { nanoid } from 'nanoid';
+import toast from 'react-hot-toast';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
 // axios.defaults.baseURL = 'http://localhost:3001';
@@ -106,8 +107,24 @@ export const TeacherQuizContainer = ({
 
       emitQuizEnd();
     } catch (e) {
-      alert('Błąd podczas zapisywania odpowiedzi. Spróbuj ponownie.');
-      console.log(e);
+      console.log(e.message);
+
+      if (
+        e.response?.data?.error === 'Lesson not found' ||
+        e.message === 'Lesson not found'
+      ) {
+        toast.error(
+          "Lesson not found! Fill in the lesson details at the top of the page and click 'OK'",
+          { duration: 5000, position: 'bottom-left' }
+        );
+
+        return;
+      }
+
+      toast.error('Error saving answers. Try again.', {
+        duration: 5000,
+        position: 'bottom-left',
+      });
     }
   };
 
@@ -133,9 +150,7 @@ export const TeacherQuizContainer = ({
           const answerNumbers = answers.hasOwnProperty(answer)
             ? answers[answer] + 1
             : 1;
-          setAnswers(
-            prev => (prev = { ...prev, [answer]: answerNumbers })
-          );
+          setAnswers(prev => (prev = { ...prev, [answer]: answerNumbers }));
         }
       });
   }, [socket, answers, page]);
@@ -216,11 +231,11 @@ export const TeacherQuizContainer = ({
               <TeacherChartSaveBtn type="button" onClick={saveAnswers}>
                 Save & Exit
               </TeacherChartSaveBtn>
-              <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
-                Exit
-              </TeacherChartResetBtn>
             </TeacherQuizCorrectListEndQuizBtnBox>
           )}
+          <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
+            <CloseIcon />
+          </TeacherChartResetBtn>
         </TeacherQuizCorrectList>
       )}
       <TeacherAnswersChart
@@ -235,12 +250,12 @@ export const TeacherQuizContainer = ({
             Start
           </TeacherChartBtn>
         )}
-        {isQuizActive && (
-          <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
-            Exit
-          </TeacherChartResetBtn>
-        )}
       </TeacherChartBtnBox>
+      {isQuizActive && (
+        <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
+          <CloseIcon />
+        </TeacherChartResetBtn>
+      )}
     </TeacherChatPageContainer>
   );
 };
