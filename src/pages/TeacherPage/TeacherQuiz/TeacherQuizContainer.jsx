@@ -234,9 +234,9 @@ export const TeacherQuizContainer = ({
               </TeacherChartSaveBtn>
             </TeacherQuizCorrectListEndQuizBtnBox>
           )}
-          <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
+          <FormCloseBtn type="button" onClick={emitQuizEnd}>
             <CloseIcon />
-          </TeacherChartResetBtn>
+          </FormCloseBtn>
         </TeacherQuizCorrectList>
       )}
       <TeacherAnswersChart
@@ -253,9 +253,9 @@ export const TeacherQuizContainer = ({
         )}
       </TeacherChartBtnBox>
       {isQuizActive && (
-        <TeacherChartResetBtn type="button" onClick={emitQuizEnd}>
+        <FormCloseBtn type="button" onClick={emitQuizEnd}>
           <CloseIcon />
-        </TeacherChartResetBtn>
+        </FormCloseBtn>
       )}
     </TeacherChatPageContainer>
   );
