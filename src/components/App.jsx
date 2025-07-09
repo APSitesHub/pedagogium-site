@@ -79,6 +79,12 @@ const UniUserAdminPanel = lazy(() =>
   )
 );
 
+const UserAttendanceAdminPanel = lazy(() =>
+  import(
+    /* webpackChunkName: "Pedagogium Users Admin Panel page" */ '../pages/Streams/UserAdminPanel/UserAttendanceAdminPanel'
+  )
+);
+
 const TimeTableAdminPanel = lazy(() =>
   import(
     /* webpackChunkName: "TimeTable Admin Panel page" */ '../pages/Streams/TimeTableAdminPanel/TimeTableAdminPanel'
@@ -113,6 +119,13 @@ export const App = () => {
           <Route
             path="admin-users"
             element={<UniUserAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />}
+            noindex={true}
+          />
+          <Route
+            path="admin-attendance-users"
+            element={
+              <UserAttendanceAdminPanel uni={'PEDAGOGIUM'} lang={'pl'} />
+            }
             noindex={true}
           />
           <Route
