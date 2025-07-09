@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Loader } from 'components/SharedLayout/Loaders/Loader';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DatesEditBlock } from './UserAdminPanel.styled';
 
 axios.defaults.baseURL = 'https://ap-server-8qi1.onrender.com';
@@ -9,17 +9,33 @@ export const UserVisitedEditForm = ({ userToView }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [editedVisited, setEditedVisited] = useState([]);
 
+  const includedDates = useMemo(
+    () => [
+      '2025-06-21',
+      '2025-07-12',
+      '2025-08-10',
+      '2025-09-06',
+      '2025-09-27',
+    ],
+    []
+  );
+
+  console.log(23, includedDates);
+
   useEffect(() => {
+    console.log('userToView', userToView.visited);
+
     const reversedVisited = [...userToView.visited]
       .filter(
         visit =>
-          visit !== '21.04.2025' &&
-          new Date(visit.split('.').reverse().join('-')).getDay() > 0 &&
-          new Date(visit.split('.').reverse().join('-')).getDay() < 6
+          (visit !== '21.04.2025' &&
+            new Date(visit.split('.').reverse().join('-')).getDay() > 0 &&
+            new Date(visit.split('.').reverse().join('-')).getDay() < 6) ||
+          includedDates.includes(visit.split('.').reverse().join('-'))
       )
       .reverse();
     setEditedVisited(reversedVisited);
-  }, [userToView]);
+  }, [userToView, includedDates]);
 
   useEffect(() => {
     setIsLoading(!editedVisited);

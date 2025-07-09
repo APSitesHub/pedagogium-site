@@ -41,6 +41,14 @@ const getAttendancePercentage = (attendance, group) => {
 
   const excludedDates = ['2025-04-21'];
 
+  const includedDates = [
+    '2025-06-21',
+    '2025-07-12',
+    '2025-08-10',
+    '2025-09-06',
+    '2025-09-27',
+  ];
+
   const validLessonDates = [];
 
   const current = new Date(startDate);
@@ -50,8 +58,11 @@ const getAttendancePercentage = (attendance, group) => {
 
     const isoDate = current.toISOString().split('T')[0];
 
-    // Weekdays only (Mon-Fri), exclude holiday
-    if (day >= 1 && day <= 5 && !excludedDates.includes(isoDate)) {
+    // Weekdays only (Mon-Fri), exclude holiday but include specific dates
+    if (
+      (day >= 1 && day <= 5 && !excludedDates.includes(isoDate)) ||
+      includedDates.includes(isoDate)
+    ) {
       validLessonDates.push(isoDate);
     }
 
